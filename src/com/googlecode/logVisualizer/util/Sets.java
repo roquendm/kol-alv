@@ -33,90 +33,92 @@ import java.util.Set;
  * Utility class with static helper methods for sets.
  */
 public final class Sets {
-    private Sets() {}
+  private Sets() {}
 
-    /**
-     * @return A new {@link HashSet}.
-     */
-    public static <E> Set<E> newHashSet() {
-        return new HashSet<E>();
-    }
+  /**
+   * @return A new {@link HashSet}.
+   */
+  public static <E> Set<E> newHashSet() {
+    return new HashSet<E>();
+  }
 
-    /**
-     * @param initialCapacity
-     *            The initial capacity of the new {@link HashSet}.
-     * @return A new {@link HashSet} with the given initial capacity.
-     */
-    public static <E> Set<E> newHashSet(
-                                        final int initialCapacity) {
-        return new HashSet<E>(initialCapacity);
-    }
+  /**
+   * @param initialCapacity
+   *            The initial capacity of the new {@link HashSet}.
+   * @return A new {@link HashSet} with the given initial capacity.
+   */
+  public static <E> Set<E> newHashSet(
+      final int initialCapacity) {
+    return new HashSet<E>(initialCapacity);
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new {@link HashSet}.
-     * @return A new {@link HashSet} populated with the given elements.
-     */
-    public static <E> Set<E> newHashSet(
-                                        final Collection<? extends E> elements) {
-        return new HashSet<E>(elements);
-    }
+  /**
+   * @param elements
+   *            The elements to be added to the new {@link HashSet}.
+   * @return A new {@link HashSet} populated with the given elements.
+   */
+  public static <E> Set<E> newHashSet(
+      final Collection<? extends E> elements) {
+    return new HashSet<E>(elements);
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new {@link HashSet}.
-     * @return A new {@link HashSet} populated with the given elements.
-     */
-    public static <E> Set<E> newHashSet(
-                                        final Iterable<? extends E> elements) {
-        final Set<E> set = newHashSet();
-        for (final E element : elements)
-            set.add(element);
+  /**
+   * @param elements
+   *            The elements to be added to the new {@link HashSet}.
+   * @return A new {@link HashSet} populated with the given elements.
+   */
+  public static <E> Set<E> newHashSet(
+      final Iterable<? extends E> elements) {
+    final Set<E> set = newHashSet();
+    for (final E element : elements)
+      set.add(element);
 
-        return set;
-    }
+    return set;
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new {@link HashSet}.
-     * @return A new {@link HashSet} populated with the given elements.
-     */
-    public static <E> Set<E> newHashSet(
-                                        final E... elements) {
-        final Set<E> set = newHashSet((int) (elements.length * 1.4));
-        for (final E element : elements)
-            set.add(element);
+  /**
+   * @param elements
+   *            The elements to be added to the new {@link HashSet}.
+   * @return A new {@link HashSet} populated with the given elements.
+   */
+  @SuppressWarnings("unchecked")
+  public static <E> Set<E> newHashSet(
+      final E... elements) {
+    final Set<E> set = newHashSet((int) (elements.length * 1.4));
+    for (final E element : elements)
+      set.add(element);
 
-        return set;
-    }
+    return set;
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new immutable set.
-     * @return A new immutable set populated with the given elements.
-     */
-    public static <E> Set<E> immutableSetOf(
-                                            final Collection<? extends E> elements) {
-        return Collections.unmodifiableSet(newHashSet(elements));
-    }
+  /**
+   * @param elements
+   *            The elements to be added to the new immutable set.
+   * @return A new immutable set populated with the given elements.
+   */
+  public static <E> Set<E> immutableSetOf(
+      final Collection<? extends E> elements) {
+    return Collections.unmodifiableSet(newHashSet(elements));
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new immutable set.
-     * @return A new immutable set populated with the given elements.
-     */
-    public static <E> Set<E> immutableSetOf(
-                                            final Iterable<? extends E> elements) {
-        return Collections.unmodifiableSet(newHashSet(elements));
-    }
+  /**
+   * @param elements
+   *            The elements to be added to the new immutable set.
+   * @return A new immutable set populated with the given elements.
+   */
+  public static <E> Set<E> immutableSetOf(
+      final Iterable<? extends E> elements) {
+    return Collections.unmodifiableSet(newHashSet(elements));
+  }
 
-    /**
-     * @param elements
-     *            The elements to be added to the new immutable set.
-     * @return A new immutable set populated with the given elements.
-     */
-    public static <E> Set<E> immutableSetOf(
-                                            final E... elements) {
-        return Collections.unmodifiableSet(newHashSet(elements));
-    }
+  /**
+   * @param elements
+   *            The elements to be added to the new immutable set.
+   * @return A new immutable set populated with the given elements.
+   */
+  @SuppressWarnings("unchecked")
+  public static <E> Set<E> immutableSetOf(
+      final E... elements) {
+    return Collections.unmodifiableSet(newHashSet(elements));
+  }
 }

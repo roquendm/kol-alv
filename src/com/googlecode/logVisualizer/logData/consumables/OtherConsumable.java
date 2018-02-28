@@ -30,70 +30,71 @@ import com.googlecode.logVisualizer.util.Countable;
 /**
  * A simple implementation of the Consumable class for other types of items such
  * as fancy chocolate, warm subject gift certificate, etc.
- * 
+ *
  * @see Consumable
  */
 final class OtherConsumable extends Consumable {
-    private static final String CONSUMED_START_STRING = "Used";
+  private static final String CONSUMED_START_STRING = "Used";
 
-    OtherConsumable(
-                    final String name, final int adventureGain, final int amountUsed) {
-        super(name, adventureGain, amountUsed);
+  OtherConsumable(
+      final String name, final int adventureGain, final int amountUsed) {
+    super(name, adventureGain, amountUsed);
+  }
+
+  OtherConsumable(
+      final String name, final int adventureGain, final int amountUsed,
+      final int turnNumberOfUsage) {
+    super(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public ConsumableVersion getConsumableVersion() {
+    return ConsumableVersion.OTHER;
+  }
+
+  /**
+   * @return A deep copy of this object.
+   * @see Countable
+   */
+  @Override
+  public OtherConsumable newInstance() {
+    final OtherConsumable consumable = getTurnNumberOfUsage() < 0 ? new OtherConsumable(getName(),
+        getAdventureGain(),
+        getAmount())
+        : new OtherConsumable(getName(),
+            getAdventureGain(),
+            getAmount(),
+            getTurnNumberOfUsage());
+
+    consumable.setDayNumberOfUsage(getDayNumberOfUsage());
+    consumable.setStatGain(getStatGain());
+
+    return consumable;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(50);
+
+    str.append(CONSUMED_START_STRING);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getAmount());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+
+    if (getAdventureGain() > 0) {
+      str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
+      str.append(getAdventureGain());
+      str.append(UsefulPatterns.WHITE_SPACE);
+      str.append(ADVENTURES_GAINED_STRING);
+      str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
+      str.append(UsefulPatterns.WHITE_SPACE);
     }
 
-    OtherConsumable(
-                    final String name, final int adventureGain, final int amountUsed,
-                    final int turnNumberOfUsage) {
-        super(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
+    str.append(getStatGain().toString());
 
-    /** {@inheritDoc} */
-    @Override
-    public ConsumableVersion getConsumableVersion() {
-        return ConsumableVersion.OTHER;
-    }
-
-    /**
-     * @return A deep copy of this object.
-     * @see Countable
-     */
-    public OtherConsumable newInstance() {
-        final OtherConsumable consumable = getTurnNumberOfUsage() < 0 ? new OtherConsumable(getName(),
-                                                                                            getAdventureGain(),
-                                                                                            getAmount())
-                                                                     : new OtherConsumable(getName(),
-                                                                                           getAdventureGain(),
-                                                                                           getAmount(),
-                                                                                           getTurnNumberOfUsage());
-
-        consumable.setDayNumberOfUsage(getDayNumberOfUsage());
-        consumable.setStatGain(getStatGain());
-
-        return consumable;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(50);
-
-        str.append(CONSUMED_START_STRING);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getAmount());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-
-        if (getAdventureGain() > 0) {
-            str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
-            str.append(getAdventureGain());
-            str.append(UsefulPatterns.WHITE_SPACE);
-            str.append(ADVENTURES_GAINED_STRING);
-            str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
-            str.append(UsefulPatterns.WHITE_SPACE);
-        }
-
-        str.append(getStatGain().toString());
-
-        return str.toString();
-    }
+    return str.toString();
+  }
 }

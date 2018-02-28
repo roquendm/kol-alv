@@ -46,85 +46,94 @@ import com.googlecode.logVisualizer.util.LookAheadIterator;
 import com.googlecode.logVisualizer.util.Pair;
 
 public final class FamiliarUsagePie extends PieChartBuilder {
-    public FamiliarUsagePie(
-                            final LogDataHolder logData) {
-        super("Familiar usage", logData, false);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6931060179230275869L;
+
+  public FamiliarUsagePie(
+      final LogDataHolder logData) {
+    super("Familiar usage", logData, false);
+  }
+
+  @Override
+  protected PieDataset createDataset() {
+    final DefaultPieDataset dataset = new DefaultPieDataset();
+
+    for (final DataNumberPair<String> dn : getLogData().getLogSummary().getFamiliarUsage())
+      dataset.setValue(dn.getData(), dn.getNumber());
+
+    return dataset;
+  }
+
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new FamiliarChartMouseEventListener());
+  }
+
+  final class FamiliarChartMouseEventListener implements ChartMouseListener {
+    @Override
+    public void chartMouseMoved(
+        final ChartMouseEvent e) {}
 
     @Override
-    protected PieDataset createDataset() {
-        final DefaultPieDataset dataset = new DefaultPieDataset();
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof PieSectionEntity) {
+        final PieSectionEntity entity = (PieSectionEntity) e.getEntity();
+        final List<Pair<Integer, Integer>> familiarUsages = getFamiliarUsages(entity.getSectionKey()
+            .toString());
+        final int combatTurnUsage = getNumberOfCombatTurnsUsed(entity.getSectionKey()
+            .toString());
 
-        for (final DataNumberPair<String> dn : getLogData().getLogSummary().getFamiliarUsage())
-            dataset.setValue(dn.getData(), dn.getNumber());
+        final StringBuilder str = new StringBuilder(100);
+        str.append("Total combat turns used: " + combatTurnUsage + "\n\n");
+        str.append("Familiar used on the given turn intervals:\n");
+        for (final Pair<Integer, Integer> p : familiarUsages)
+          if (p.getVar1().equals(p.getVar2()))
+            str.append(p.getVar1() + "\n");
+          else
+            str.append(p.getVar1() + "-" + p.getVar2() + "\n");
 
-        return dataset;
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(400, 350));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "Usage of " + entity.getSectionKey(),
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
 
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new FamiliarChartMouseEventListener());
+    @SuppressWarnings("boxing")
+    private List<Pair<Integer, Integer>> getFamiliarUsages(
+        final String familiar) {
+      final List<Pair<Integer, Integer>> familiarUsages = Lists.newArrayList();
+      final LookAheadIterator<FamiliarChange> index = new LookAheadIterator<FamiliarChange>(getLogData().getFamiliarChanges()
+          .iterator());
+      while (index.hasNext()) {
+        final FamiliarChange fc = index.next();
+        if (fc.getFamiliarName().equals(familiar)) {
+          final int startTurn = fc.getTurnNumber() + 1;
+          if (index.hasNext())
+            familiarUsages.add(Pair.of(startTurn, index.peek().getTurnNumber()));
+          else
+            familiarUsages.add(Pair.of(startTurn, getLogData().getLastTurnSpent()
+                .getTurnNumber()));
+        }
+      }
+
+      return familiarUsages;
     }
 
-    private final class FamiliarChartMouseEventListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent e) {}
+    @SuppressWarnings("boxing")
+    private int getNumberOfCombatTurnsUsed(
+        final String familiarName) {
+      for (final DataNumberPair<String> dnp : getLogData().getLogSummary().getFamiliarUsage())
+        if (dnp.getData().equals(familiarName))
+          return dnp.getNumber();
 
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof PieSectionEntity) {
-                final PieSectionEntity entity = (PieSectionEntity) e.getEntity();
-                final List<Pair<Integer, Integer>> familiarUsages = getFamiliarUsages(entity.getSectionKey()
-                                                                                            .toString());
-                final int combatTurnUsage = getNumberOfCombatTurnsUsed(entity.getSectionKey()
-                                                                             .toString());
-
-                final StringBuilder str = new StringBuilder(100);
-                str.append("Total combat turns used: " + combatTurnUsage + "\n\n");
-                str.append("Familiar used on the given turn intervals:\n");
-                for (final Pair<Integer, Integer> p : familiarUsages)
-                    if (p.getVar1().equals(p.getVar2()))
-                        str.append(p.getVar1() + "\n");
-                    else
-                        str.append(p.getVar1() + "-" + p.getVar2() + "\n");
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(400, 350));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "Usage of " + entity.getSectionKey(),
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-
-        private List<Pair<Integer, Integer>> getFamiliarUsages(
-                                                               final String familiar) {
-            final List<Pair<Integer, Integer>> familiarUsages = Lists.newArrayList();
-            final LookAheadIterator<FamiliarChange> index = new LookAheadIterator<FamiliarChange>(getLogData().getFamiliarChanges()
-                                                                                                              .iterator());
-            while (index.hasNext()) {
-                final FamiliarChange fc = index.next();
-                if (fc.getFamiliarName().equals(familiar)) {
-                    final int startTurn = fc.getTurnNumber() + 1;
-                    if (index.hasNext())
-                        familiarUsages.add(Pair.of(startTurn, index.peek().getTurnNumber()));
-                    else
-                        familiarUsages.add(Pair.of(startTurn, getLogData().getLastTurnSpent()
-                                                                          .getTurnNumber()));
-                }
-            }
-
-            return familiarUsages;
-        }
-
-        private int getNumberOfCombatTurnsUsed(
-                                               final String familiarName) {
-            for (final DataNumberPair<String> dnp : getLogData().getLogSummary().getFamiliarUsage())
-                if (dnp.getData().equals(familiarName))
-                    return dnp.getNumber();
-
-            return 0;
-        }
+      return 0;
     }
+  }
 }

@@ -32,82 +32,84 @@ import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.Statgain;
+import com.googlecode.logVisualizer.parser.MafiaSessionLogReader;
 
 /**
  * A parser for the stats summary at the end of preparsed ascension logs.
  */
 public final class StatsSummaryBlockParser extends AbstractBlockParser {
-    private static final Pattern STAT_SUMMARY_LINE_CAPTURE_PATTERN = Pattern.compile("\\w+:\\s+(\\-?\\d+)\\s+(\\-?\\d+)\\s+(\\-?\\d+).*");
+  private static final Pattern STAT_SUMMARY_LINE_CAPTURE_PATTERN = Pattern.compile("\\w+:\\s+(\\-?\\d+)\\s+(\\-?\\d+)\\s+(\\-?\\d+).*");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final BufferedReader reader, final LogDataHolder logData)
-                                                                                      throws IOException {
-        int statSummaryLineCounter = 0;
-        int emptyLineCounter = 0;
-        String line;
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final BufferedReader reader, final LogDataHolder logData)
+          throws IOException {
+    int statSummaryLineCounter = 0;
+    int emptyLineCounter = 0;
+    String line;
 
-        while ((line = reader.readLine()) != null)
-            if (line.length() > 4) {
-                if (statSummaryLineCounter < 4
-                    && STAT_SUMMARY_LINE_CAPTURE_PATTERN.matcher(line).matches()) {
-                    // Parse stats
-                    final Scanner scanner = new Scanner(line);
-                    scanner.findInLine(STAT_SUMMARY_LINE_CAPTURE_PATTERN);
-                    final MatchResult result = scanner.match();
-                    scanner.close();
+    while ((line = reader.readLine()) != null)
+      if (line.length() > 4) {
+        if (statSummaryLineCounter < 4
+            && STAT_SUMMARY_LINE_CAPTURE_PATTERN.matcher(line).matches()) {
+          // Parse stats
+          final Scanner scanner = new Scanner(line);
+          scanner.findInLine(STAT_SUMMARY_LINE_CAPTURE_PATTERN);
+          final MatchResult result = scanner.match();
+          scanner.close();
 
-                    final int muscleStats = Integer.parseInt(result.group(1));
-                    final int mystStats = Integer.parseInt(result.group(2));
-                    final int moxieStats = Integer.parseInt(result.group(3));
+          final int muscleStats = Integer.parseInt(result.group(1));
+          final int mystStats = Integer.parseInt(result.group(2));
+          final int moxieStats = Integer.parseInt(result.group(3));
 
-                    final Statgain stats = new Statgain(muscleStats, mystStats, moxieStats);
+          final Statgain stats = new Statgain(muscleStats, mystStats, moxieStats);
 
-                    // Set stat gain summaries
-                    // This switch construct is not really the most elegant way
-                    // to go about things, but it does what it is supposed to
-                    // do.
-                    switch (statSummaryLineCounter) {
-                        case 0:
-                            logData.getLogSummary().setTotalStatgains(stats);
-                            break;
-                        case 1:
-                            logData.getLogSummary().setCombatsStatgains(stats);
-                            break;
-                        case 2:
-                            logData.getLogSummary().setNoncombatsStatgains(stats);
-                            break;
-                        case 3:
-                            logData.getLogSummary().setOthersStatgains(stats);
-                            break;
-                        default:
-                            break;
-                    }
+          // Set stat gain summaries
+          // This switch construct is not really the most elegant way
+          // to go about things, but it does what it is supposed to
+          // do.
+          switch (statSummaryLineCounter) {
+            case 0:
+              logData.getLogSummary().setTotalStatgains(stats);
+              break;
+            case 1:
+              logData.getLogSummary().setCombatsStatgains(stats);
+              break;
+            case 2:
+              logData.getLogSummary().setNoncombatsStatgains(stats);
+              break;
+            case 3:
+              logData.getLogSummary().setOthersStatgains(stats);
+              break;
+            default:
+              break;
+          }
 
-                    statSummaryLineCounter++;
-                }
+          statSummaryLineCounter++;
+        }
 
-                emptyLineCounter = 0;
-            } else {
-                emptyLineCounter++;
-                if (emptyLineCounter >= 2) {
-                    reader.reset();
-                    break;
-                }
-                reader.mark(10);
-            }
-    }
+        emptyLineCounter = 0;
+      } else {
+        emptyLineCounter++;
+        if (emptyLineCounter >= 2) {
+          reader.reset();
+          break;
+        }
+        reader.mark(MafiaSessionLogReader.MARK_LIMIT);
+      }
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleBlock(
-                                        final String line) {
-        return line.contains("STATS");
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleBlock(
+      final String line) {
+    return line.contains("STATS");
+  }
 
 }

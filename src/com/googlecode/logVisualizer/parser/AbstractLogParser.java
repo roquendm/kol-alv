@@ -41,119 +41,121 @@ import com.googlecode.logVisualizer.util.textualLogs.TextLogCreator;
  * object reference is passed in any parameter.
  */
 public abstract class AbstractLogParser implements LogParser {
-    private final LogDataHolder logData;
+  private final LogDataHolder logData;
 
-    private final List<LineParser> lineParsers = Lists.newArrayList();
+  private final List<LineParser> lineParsers = Lists.newArrayList();
 
-    private final List<BlockParser> blockParsers = Lists.newArrayList();
+  private final List<BlockParser> blockParsers = Lists.newArrayList();
 
-    /**
-     * @param logData
-     *            The log data of this log parser to set.
-     */
-    public AbstractLogParser(
-                             final LogDataHolder logData) {
-        if (logData == null)
-            throw new NullPointerException("The LogDataHolder must not be null.");
+  /**
+   * @param logData
+   *            The log data of this log parser to set.
+   */
+  public AbstractLogParser(
+      final LogDataHolder logData) {
+    if (logData == null)
+      throw new NullPointerException("The LogDataHolder must not be null.");
 
-        this.logData = logData;
+    this.logData = logData;
+  }
+
+  /**
+   * This method tries to parse the given line with one of the line parsers it
+   * has.
+   * <p>
+   * This should always be the method of choice to parse lines in actual
+   * implementations of this class.
+   * <p>
+   * This implementation iterates over the internal line parser list and lets
+   * all line parsers try to parse data out of the given line. If one of the
+   * line parsers was able to parse the line, the loop is ended without
+   * checking another parser. Thus the line parser list shouldn't contain
+   * parsers which are able to parse the same line.
+   *
+   * @param line
+   *            The line to be parsed.
+   */
+  protected void parseLine(
+      final String line) {
+    for (final LineParser lp : lineParsers)
+      // If the parser can parse the line, this method also returns true.
+      // This is used to cut back on the amount of loops.
+      if (lp.parseLine(line, logData))
+        break;
+  }
+
+  /**
+   * This method tries to parse multiple lines from the given log reader with
+   * one of the block parsers it has.
+   * <p>
+   * This should always be the method of choice to parse blocks in actual
+   * implementations of this class.
+   * <p>
+   * This implementation saves the next line returned by the BufferedReader
+   * and checks it with ever block parser to see whether one of them
+   * recognises it as the first line of parsable block. Thus, this method will
+   * not catch different parsable blocks that directly follow each other in
+   * one runthrough. Developers have to plan for such cases accordingly by
+   * making sure that block parsers leave the BufferedReader in a position
+   * that makes it possible for another block parser to recognise a compatible
+   * block in a following call of this method.
+   *
+   * @param reader
+   *            The line to be parsed.
+   */
+  protected void parseBlock(
+      final BufferedReader reader)
+          throws IOException {
+    if (!blockParsers.isEmpty()) {
+      // Get the next line and reset the reader back to its previous
+      // position afterwards.
+      // A 500 characters limit should be enough for this (maybe too
+      // much).
+      reader.mark(MafiaSessionLogReader.MARK_LIMIT);
+      final String line = reader.readLine();
+      reader.reset();
+
+      if (line != null && line.length() > 0)
+        for (final BlockParser bp : blockParsers)
+          bp.parseBlock(line, reader, logData);
     }
+  }
 
-    /**
-     * This method tries to parse the given line with one of the line parsers it
-     * has.
-     * <p>
-     * This should always be the method of choice to parse lines in actual
-     * implementations of this class.
-     * <p>
-     * This implementation iterates over the internal line parser list and lets
-     * all line parsers try to parse data out of the given line. If one of the
-     * line parsers was able to parse the line, the loop is ended without
-     * checking another parser. Thus the line parser list shouldn't contain
-     * parsers which are able to parse the same line.
-     * 
-     * @param line
-     *            The line to be parsed.
-     */
-    protected void parseLine(
-                             final String line) {
-        for (final LineParser lp : lineParsers)
-            // If the parser can parse the line, this method also returns true.
-            // This is used to cut back on the amount of loops.
-            if (lp.parseLine(line, logData))
-                break;
-    }
+  /**
+   * @return The log data of this log parser.
+   */
+  @Override
+  public LogDataHolder getLogData() {
+    return logData;
+  }
 
-    /**
-     * This method tries to parse multiple lines from the given log reader with
-     * one of the block parsers it has.
-     * <p>
-     * This should always be the method of choice to parse blocks in actual
-     * implementations of this class.
-     * <p>
-     * This implementation saves the next line returned by the BufferedReader
-     * and checks it with ever block parser to see whether one of them
-     * recognises it as the first line of parsable block. Thus, this method will
-     * not catch different parsable blocks that directly follow each other in
-     * one runthrough. Developers have to plan for such cases accordingly by
-     * making sure that block parsers leave the BufferedReader in a position
-     * that makes it possible for another block parser to recognise a compatible
-     * block in a following call of this method.
-     * 
-     * @param reader
-     *            The line to be parsed.
-     */
-    protected void parseBlock(
-                              final BufferedReader reader)
-                                                          throws IOException {
-        if (!blockParsers.isEmpty()) {
-            // Get the next line and reset the reader back to its previous
-            // position afterwards.
-            // A 500 characters limit should be enough for this (maybe too
-            // much).
-            reader.mark(500);
-            final String line = reader.readLine();
-            reader.reset();
+  /**
+   * Calls through to {@link LogDataHolder#isDetailedLog()} in this
+   * implementation to figure you whether the log data is detailed enough for
+   * the {@link TextLogCreator}.
+   *
+   * @see LogParser
+   */
+  @Override
+  public boolean isDetailedLogData() {
+    return logData.isDetailedLog();
+  }
 
-            if (line != null && line.length() > 0)
-                for (final BlockParser bp : blockParsers)
-                    bp.parseBlock(line, reader, logData);
-        }
-    }
+  /**
+   * @param lineParser
+   *            The line parser to add.
+   */
+  protected void addLineParser(
+      final LineParser lineParser) {
+    lineParsers.add(lineParser);
+  }
 
-    /**
-     * @return The log data of this log parser.
-     */
-    public LogDataHolder getLogData() {
-        return logData;
-    }
-
-    /**
-     * Calls through to {@link LogDataHolder#isDetailedLog()} in this
-     * implementation to figure you whether the log data is detailed enough for
-     * the {@link TextLogCreator}.
-     * 
-     * @see LogParser
-     */
-    public boolean isDetailedLogData() {
-        return logData.isDetailedLog();
-    }
-
-    /**
-     * @param lineParser
-     *            The line parser to add.
-     */
-    protected void addLineParser(
-                                 final LineParser lineParser) {
-        lineParsers.add(lineParser);
-    }
-
-    /**
-     * @param blockParser
-     *            The block parser to add.
-     */
-    protected void addBlockParser(
-                                  final BlockParser blockParser) {
-        blockParsers.add(blockParser);
-    }
+  /**
+   * @param blockParser
+   *            The block parser to add.
+   */
+  protected void addBlockParser(
+      final BlockParser blockParser) {
+    blockParsers.add(blockParser);
+  }
 }

@@ -39,33 +39,34 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code &> _successfulAttempts_ / _totslAttempts_ free retreats}
  */
 public final class FreeRunawaysLineParser extends AbstractLineParser {
-    private final Matcher freeRunawaysMatcher = UsefulPatterns.FREE_RUNAWAYS_USAGE.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher freeRunawaysMatcher = UsefulPatterns.FREE_RUNAWAYS_USAGE.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        // Parse the usage numbers
-        final Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-        final int successfulUsages = scanner.nextInt();
-        final int attemptedUsages = scanner.nextInt();
-        scanner.close();
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    // Parse the usage numbers
+    final Scanner scanner = new Scanner(line);
+    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+    final int successfulUsages = scanner.nextInt();
+    final int attemptedUsages = scanner.nextInt();
+    scanner.close();
 
-        // Add usage numbers.
-        final SimpleTurnInterval sti = (SimpleTurnInterval) logData.getLastTurnSpent();
-        sti.setFreeRunaways(successfulUsages);
-        sti.setUnsuccessfulFreeRunaways(attemptedUsages);
-    }
+    // Add usage numbers.
+    final SimpleTurnInterval sti = (SimpleTurnInterval) logData.getLastTurnSpent();
+    sti.setFreeRunaways(successfulUsages);
+    sti.setUnsuccessfulFreeRunaways(attemptedUsages);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return freeRunawaysMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return freeRunawaysMatcher.reset(line).matches();
+  }
 }

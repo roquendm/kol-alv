@@ -35,162 +35,162 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class PlayerSnapshot extends AbstractTurnAction<PlayerSnapshot> {
-    private final int musStats;
+  private final int musStats;
 
-    private final int mystStats;
+  private final int mystStats;
 
-    private final int moxStats;
+  private final int moxStats;
 
-    private final int adventures;
+  private final int adventures;
 
-    private final int meat;
+  private final int meat;
 
-    /**
-     * @param playerStats
-     *            The base player stats as listed in the player snapshot.
-     * @param adventures
-     *            The number of adventures left when the snapshot occurred.
-     * @param meat
-     *            The meat on hand when the snapshot occurred.
-     * @param turnNumber
-     *            The turn number on which this player snapshot happened.
-     * @throws NullPointerException
-     *             if playerStats is {@code null}.
-     * @throws IllegalArgumentException
-     *             if one of the stats is below 0; if turnNumber is below 0
-     */
-    public PlayerSnapshot(
-                          final Statgain playerStats, final int adventures, final int meat,
-                          final int turnNumber) {
-        this(playerStats.mus, playerStats.myst, playerStats.mox, adventures, meat, turnNumber);
-    }
+  /**
+   * @param playerStats
+   *            The base player stats as listed in the player snapshot.
+   * @param adventures
+   *            The number of adventures left when the snapshot occurred.
+   * @param meat
+   *            The meat on hand when the snapshot occurred.
+   * @param turnNumber
+   *            The turn number on which this player snapshot happened.
+   * @throws NullPointerException
+   *             if playerStats is {@code null}.
+   * @throws IllegalArgumentException
+   *             if one of the stats is below 0; if turnNumber is below 0
+   */
+  public PlayerSnapshot(
+      final Statgain playerStats, final int adventures, final int meat,
+      final int turnNumber) {
+    this(playerStats.mus, playerStats.myst, playerStats.mox, adventures, meat, turnNumber);
+  }
 
-    /**
-     * @param musStats
-     *            The base player muscle as listed in the player snapshot.
-     * @param mystStats
-     *            The base player mysticality as listed in the player snapshot.
-     * @param moxStats
-     *            The base player moxie as listed in the player snapshot.
-     * @param adventures
-     *            The number of adventures left when the snapshot occurred.
-     * @param meat
-     *            The meat on hand when the snapshot occurred.
-     * @param turnNumber
-     *            The turn number on which this player snapshot happened.
-     * @throws IllegalArgumentException
-     *             if any of the values is negative
-     */
-    public PlayerSnapshot(
-                          final int musStats, final int mystStats, final int moxStats,
-                          final int adventures, final int meat, final int turnNumber) {
-        super(turnNumber);
+  /**
+   * @param musStats
+   *            The base player muscle as listed in the player snapshot.
+   * @param mystStats
+   *            The base player mysticality as listed in the player snapshot.
+   * @param moxStats
+   *            The base player moxie as listed in the player snapshot.
+   * @param adventures
+   *            The number of adventures left when the snapshot occurred.
+   * @param meat
+   *            The meat on hand when the snapshot occurred.
+   * @param turnNumber
+   *            The turn number on which this player snapshot happened.
+   * @throws IllegalArgumentException
+   *             if any of the values is negative
+   */
+  public PlayerSnapshot(
+      final int musStats, final int mystStats, final int moxStats,
+      final int adventures, final int meat, final int turnNumber) {
+    super(turnNumber);
 
-        if (musStats < 0)
-            throw new IllegalArgumentException("Player stats cannot be below 0.");
-        if (mystStats < 0)
-            throw new IllegalArgumentException("Player stats cannot be below 0.");
-        if (moxStats < 0)
-            throw new IllegalArgumentException("Player stats cannot be below 0.");
-        if (adventures < 0)
-            throw new IllegalArgumentException("Adventures left cannot be below 0.");
-        if (meat < 0)
-            throw new IllegalArgumentException("Current meat cannot be below 0.");
+    if (musStats < 0)
+      throw new IllegalArgumentException("Player stats cannot be below 0.");
+    if (mystStats < 0)
+      throw new IllegalArgumentException("Player stats cannot be below 0.");
+    if (moxStats < 0)
+      throw new IllegalArgumentException("Player stats cannot be below 0.");
+    if (adventures < 0)
+      throw new IllegalArgumentException("Adventures left cannot be below 0.");
+    if (meat < 0)
+      throw new IllegalArgumentException("Current meat cannot be below 0.");
 
-        this.musStats = musStats;
-        this.mystStats = mystStats;
-        this.moxStats = moxStats;
-        this.adventures = adventures;
-        this.meat = meat;
-    }
+    this.musStats = musStats;
+    this.mystStats = mystStats;
+    this.moxStats = moxStats;
+    this.adventures = adventures;
+    this.meat = meat;
+  }
 
-    /**
-     * @return The base player muscle as it was listed in the player snapshot.
-     */
-    public int getMuscleStats() {
-        return musStats;
-    }
+  /**
+   * @return The base player muscle as it was listed in the player snapshot.
+   */
+  public int getMuscleStats() {
+    return musStats;
+  }
 
-    /**
-     * @return The base player mysticality as it was listed in the player
-     *         snapshot.
-     */
-    public int getMystStats() {
-        return mystStats;
-    }
+  /**
+   * @return The base player mysticality as it was listed in the player
+   *         snapshot.
+   */
+  public int getMystStats() {
+    return mystStats;
+  }
 
-    /**
-     * @return The base player moxie as it was listed in the player snapshot.
-     */
-    public int getMoxieStats() {
-        return moxStats;
-    }
+  /**
+   * @return The base player moxie as it was listed in the player snapshot.
+   */
+  public int getMoxieStats() {
+    return moxStats;
+  }
 
-    /**
-     * @return The number of adventures left when the snapshot occurred.
-     */
-    public int getAdventuresLeft() {
-        return adventures;
-    }
+  /**
+   * @return The number of adventures left when the snapshot occurred.
+   */
+  public int getAdventuresLeft() {
+    return adventures;
+  }
 
-    /**
-     * @return The meat on hand when the snapshot occurred.
-     */
-    public int getCurrentMeat() {
-        return meat;
-    }
+  /**
+   * @return The meat on hand when the snapshot occurred.
+   */
+  public int getCurrentMeat() {
+    return meat;
+  }
 
-    @Override
-    public String toString() {
-        final String newLine = System.getProperty("line.separator");
-        final StringBuilder str = new StringBuilder(60);
+  @Override
+  public String toString() {
+    final String newLine = System.getProperty("line.separator");
+    final StringBuilder str = new StringBuilder(60);
 
-        str.append("Mus:");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(musStats);
-        str.append(newLine);
-        str.append("Myst:");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(mystStats);
-        str.append(newLine);
-        str.append("Mox:");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(moxStats);
-        str.append(newLine);
-        str.append("Adventures left:");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(adventures);
-        str.append(newLine);
-        str.append("Current meat:");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(meat);
+    str.append("Mus:");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(musStats);
+    str.append(newLine);
+    str.append("Myst:");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(mystStats);
+    str.append(newLine);
+    str.append("Mox:");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(moxStats);
+    str.append(newLine);
+    str.append("Adventures left:");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(adventures);
+    str.append(newLine);
+    str.append("Current meat:");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(meat);
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (super.equals(o) && o instanceof PlayerSnapshot)
-            return ((PlayerSnapshot) o).getMuscleStats() == musStats
-                   && ((PlayerSnapshot) o).getMystStats() == mystStats
-                   && ((PlayerSnapshot) o).getMoxieStats() == moxStats
-                   && ((PlayerSnapshot) o).getAdventuresLeft() == adventures
-                   && ((PlayerSnapshot) o).getCurrentMeat() == meat;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (super.equals(o) && o instanceof PlayerSnapshot)
+      return ((PlayerSnapshot) o).getMuscleStats() == musStats
+      && ((PlayerSnapshot) o).getMystStats() == mystStats
+      && ((PlayerSnapshot) o).getMoxieStats() == moxStats
+      && ((PlayerSnapshot) o).getAdventuresLeft() == adventures
+      && ((PlayerSnapshot) o).getCurrentMeat() == meat;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 2334;
-        result = 31 * result + super.hashCode();
-        result = 31 * result + musStats;
-        result = 31 * result + mystStats;
-        result = 31 * result + moxStats;
-        result = 31 * result + adventures;
-        result = 31 * result + meat;
+  @Override
+  public int hashCode() {
+    int result = 2334;
+    result = 31 * result + super.hashCode();
+    result = 31 * result + musStats;
+    result = 31 * result + mystStats;
+    result = 31 * result + moxStats;
+    result = 31 * result + adventures;
+    result = 31 * result + meat;
 
-        return result;
-    }
+    return result;
+  }
 }

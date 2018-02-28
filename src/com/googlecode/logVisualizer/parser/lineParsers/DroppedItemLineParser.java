@@ -42,35 +42,36 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * this will be appended as long as needed->, *itemName*)}
  */
 public final class DroppedItemLineParser extends AbstractLineParser {
-    private final Matcher droppedItemMatcher = UsefulPatterns.ITEM_FOUND.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher droppedItemMatcher = UsefulPatterns.ITEM_FOUND.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private static final Pattern NOT_ITEM_NAME = Pattern.compile("^.*\\]\\s*Got\\s*|,\\s*");
+  private static final Pattern NOT_ITEM_NAME = Pattern.compile("^.*\\]\\s*Got\\s*|,\\s*");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        // Parse the turn number
-        final int foundTurn = Integer.parseInt(line.substring(line.indexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
-                                                              line.indexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE)));
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    // Parse the turn number
+    final int foundTurn = Integer.parseInt(line.substring(line.indexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
+        line.indexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE)));
 
-        // Parse out the item names and add all items
-        final Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(NOT_ITEM_NAME);
-        final TurnInterval lastInterval = (TurnInterval) logData.getLastTurnSpent();
-        while (scanner.hasNext())
-            lastInterval.addDroppedItem(new Item(scanner.next(), 1, foundTurn));
-        scanner.close();
-    }
+    // Parse out the item names and add all items
+    final Scanner scanner = new Scanner(line);
+    scanner.useDelimiter(NOT_ITEM_NAME);
+    final TurnInterval lastInterval = (TurnInterval) logData.getLastTurnSpent();
+    while (scanner.hasNext())
+      lastInterval.addDroppedItem(new Item(scanner.next(), 1, foundTurn));
+    scanner.close();
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return droppedItemMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return droppedItemMatcher.reset(line).matches();
+  }
 }

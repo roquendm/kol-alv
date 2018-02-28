@@ -40,33 +40,34 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code ===Day *dayNumber*===}
  */
 public final class DayChangeLineParser extends AbstractLineParser {
-    private final Matcher dayChangeMatcher = UsefulPatterns.DAY_CHANGE.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher dayChangeMatcher = UsefulPatterns.DAY_CHANGE.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        // Parse day number
-        final Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-        final int dayNumber = scanner.nextInt();
-        scanner.close();
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    // Parse day number
+    final Scanner scanner = new Scanner(line);
+    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+    final int dayNumber = scanner.nextInt();
+    scanner.close();
 
-        // Get turn number of last turn spent
-        final int turn = logData.getLastTurnSpent().getTurnNumber();
+    // Get turn number of last turn spent
+    final int turn = logData.getLastTurnSpent().getTurnNumber();
 
-        // Add day change
-        logData.addDayChange(new DayChange(dayNumber, turn));
-    }
+    // Add day change
+    logData.addDayChange(new DayChange(dayNumber, turn));
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return dayChangeMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return dayChangeMatcher.reset(line).matches();
+  }
 }

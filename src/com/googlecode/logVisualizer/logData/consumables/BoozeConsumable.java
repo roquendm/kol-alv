@@ -29,66 +29,67 @@ import com.googlecode.logVisualizer.util.Countable;
 
 /**
  * A simple implementation of the Consumable class for booze.
- * 
+ *
  * @see Consumable
  */
 final class BoozeConsumable extends Consumable {
-    private static final String CONSUMED_START_STRING = "Drank";
+  private static final String CONSUMED_START_STRING = "Drank";
 
-    BoozeConsumable(
-                    final String name, final int adventureGain, final int amountUsed) {
-        super(name, adventureGain, amountUsed);
-    }
+  BoozeConsumable(
+      final String name, final int adventureGain, final int amountUsed) {
+    super(name, adventureGain, amountUsed);
+  }
 
-    BoozeConsumable(
-                    final String name, final int adventureGain, final int amountUsed,
-                    final int turnNumberOfUsage) {
-        super(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
+  BoozeConsumable(
+      final String name, final int adventureGain, final int amountUsed,
+      final int turnNumberOfUsage) {
+    super(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public ConsumableVersion getConsumableVersion() {
-        return ConsumableVersion.BOOZE;
-    }
+  /** {@inheritDoc} */
+  @Override
+  public ConsumableVersion getConsumableVersion() {
+    return ConsumableVersion.BOOZE;
+  }
 
-    /**
-     * @return A deep copy of this object.
-     * @see Countable
-     */
-    public BoozeConsumable newInstance() {
-        final BoozeConsumable consumable = getTurnNumberOfUsage() < 0 ? new BoozeConsumable(getName(),
-                                                                                            getAdventureGain(),
-                                                                                            getAmount())
-                                                                     : new BoozeConsumable(getName(),
-                                                                                           getAdventureGain(),
-                                                                                           getAmount(),
-                                                                                           getTurnNumberOfUsage());
+  /**
+   * @return A deep copy of this object.
+   * @see Countable
+   */
+  @Override
+  public BoozeConsumable newInstance() {
+    final BoozeConsumable consumable = getTurnNumberOfUsage() < 0 ? new BoozeConsumable(getName(),
+        getAdventureGain(),
+        getAmount())
+        : new BoozeConsumable(getName(),
+            getAdventureGain(),
+            getAmount(),
+            getTurnNumberOfUsage());
 
-        consumable.setDayNumberOfUsage(getDayNumberOfUsage());
-        consumable.setStatGain(getStatGain());
+    consumable.setDayNumberOfUsage(getDayNumberOfUsage());
+    consumable.setStatGain(getStatGain());
 
-        return consumable;
-    }
+    return consumable;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(50);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(50);
 
-        str.append(CONSUMED_START_STRING);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getAmount());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
-        str.append(getAdventureGain());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(ADVENTURES_GAINED_STRING);
-        str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getStatGain().toString());
+    str.append(CONSUMED_START_STRING);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getAmount());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
+    str.append(getAdventureGain());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(ADVENTURES_GAINED_STRING);
+    str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getStatGain().toString());
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 }

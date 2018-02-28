@@ -30,18 +30,18 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
  * An interface for a parser that can only parse one single line.
  */
 public interface LineParser {
-    /**
-     * Parses the given line. If it isn't parsable by this parser nothing will
-     * be done and {@code false} will be returned.
-     * 
-     * @param line
-     *            The line to be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     * @return True if the line is compatible with this parser and thus has been
-     *         parsed.
-     */
-    public boolean parseLine(
-                             String line, LogDataHolder logData);
+  /**
+   * Parses the given line. If it isn't parsable by this parser nothing will
+   * be done and {@code false} will be returned.
+   *
+   * @param line
+   *            The line to be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   * @return True if the line is compatible with this parser and thus has been
+   *         parsed.
+   */
+  public boolean parseLine(
+      String line, LogDataHolder logData);
 }

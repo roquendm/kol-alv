@@ -30,9 +30,9 @@ import com.googlecode.logVisualizer.logData.MeatGain;
  * Data class for meat data summaries by level.
  */
 public final class MeatSummary extends DataPerLevelSummary<MeatGain> {
-    @Override
-    MeatGain getDataAddition(
-                             final MeatGain data1, final MeatGain data2) {
-        return data1.addMeatData(data2);
-    }
+  @Override
+  MeatGain getDataAddition(
+      final MeatGain data1, final MeatGain data2) {
+    return data1.addMeatData(data2);
+  }
 }

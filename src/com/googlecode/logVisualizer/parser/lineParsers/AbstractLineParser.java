@@ -34,52 +34,53 @@ import com.googlecode.logVisualizer.parser.LineParser;
  * actual parsers.
  */
 public abstract class AbstractLineParser implements LineParser {
-    /**
-     * Parses the given line. If it isn't parsable by this parser nothing will
-     * be done and <code>false</code> will be returned.
-     * <p>
-     * This implementation checks whether the given line is parsable by calling
-     * {@link #isCompatibleLine(String)}. If that method returns true, the
-     * method {@link #doParsing(String, LogDataHolder)} is called to do the
-     * actual parsing.
-     * 
-     * @param line
-     *            The line to be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     * @return True if the line is compatible with this parser and thus has been
-     *         parsed.
-     */
-    public boolean parseLine(
-                             final String line, final LogDataHolder logData) {
-        final boolean isParsable = isCompatibleLine(line);
-        if (isParsable)
-            doParsing(line, logData);
+  /**
+   * Parses the given line. If it isn't parsable by this parser nothing will
+   * be done and <code>false</code> will be returned.
+   * <p>
+   * This implementation checks whether the given line is parsable by calling
+   * {@link #isCompatibleLine(String)}. If that method returns true, the
+   * method {@link #doParsing(String, LogDataHolder)} is called to do the
+   * actual parsing.
+   *
+   * @param line
+   *            The line to be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   * @return True if the line is compatible with this parser and thus has been
+   *         parsed.
+   */
+  @Override
+  public boolean parseLine(
+      final String line, final LogDataHolder logData) {
+    final boolean isParsable = isCompatibleLine(line);
+    if (isParsable)
+      doParsing(line, logData);
 
-        return isParsable;
-    }
+    return isParsable;
+  }
 
-    /**
-     * Checks whether the given line can be parsed by this parser.
-     * 
-     * @param line
-     *            The line to be parsed.
-     * @return True if the line can be parsed.
-     */
-    protected abstract boolean isCompatibleLine(
-                                                String line);
+  /**
+   * Checks whether the given line can be parsed by this parser.
+   *
+   * @param line
+   *            The line to be parsed.
+   * @return True if the line can be parsed.
+   */
+  protected abstract boolean isCompatibleLine(
+      String line);
 
-    /**
-     * Parses the wanted information out of the given line and saves it in the
-     * given {@link LogDataHolder} instance.
-     * 
-     * @param line
-     *            The line to be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     */
-    protected abstract void doParsing(
-                                      String line, LogDataHolder logData);
+  /**
+   * Parses the wanted information out of the given line and saves it in the
+   * given {@link LogDataHolder} instance.
+   *
+   * @param line
+   *            The line to be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   */
+  protected abstract void doParsing(
+      String line, LogDataHolder logData);
 }

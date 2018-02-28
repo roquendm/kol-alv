@@ -43,59 +43,64 @@ import org.jfree.data.category.CategoryDataset;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public abstract class HorizontalBarChartBuilder extends AbstractChart {
-    private final String xLable;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -2908920850129204194L;
 
-    private final String yLable;
+  private final String xLable;
 
-    protected HorizontalBarChartBuilder(
-                                        final LogDataHolder logData, final String title,
-                                        final String xLable, final String yLable,
-                                        final boolean isIncludeLegend) {
-        super(title, logData, isIncludeLegend);
-        this.xLable = xLable;
-        this.yLable = yLable;
-        addChart();
-    }
+  private final String yLable;
 
-    protected abstract CategoryDataset createDataset();
+  protected HorizontalBarChartBuilder(
+      final LogDataHolder logData, final String title,
+      final String xLable, final String yLable,
+      final boolean isIncludeLegend) {
+    super(title, logData, isIncludeLegend);
+    this.xLable = xLable;
+    this.yLable = yLable;
+    addChart();
+  }
 
-    private JFreeChart createChart(
-                                   final CategoryDataset dataset) {
-        final JFreeChart chart = ChartFactory.createBarChart(getTitle(),
-                                                             xLable,
-                                                             yLable,
-                                                             dataset,
-                                                             PlotOrientation.HORIZONTAL,
-                                                             isIncludeLegend(),
-                                                             true,
-                                                             false);
-        final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        final BarRenderer renderer = (BarRenderer) plot.getRenderer();
-        final CategoryAxis categoryAxis = plot.getDomainAxis();
-        final NumberAxis numberAxis = (NumberAxis) plot.getRangeAxis();
+  protected abstract CategoryDataset createDataset();
 
-        plot.setNoDataMessage("No data available");
-        plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-        setBarShadowVisible(chart, false);
+  private JFreeChart createChart(
+      final CategoryDataset dataset) {
+    final JFreeChart chart = ChartFactory.createBarChart(getTitle(),
+        xLable,
+        yLable,
+        dataset,
+        PlotOrientation.HORIZONTAL,
+        isIncludeLegend(),
+        true,
+        false);
+    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    final BarRenderer renderer = (BarRenderer) plot.getRenderer();
+    final CategoryAxis categoryAxis = plot.getDomainAxis();
+    final NumberAxis numberAxis = (NumberAxis) plot.getRangeAxis();
 
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-        renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("{1}, {2}",
-                                                                              NumberFormat.getInstance()));
+    plot.setNoDataMessage("No data available");
+    plot.setBackgroundPaint(Color.white);
+    plot.setRangeGridlinePaint(Color.black);
+    plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+    setBarShadowVisible(chart, false);
 
-        categoryAxis.setCategoryMargin(0.02);
-        categoryAxis.setUpperMargin(0.02);
-        categoryAxis.setLowerMargin(0.02);
-        numberAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        numberAxis.setUpperMargin(0.1);
+    renderer.setBaseItemLabelsVisible(true);
+    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+    renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("{1}, {2}",
+        NumberFormat.getInstance()));
 
-        return chart;
-    }
+    categoryAxis.setCategoryMargin(0.02);
+    categoryAxis.setUpperMargin(0.02);
+    categoryAxis.setLowerMargin(0.02);
+    numberAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    numberAxis.setUpperMargin(0.1);
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+    return chart;
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

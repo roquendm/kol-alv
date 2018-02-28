@@ -32,35 +32,35 @@ import com.googlecode.logVisualizer.logData.turn.TurnEntity;
  * {@link #toString()} implementation.
  */
 final class TurnContainer {
-    private final TurnEntity turn;
+  private final TurnEntity turn;
 
-    private final String turnString;
+  private final String turnString;
 
-    /**
-     * @param turn
-     *            The actual turn.
-     * @param turnString
-     *            The string returned by this classes {@link #toString()}
-     *            method. Will be displayed in UI elements and as such should be
-     *            an adequate representation of the given turn.
-     */
-    TurnContainer(
-                  final TurnEntity turn, final String turnString) {
-        this.turn = turn;
-        this.turnString = turnString;
-    }
+  /**
+   * @param turn
+   *            The actual turn.
+   * @param turnString
+   *            The string returned by this classes {@link #toString()}
+   *            method. Will be displayed in UI elements and as such should be
+   *            an adequate representation of the given turn.
+   */
+  TurnContainer(
+      final TurnEntity turn, final String turnString) {
+    this.turn = turn;
+    this.turnString = turnString;
+  }
 
-    TurnEntity getTurn() {
-        return turn;
-    }
+  TurnEntity getTurn() {
+    return turn;
+  }
 
-    /**
-     * Returns the previously given turnString.
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return turnString;
-    }
+  /**
+   * Returns the previously given turnString.
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return turnString;
+  }
 }

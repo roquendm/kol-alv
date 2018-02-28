@@ -42,60 +42,61 @@ import com.googlecode.logVisualizer.util.Lists;
  * {@code #> Turn [*turnNumber*] pulled *amount* *itemName*}
  */
 public final class PullLineParser extends AbstractLineParser {
-    private static final Pattern NOT_PULL_STRING = Pattern.compile("^.*\\]\\s*pulled\\s*|,\\s*");
+  private static final Pattern NOT_PULL_STRING = Pattern.compile("^.*\\]\\s*pulled\\s*|,\\s*");
 
-    private static final Pattern NOT_PULL_NAME = Pattern.compile("^\\d+\\s*");
+  private static final Pattern NOT_PULL_NAME = Pattern.compile("^\\d+\\s*");
 
-    private final Matcher pullMatcher = UsefulPatterns.PULL.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher pullMatcher = UsefulPatterns.PULL.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        // Parse the turn number
-        Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-        final int turnNumber = scanner.nextInt();
-        scanner.close();
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    // Parse the turn number
+    Scanner scanner = new Scanner(line);
+    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+    final int turnNumber = scanner.nextInt();
+    scanner.close();
 
-        // Get current day number
-        final int dayNumber = logData.getLastDayChange().getDayNumber();
+    // Get current day number
+    final int dayNumber = logData.getLastDayChange().getDayNumber();
 
-        // Parse out all single pull strings (some older versions of the AFH
-        // parser had pulls in one single line)
-        scanner = new Scanner(line);
-        scanner.useDelimiter(NOT_PULL_STRING);
-        final List<String> pulls = Lists.newArrayList();
-        while (scanner.hasNext())
-            pulls.add(scanner.next());
-        scanner.close();
+    // Parse out all single pull strings (some older versions of the AFH
+    // parser had pulls in one single line)
+    scanner = new Scanner(line);
+    scanner.useDelimiter(NOT_PULL_STRING);
+    final List<String> pulls = Lists.newArrayList();
+    while (scanner.hasNext())
+      pulls.add(scanner.next());
+    scanner.close();
 
-        for (final String s : pulls) {
-            // Parse number of items pulled
-            scanner = new Scanner(s);
-            scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-            final int numberOfItems = scanner.nextInt();
-            scanner.close();
+    for (final String s : pulls) {
+      // Parse number of items pulled
+      scanner = new Scanner(s);
+      scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+      final int numberOfItems = scanner.nextInt();
+      scanner.close();
 
-            // Parse item name
-            scanner = new Scanner(s);
-            scanner.useDelimiter(NOT_PULL_NAME);
-            final String itemName = scanner.next();
-            scanner.close();
+      // Parse item name
+      scanner = new Scanner(s);
+      scanner.useDelimiter(NOT_PULL_NAME);
+      final String itemName = scanner.next();
+      scanner.close();
 
-            // Add pull
-            logData.addPull(new Pull(itemName, numberOfItems, turnNumber, dayNumber));
-        }
+      // Add pull
+      logData.addPull(new Pull(itemName, numberOfItems, turnNumber, dayNumber));
     }
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return pullMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return pullMatcher.reset(line).matches();
+  }
 }

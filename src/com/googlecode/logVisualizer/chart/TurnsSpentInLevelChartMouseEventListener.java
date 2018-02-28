@@ -40,47 +40,49 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 
 final class TurnsSpentInLevelChartMouseEventListener implements ChartMouseListener {
-    private final LogDataHolder logData;
+  private final LogDataHolder logData;
 
-    private final Pattern levelNumberExtractor;
+  private final Pattern levelNumberExtractor;
 
-    TurnsSpentInLevelChartMouseEventListener(
-                                             final LogDataHolder logData,
-                                             final Pattern levelNumberExtractor) {
-        this.logData = logData;
-        this.levelNumberExtractor = levelNumberExtractor;
+  TurnsSpentInLevelChartMouseEventListener(
+      final LogDataHolder logData,
+      final Pattern levelNumberExtractor) {
+    this.logData = logData;
+    this.levelNumberExtractor = levelNumberExtractor;
+  }
+
+  @Override
+  public void chartMouseMoved(
+      final ChartMouseEvent arg0) {}
+
+  @Override
+  public void chartMouseClicked(
+      final ChartMouseEvent e) {
+    if (e.getEntity() instanceof CategoryItemEntity) {
+      final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+      final Matcher m = levelNumberExtractor.matcher((String) entity.getColumnKey());
+      m.find();
+      final int level = Integer.parseInt(m.group(1));
+
+      final StringBuilder str = new StringBuilder(100);
+      for (final TurnInterval ti : logData.getTurnIntervalsSpent()) {
+        final int levelOnStart = logData.getCurrentLevel(ti.getStartTurn())
+            .getLevelNumber();
+        final int levelOnEnd = logData.getCurrentLevel(ti.getEndTurn()).getLevelNumber();
+
+        if (levelOnStart > level)
+          break;
+
+        if (levelOnStart == level || levelOnEnd == level)
+          str.append(ti + "\n");
+      }
+
+      final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+      text.setPreferredSize(new Dimension(500, 450));
+      JOptionPane.showMessageDialog(null,
+          text,
+          "Areas visited during level " + level,
+          JOptionPane.INFORMATION_MESSAGE);
     }
-
-    public void chartMouseMoved(
-                                final ChartMouseEvent arg0) {}
-
-    public void chartMouseClicked(
-                                  final ChartMouseEvent e) {
-        if (e.getEntity() instanceof CategoryItemEntity) {
-            final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-            final Matcher m = levelNumberExtractor.matcher((String) entity.getColumnKey());
-            m.find();
-            final int level = Integer.parseInt(m.group(1));
-
-            final StringBuilder str = new StringBuilder(100);
-            for (final TurnInterval ti : logData.getTurnIntervalsSpent()) {
-                final int levelOnStart = logData.getCurrentLevel(ti.getStartTurn())
-                                                .getLevelNumber();
-                final int levelOnEnd = logData.getCurrentLevel(ti.getEndTurn()).getLevelNumber();
-
-                if (levelOnStart > level)
-                    break;
-
-                if (levelOnStart == level || levelOnEnd == level)
-                    str.append(ti + "\n");
-            }
-
-            final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-            text.setPreferredSize(new Dimension(500, 450));
-            JOptionPane.showMessageDialog(null,
-                                          text,
-                                          "Areas visited during level " + level,
-                                          JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+  }
 }

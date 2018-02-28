@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.Skill;
-import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.logData.turn.SingleTurn;
+import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 import com.googlecode.logVisualizer.util.dataTables.DataTablesHandler;
@@ -52,67 +52,68 @@ import com.googlecode.logVisualizer.util.dataTables.DataTablesHandler;
  * {@code Round _roundNumber_: _accountName_ casts _skillName_! (auto-attack)}
  */
 public final class SkillCastLineParser extends AbstractLineParser {
-    private static final Pattern SKILL_CAST = Pattern.compile("cast \\d+ [\\p{L}\\d\\p{Punct}\\s]+|.*casts [\\p{L}\\d\\p{Punct}\\s]+!(?: \\(auto-attack\\))?");
+  private static final Pattern SKILL_CAST = Pattern.compile("cast \\d+ [\\p{L}\\d\\p{Punct}\\s]+|.*casts [\\p{L}\\d\\p{Punct}\\s]+!(?: \\(auto-attack\\))?");
 
-    private static final Pattern COMBAT_CAST_CAPTURE_PATTERN = Pattern.compile(".*casts ([\\p{L}\\d\\p{Punct}\\s]+)!(?: \\(auto-attack\\))?");
+  private static final Pattern COMBAT_CAST_CAPTURE_PATTERN = Pattern.compile(".*casts ([\\p{L}\\d\\p{Punct}\\s]+)!(?: \\(auto-attack\\))?");
 
-    private static final Pattern NONCOMBAT_CAST_CAPTURE_PATTERN = Pattern.compile("cast (\\d+) ([\\p{L}\\d\\p{Punct}\\s]+)");
+  private static final Pattern NONCOMBAT_CAST_CAPTURE_PATTERN = Pattern.compile("cast (\\d+) ([\\p{L}\\d\\p{Punct}\\s]+)");
 
-    private static final String COMBAT_CAST_STRING = "casts";
+  private static final String COMBAT_CAST_STRING = "casts";
 
-    private final Matcher skillCastMatcher = SKILL_CAST.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher skillCastMatcher = SKILL_CAST.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(final String line, final LogDataHolder logData) {
-        final String skillName;
-        int amount = 1;
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("boxing")
+  @Override
+  protected void doParsing(final String line, final LogDataHolder logData) {
+    final String skillName;
+    int amount = 1;
 
-        // Skill casts during combats and between turns use different formats.
-        if (line.contains(COMBAT_CAST_STRING)) {
-            final Matcher result = COMBAT_CAST_CAPTURE_PATTERN.matcher(line);
-            result.find();
+    // Skill casts during combats and between turns use different formats.
+    if (line.contains(COMBAT_CAST_STRING)) {
+      final Matcher result = COMBAT_CAST_CAPTURE_PATTERN.matcher(line);
+      result.find();
 
-            skillName = result.group(1).toLowerCase(Locale.ENGLISH);
-        } else {
-            final Matcher result = NONCOMBAT_CAST_CAPTURE_PATTERN.matcher(line);
-            result.find();
+      skillName = result.group(1).toLowerCase(Locale.ENGLISH);
+    } else {
+      final Matcher result = NONCOMBAT_CAST_CAPTURE_PATTERN.matcher(line);
+      result.find();
 
-            amount = Integer.parseInt(result.group(1));
-            skillName = result.group(2).toLowerCase(Locale.ENGLISH);
-        }
-
-        // Add the skill to the current turn.
-        final Turn currentTurn = logData.getLastTurnSpent();
-        final Skill skill = new Skill(skillName, currentTurn.getTurnNumber());
-        skill.setCasts(amount,
-                       DataTablesHandler.HANDLER.getMPCostOffset(logData.getLastEquipmentChange()));
-
-        // Trivial combat skills don't cost MP for the natural class.
-        if (UsefulPatterns.TRIVIAL_COMBAT_SKILL_NAMES.contains(skillName)
-            && logData.getCharacterClass() == UsefulPatterns.TRIVAL_COMBAT_SKILL_CHARACTER_CLASS_MAP.get(skillName))
-            skill.setMpCost(0);
-
-        currentTurn.addSkillCast(skill);
-        
-        //Check for Banishing skills
-        if (UsefulPatterns.BANISH_SKILLS.contains( skillName ))
-        	((SingleTurn) logData.getLastTurnSpent()).setBanished(true, skillName, null);
-        
-        //Check for tracking skills
-        if (skillName.contains( "curse of stench" )) {
-        	SingleTurn st = (SingleTurn) logData.getLastTurnSpent();
-        	logData.addHuntedCombat(DataNumberPair.of(st.getEncounterName(), st.getTurnNumber()));
-        }
+      amount = Integer.parseInt(result.group(1));
+      skillName = result.group(2).toLowerCase(Locale.ENGLISH);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(final String line) {
-        return line.contains("cast") && skillCastMatcher.reset(line).matches();
+    // Add the skill to the current turn.
+    final Turn currentTurn = logData.getLastTurnSpent();
+    final Skill skill = new Skill(skillName, currentTurn.getTurnNumber());
+    skill.setCasts(amount,
+        DataTablesHandler.HANDLER.getMPCostOffset(logData.getLastEquipmentChange()));
+
+    // Trivial combat skills don't cost MP for the natural class.
+    if (UsefulPatterns.TRIVIAL_COMBAT_SKILL_NAMES.contains(skillName)
+        && logData.getCharacterClass() == UsefulPatterns.TRIVAL_COMBAT_SKILL_CHARACTER_CLASS_MAP.get(skillName))
+      skill.setMpCost(0);
+
+    currentTurn.addSkillCast(skill);
+
+    //Check for Banishing skills
+    if (UsefulPatterns.BANISH_SKILLS.contains( skillName ))
+      ((SingleTurn) logData.getLastTurnSpent()).setBanished(true, skillName, null);
+
+    //Check for tracking skills
+    if (skillName.contains( "curse of stench" )) {
+      SingleTurn st = (SingleTurn) logData.getLastTurnSpent();
+      logData.addHuntedCombat(DataNumberPair.of(st.getEncounterName(), st.getTurnNumber()));
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(final String line) {
+    return line.contains("cast") && skillCastMatcher.reset(line).matches();
+  }
 }

@@ -34,41 +34,47 @@ import javax.swing.ListCellRenderer;
 /**
  * ListCellRenderer able to correctly display multi-line strings.
  */
+@SuppressWarnings("rawtypes")
 public final class MultiLineCellRenderer extends JTextArea implements ListCellRenderer {
-    private static final char NEW_LINE = '\n';
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5438590529091761545L;
+  private static final char NEW_LINE = '\n';
 
-    public MultiLineCellRenderer() {
-        setLineWrap(true);
-        setWrapStyleWord(true);
-        setEditable(false);
-        setOpaque(true);
+  public MultiLineCellRenderer() {
+    setLineWrap(true);
+    setWrapStyleWord(true);
+    setEditable(false);
+    setOpaque(true);
+  }
+
+  @Override
+  public Component getListCellRendererComponent(
+      final JList list, final Object value,
+      final int index, final boolean isSelected,
+      final boolean cellHasFocus) {
+    final String text = value.toString();
+    setText(text);
+
+    // A little mucking around necessary to make sure the list items don't
+    // end up being far bigger than their content would mandate.
+    setPreferredSize(new Dimension(0, 0));
+    int rowCount = 1;
+    for (int i = 0; i < text.length(); i++)
+      if (text.charAt(i) == NEW_LINE)
+        rowCount++;
+    setRows(rowCount);
+    setPreferredSize(getPreferredSize());
+
+    if (isSelected) {
+      setBackground(list.getSelectionBackground());
+      setForeground(list.getSelectionForeground());
+    } else {
+      setBackground(list.getBackground());
+      setForeground(list.getForeground());
     }
 
-    public Component getListCellRendererComponent(
-                                                  final JList list, final Object value,
-                                                  final int index, final boolean isSelected,
-                                                  final boolean cellHasFocus) {
-        final String text = value.toString();
-        setText(text);
-
-        // A little mucking around necessary to make sure the list items don't
-        // end up being far bigger than their content would mandate.
-        setPreferredSize(new Dimension(0, 0));
-        int rowCount = 1;
-        for (int i = 0; i < text.length(); i++)
-            if (text.charAt(i) == NEW_LINE)
-                rowCount++;
-        setRows(rowCount);
-        setPreferredSize(getPreferredSize());
-
-        if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
-
-        return this;
-    }
+    return this;
+  }
 }

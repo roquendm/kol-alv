@@ -38,62 +38,70 @@ import com.googlecode.logVisualizer.util.Lists;
  * familiar colourisation of ascension logs.
  */
 final class FamiliarCustomizationTableModel extends AbstractTableModel {
-    private static final String[] COLUMN_NAMES = { "Familiar", "Color used" };
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1221006585852064568L;
 
-    private List<FamiliarColor> familiars;
+  private static final String[] COLUMN_NAMES = { "Familiar", "Color used" };
 
-    FamiliarCustomizationTableModel(
-                                    final Collection<FamiliarColor> familiars) {
-        super();
-        this.familiars = Lists.newArrayList(familiars);
-    }
+  private List<FamiliarColor> familiars;
 
-    void addFamiliar(
-                     final FamiliarColor familiar) {
-        if (familiars == null)
-            familiars = Lists.newArrayList();
+  FamiliarCustomizationTableModel(
+      final Collection<FamiliarColor> familiars) {
+    super();
+    this.familiars = Lists.newArrayList(familiars);
+  }
 
-        familiars.add(familiar);
-    }
+  void addFamiliar(
+      final FamiliarColor familiar) {
+    if (familiars == null)
+      familiars = Lists.newArrayList();
 
-    void setFamiliars(
-                      final List<FamiliarColor> familiars) {
-        this.familiars = familiars;
-    }
+    familiars.add(familiar);
+  }
 
-    List<FamiliarColor> getFamiliars() {
-        return familiars;
-    }
+  void setFamiliars(
+      final List<FamiliarColor> familiars) {
+    this.familiars = familiars;
+  }
 
-    @Override
-    public boolean isCellEditable(
-                                  final int rowIndex, final int columnIndex) {
-        return columnIndex == 1;
-    }
+  List<FamiliarColor> getFamiliars() {
+    return familiars;
+  }
 
-    @Override
-    public void setValueAt(
-                           final Object aValue, final int rowIndex, final int columnIndex) {
-        familiars.get(rowIndex).setColor((Colors) aValue);
-    }
+  @Override
+  public boolean isCellEditable(
+      final int rowIndex, final int columnIndex) {
+    return columnIndex == 1;
+  }
 
-    @Override
-    public String getColumnName(
-                                final int column) {
-        return COLUMN_NAMES[column];
-    }
+  @Override
+  public void setValueAt(
+      final Object aValue, final int rowIndex, final int columnIndex) {
+    familiars.get(rowIndex).setColor((Colors) aValue);
+  }
 
-    public int getColumnCount() {
-        return COLUMN_NAMES.length;
-    }
+  @Override
+  public String getColumnName(
+      final int column) {
+    return COLUMN_NAMES[column];
+  }
 
-    public int getRowCount() {
-        return familiars.size();
-    }
+  @Override
+  public int getColumnCount() {
+    return COLUMN_NAMES.length;
+  }
 
-    public Object getValueAt(
-                             final int rowIndex, final int columnIndex) {
-        return columnIndex == 0 ? familiars.get(rowIndex).getFamiliarName()
-                               : familiars.get(rowIndex).getColor();
-    }
+  @Override
+  public int getRowCount() {
+    return familiars.size();
+  }
+
+  @Override
+  public Object getValueAt(
+      final int rowIndex, final int columnIndex) {
+    return columnIndex == 0 ? familiars.get(rowIndex).getFamiliarName()
+        : familiars.get(rowIndex).getColor();
+  }
 }

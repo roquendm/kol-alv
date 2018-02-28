@@ -39,39 +39,39 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
  * {@code > Footer: _actualNote_}
  */
 public final class NotesLineParser extends AbstractLineParser {
-    private static final String NOTES_START_STRING = " > Note: ";
+  private static final String NOTES_START_STRING = " > Note: ";
 
-    private static final String HEADER_START_STRING = " > Header: ";
+  private static final String HEADER_START_STRING = " > Header: ";
 
-    private static final String FOOTER_START_STRING = " > Footer: ";
+  private static final String FOOTER_START_STRING = " > Footer: ";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        if (line.startsWith(NOTES_START_STRING))
-            logData.getLastTurnSpent().addNotes(line.substring(NOTES_START_STRING.length()));
-        else {
-            final HeaderFooterComment currentHeadFoot = logData.getLastHeaderFooterComment();
-            // Header and footer strings have the same length.
-            final String comment = line.substring(HEADER_START_STRING.length());
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    if (line.startsWith(NOTES_START_STRING))
+      logData.getLastTurnSpent().addNotes(line.substring(NOTES_START_STRING.length()));
+    else {
+      final HeaderFooterComment currentHeadFoot = logData.getLastHeaderFooterComment();
+      // Header and footer strings have the same length.
+      final String comment = line.substring(HEADER_START_STRING.length());
 
-            if (line.startsWith(HEADER_START_STRING))
-                currentHeadFoot.addHeaderComments(comment);
-            else
-                currentHeadFoot.addFooterComments(comment);
-        }
+      if (line.startsWith(HEADER_START_STRING))
+        currentHeadFoot.addHeaderComments(comment);
+      else
+        currentHeadFoot.addFooterComments(comment);
     }
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return line.startsWith(NOTES_START_STRING) || line.startsWith(HEADER_START_STRING)
-               || line.startsWith(FOOTER_START_STRING);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return line.startsWith(NOTES_START_STRING) || line.startsWith(HEADER_START_STRING)
+        || line.startsWith(FOOTER_START_STRING);
+  }
 }

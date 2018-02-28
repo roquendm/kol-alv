@@ -24,7 +24,14 @@
 
 package com.googlecode.logVisualizer.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -42,92 +49,94 @@ import com.googlecode.logVisualizer.chart.turnrundownGantt.TurnAreaCategory;
  * object reference is passed in any parameter.
  */
 public final class CategoryViewFileHandler {
-    private static final Pattern CATEGORY = Pattern.compile("^Category name:\\s.+");
+  private static final Pattern CATEGORY = Pattern.compile("^Category name:\\s.+");
 
-    private static final Pattern AREA = Pattern.compile("^\\s{3}.+");
+  private static final Pattern AREA = Pattern.compile("^\\s{3}.+");
 
-    /**
-     * Parses out the area categories from the given category view file.
-     * 
-     * @param viewFile
-     *            A category view file.
-     * @return The list of area categories.
-     * @throws IOException
-     *             if there was a problem with reading the given file
-     */
-    public static List<TurnAreaCategory> parseOutCategories(
-                                                            final File viewFile)
-                                                                                throws IOException {
-        final List<TurnAreaCategory> categories = Lists.newArrayList();
-        final FileInputStream fis = new FileInputStream(viewFile);
-        final BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        String tmpLine;
+  /**
+   * Parses out the area categories from the given category view file.
+   *
+   * @param viewFile
+   *            A category view file.
+   * @return The list of area categories.
+   * @throws IOException
+   *             if there was a problem with reading the given file
+   */
+  @SuppressWarnings("resource")
+  public static List<TurnAreaCategory> parseOutCategories(
+      final File viewFile)
+          throws IOException {
+    final List<TurnAreaCategory> categories = Lists.newArrayList();
+    final FileInputStream fis = new FileInputStream(viewFile);
+    final BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+    String tmpLine;
 
-        while ((tmpLine = br.readLine()) != null)
-            // Ignore empty lines and comments.
-            if (!tmpLine.equals("") && !tmpLine.startsWith("//")) {
-                if (CATEGORY.matcher(tmpLine).matches()) {
-                    final String categoryName = tmpLine.substring(tmpLine.indexOf(":") + 2);
-                    categories.add(new TurnAreaCategory(categoryName));
-                }
-                if (!categories.isEmpty() && AREA.matcher(tmpLine).matches()) {
-                    final String areaName = tmpLine.substring(3);
-                    categories.get(categories.size() - 1).addTurnAreaName(areaName);
-                }
-            }
-
-        br.close();
-
-        return categories;
-    }
-
-    /**
-     * Saves the given area categories to the given file.
-     * <p>
-     * Note that if the given file already exists, that file's contents will be
-     * replaced with the given categories collection.
-     * 
-     * @param categories
-     *            The area categories to be saved.
-     * @param viewFile
-     *            The file in which the given category view will be saved in. If
-     *            the file already exists, it will be deleted before the
-     *            category view is saved.
-     * @throws IllegalArgumentException
-     *             if the given file is a directory
-     * @throws IOException
-     *             if there was a problem with writing into the given file
-     */
-    public static void createCategoryViewFile(
-                                              final Collection<TurnAreaCategory> categories,
-                                              File viewFile)
-                                                            throws IOException {
-        if (categories == null)
-            throw new NullPointerException("Category list must not be null.");
-        if (viewFile.isDirectory())
-            throw new IllegalArgumentException("The given file must not be a directory.");
-
-        if (!viewFile.getName().endsWith(".cvw"))
-            viewFile = new File(viewFile.getPath() + ".cvw");
-        if (viewFile.exists())
-            viewFile.delete();
-
-        viewFile.createNewFile();
-
-        final PrintWriter logWriter = new PrintWriter(new BufferedWriter(new FileWriter(viewFile)));
-
-        for (final TurnAreaCategory tlc : categories) {
-            logWriter.println("Category name: " + tlc.getCategoryName());
-
-            for (final String s : tlc.getTurnAreaNames())
-                logWriter.println("   " + s);
-
-            logWriter.println();
+    while ((tmpLine = br.readLine()) != null)
+      // Ignore empty lines and comments.
+      if (!tmpLine.equals("") && !tmpLine.startsWith("//")) {
+        if (CATEGORY.matcher(tmpLine).matches()) {
+          final String categoryName = tmpLine.substring(tmpLine.indexOf(":") + 2);
+          categories.add(new TurnAreaCategory(categoryName));
         }
+        if (!categories.isEmpty() && AREA.matcher(tmpLine).matches()) {
+          final String areaName = tmpLine.substring(3);
+          categories.get(categories.size() - 1).addTurnAreaName(areaName);
+        }
+      }
 
-        logWriter.close();
+    br.close();
+
+    return categories;
+  }
+
+  /**
+   * Saves the given area categories to the given file.
+   * <p>
+   * Note that if the given file already exists, that file's contents will be
+   * replaced with the given categories collection.
+   *
+   * @param categories
+   *            The area categories to be saved.
+   * @param viewFile
+   *            The file in which the given category view will be saved in. If
+   *            the file already exists, it will be deleted before the
+   *            category view is saved.
+   * @throws IllegalArgumentException
+   *             if the given file is a directory
+   * @throws IOException
+   *             if there was a problem with writing into the given file
+   */
+  @SuppressWarnings("resource")
+  public static void createCategoryViewFile(
+      final Collection<TurnAreaCategory> categories,
+      File viewFile)
+          throws IOException {
+    if (categories == null)
+      throw new NullPointerException("Category list must not be null.");
+    if (viewFile.isDirectory())
+      throw new IllegalArgumentException("The given file must not be a directory.");
+
+    if (!viewFile.getName().endsWith(".cvw"))
+      viewFile = new File(viewFile.getPath() + ".cvw");
+    if (viewFile.exists())
+      viewFile.delete();
+
+    viewFile.createNewFile();
+
+    final PrintWriter logWriter = new PrintWriter(new BufferedWriter(new FileWriter(viewFile)));
+
+    for (final TurnAreaCategory tlc : categories) {
+      logWriter.println("Category name: " + tlc.getCategoryName());
+
+      for (final String s : tlc.getTurnAreaNames())
+        logWriter.println("   " + s);
+
+      logWriter.println();
     }
 
-    // This class is not to be instanced.
-    private CategoryViewFileHandler() {}
+    logWriter.close();
+  }
+
+  // This class is not to be instanced.
+  private CategoryViewFileHandler() {}
 }

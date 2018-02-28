@@ -32,92 +32,97 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
 import com.googlecode.logVisualizer.logData.logSummary.ConsumptionSummary.ConsumptionDayStats;
-import com.googlecode.logVisualizer.util.dataTables.DataTablesHandler;
 import com.googlecode.logVisualizer.util.Maps;
+import com.googlecode.logVisualizer.util.dataTables.DataTablesHandler;
 
 final class ConsumptionDataset extends DefaultCategoryDataset {
-    // NumberFormat isn't thread-safe, but from what I could gather, as long as
-    // one doesn't change the state of a NumberFormat object and only calls the
-    // format() methods, everything should be OK.
-    private final NumberFormat FORMATTER = new DecimalFormat("#0.00");
+  /**
+   *
+   */
+  private static final long serialVersionUID = 3893864950692096107L;
 
-    private final Map<String, Consumable> consumables = Maps.newHashMap();
+  // NumberFormat isn't thread-safe, but from what I could gather, as long as
+  // one doesn't change the state of a NumberFormat object and only calls the
+  // format() methods, everything should be OK.
+  private final NumberFormat FORMATTER = new DecimalFormat("#0.00");
 
-    private final String foodCategoryString;
+  private final Map<String, Consumable> consumables = Maps.newHashMap();
 
-    private final String boozeCategoryString;
+  private final String foodCategoryString;
 
-    private final String spleenCategoryString;
+  private final String boozeCategoryString;
 
-    ConsumptionDataset(
-                       final ConsumptionDayStats consumptionStats) {
-        super();
+  private final String spleenCategoryString;
 
-        foodCategoryString = "Food; "
-                             + consumptionStats.getTotalTurnsFromFood()
-                             + " adv/"
-                             + consumptionStats.getTotalFullnessHit()
-                             + " full ("
-                             + FORMATTER.format(consumptionStats.getTotalTurnsFromFood() * 1.0
-                                                / consumptionStats.getTotalFullnessHit()) + " avg)";
-        boozeCategoryString = "Booze; "
-                              + consumptionStats.getTotalTurnsFromBooze()
-                              + " adv/"
-                              + consumptionStats.getTotalDrunkennessHit()
-                              + " drunk ("
-                              + FORMATTER.format(consumptionStats.getTotalTurnsFromBooze() * 1.0
-                                                 / consumptionStats.getTotalDrunkennessHit())
-                              + " avg)";
-        spleenCategoryString = "Spleen; "
-                               + consumptionStats.getTotalTurnsFromSpleen()
-                               + " adv/"
-                               + consumptionStats.getTotalSpleenHit()
-                               + " spleen ("
-                               + FORMATTER.format(consumptionStats.getTotalTurnsFromSpleen() * 1.0
-                                                  / consumptionStats.getTotalSpleenHit()) + " avg)";
+  ConsumptionDataset(
+      final ConsumptionDayStats consumptionStats) {
+    super();
 
-        // Dummy values added and removed again to establish the same category
-        // order in all charts. There may possibly be a simpler way to do it.
-        addValue(0, "", foodCategoryString);
-        addValue(0, "", boozeCategoryString);
-        addValue(0, "", spleenCategoryString);
-        removeRow("");
+    foodCategoryString = "Food; "
+        + consumptionStats.getTotalTurnsFromFood()
+        + " adv/"
+        + consumptionStats.getTotalFullnessHit()
+        + " full ("
+        + FORMATTER.format(consumptionStats.getTotalTurnsFromFood() * 1.0
+            / consumptionStats.getTotalFullnessHit()) + " avg)";
+    boozeCategoryString = "Booze; "
+        + consumptionStats.getTotalTurnsFromBooze()
+        + " adv/"
+        + consumptionStats.getTotalDrunkennessHit()
+        + " drunk ("
+        + FORMATTER.format(consumptionStats.getTotalTurnsFromBooze() * 1.0
+            / consumptionStats.getTotalDrunkennessHit())
+        + " avg)";
+    spleenCategoryString = "Spleen; "
+        + consumptionStats.getTotalTurnsFromSpleen()
+        + " adv/"
+        + consumptionStats.getTotalSpleenHit()
+        + " spleen ("
+        + FORMATTER.format(consumptionStats.getTotalTurnsFromSpleen() * 1.0
+            / consumptionStats.getTotalSpleenHit()) + " avg)";
+
+    // Dummy values added and removed again to establish the same category
+    // order in all charts. There may possibly be a simpler way to do it.
+    addValue(0, "", foodCategoryString);
+    addValue(0, "", boozeCategoryString);
+    addValue(0, "", spleenCategoryString);
+    removeRow("");
+  }
+
+  void addConsumable(
+      final Consumable c) {
+    consumables.put(c.getName(), c);
+
+    switch (c.getConsumableVersion()) {
+      case FOOD:
+        addValue(DataTablesHandler.HANDLER.getFullnessHit(c.getName()) * c.getAmount(),
+            c.getName(),
+            foodCategoryString);
+        break;
+      case BOOZE:
+        addValue(DataTablesHandler.HANDLER.getDrunkennessHit(c.getName()) * c.getAmount(),
+            c.getName(),
+            boozeCategoryString);
+        break;
+      default:
+        addValue(DataTablesHandler.HANDLER.getSpleenHit(c.getName()) * c.getAmount(),
+            c.getName(),
+            spleenCategoryString);
     }
+  }
 
-    void addConsumable(
-                       final Consumable c) {
-        consumables.put(c.getName(), c);
+  void addLeftoverOrganHits(
+      final ConsumptionDayStats consumptionStats) {
+    if (consumptionStats.getTotalFullnessHit() < 15)
+      addValue(15 - consumptionStats.getTotalFullnessHit(), "Nothing", foodCategoryString);
+    if (consumptionStats.getTotalDrunkennessHit() < 15)
+      addValue(15 - consumptionStats.getTotalDrunkennessHit(), "Nothing", boozeCategoryString);
+    if (consumptionStats.getTotalSpleenHit() < 15)
+      addValue(15 - consumptionStats.getTotalSpleenHit(), "Nothing", spleenCategoryString);
+  }
 
-        switch (c.getConsumableVersion()) {
-            case FOOD:
-                addValue(DataTablesHandler.HANDLER.getFullnessHit(c.getName()) * c.getAmount(),
-                         c.getName(),
-                         foodCategoryString);
-                break;
-            case BOOZE:
-                addValue(DataTablesHandler.HANDLER.getDrunkennessHit(c.getName()) * c.getAmount(),
-                         c.getName(),
-                         boozeCategoryString);
-                break;
-            default:
-                addValue(DataTablesHandler.HANDLER.getSpleenHit(c.getName()) * c.getAmount(),
-                         c.getName(),
-                         spleenCategoryString);
-        }
-    }
-
-    void addLeftoverOrganHits(
-                              final ConsumptionDayStats consumptionStats) {
-        if (consumptionStats.getTotalFullnessHit() < 15)
-            addValue(15 - consumptionStats.getTotalFullnessHit(), "Nothing", foodCategoryString);
-        if (consumptionStats.getTotalDrunkennessHit() < 15)
-            addValue(15 - consumptionStats.getTotalDrunkennessHit(), "Nothing", boozeCategoryString);
-        if (consumptionStats.getTotalSpleenHit() < 15)
-            addValue(15 - consumptionStats.getTotalSpleenHit(), "Nothing", spleenCategoryString);
-    }
-
-    Consumable getConsumable(
-                             final String consumableName) {
-        return consumables.get(consumableName);
-    }
+  Consumable getConsumable(
+      final String consumableName) {
+    return consumables.get(consumableName);
+  }
 }

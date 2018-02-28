@@ -33,35 +33,40 @@ import org.jfree.data.general.PieDataset;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public abstract class PieChartBuilder extends AbstractChart {
-    protected PieChartBuilder(
-                              final String title, final LogDataHolder logData,
-                              final boolean isIncludeLegend) {
-        super(title, logData, isIncludeLegend);
-        addChart();
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = 623583732328863273L;
 
-    protected abstract PieDataset createDataset();
+  protected PieChartBuilder(
+      final String title, final LogDataHolder logData,
+      final boolean isIncludeLegend) {
+    super(title, logData, isIncludeLegend);
+    addChart();
+  }
 
-    private JFreeChart createChart(
-                                   final PieDataset dataset) {
+  protected abstract PieDataset createDataset();
 
-        final JFreeChart chart = ChartFactory.createPieChart(getTitle(),
-                                                             dataset,
-                                                             isIncludeLegend(),
-                                                             true,
-                                                             false);
-        final PiePlot plot = (PiePlot) chart.getPlot();
+  private JFreeChart createChart(
+      final PieDataset dataset) {
 
-        plot.setSectionOutlinesVisible(false);
-        plot.setNoDataMessage("No data available");
-        plot.setIgnoreNullValues(true);
-        plot.setIgnoreZeroValues(true);
+    final JFreeChart chart = ChartFactory.createPieChart(getTitle(),
+        dataset,
+        isIncludeLegend(),
+        true,
+        false);
+    final PiePlot plot = (PiePlot) chart.getPlot();
 
-        return chart;
-    }
+    plot.setSectionOutlinesVisible(false);
+    plot.setNoDataMessage("No data available");
+    plot.setIgnoreNullValues(true);
+    plot.setIgnoreZeroValues(true);
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+    return chart;
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

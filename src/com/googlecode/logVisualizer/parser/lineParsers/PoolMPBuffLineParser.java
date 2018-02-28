@@ -42,26 +42,26 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  *
  */
 public final class PoolMPBuffLineParser extends AbstractLineParser {
-    private static final Pattern POOL_MP_BUFF_ACQUISITION = Pattern.compile("You acquire an effect:\\s*Mental A-cue-ity.*$");
+  private static final Pattern POOL_MP_BUFF_ACQUISITION = Pattern.compile("You acquire an effect:\\s*Mental A-cue-ity.*$");
 
-    private final Matcher poolMatcher = POOL_MP_BUFF_ACQUISITION.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher poolMatcher = POOL_MP_BUFF_ACQUISITION.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * @see AbstractLineParser#doParsing(String, LogDataHolder)
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        logData.getLastTurnSpent().addMPGain(new MPGain(100, 0, 0, 0, 0));
-    }
+  /**
+   * @see AbstractLineParser#doParsing(String, LogDataHolder)
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    logData.getLastTurnSpent().addMPGain(new MPGain(100, 0, 0, 0, 0));
+  }
 
-    /**
-     * @see AbstractLineParser#isCompatibleLine(String)
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return line.startsWith(UsefulPatterns.ACQUIRE_EFFECT_STRING) &&
-                poolMatcher.reset(line).matches();
-    }
+  /**
+   * @see AbstractLineParser#isCompatibleLine(String)
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return line.startsWith(UsefulPatterns.ACQUIRE_EFFECT_STRING) &&
+        poolMatcher.reset(line).matches();
+  }
 }

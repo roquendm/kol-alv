@@ -41,45 +41,46 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code -> Turn [*turnNumber*] *familiarName* (*familiarPoundage* lbs)}
  */
 public final class FamiliarChangeLineParse extends AbstractLineParser {
-    private final Matcher familiarChangedMatcher = UsefulPatterns.FAMILIAR_CHANGED.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher familiarChangedMatcher = UsefulPatterns.FAMILIAR_CHANGED.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private static final Pattern NOT_FAMILIAR_NAME = Pattern.compile("^.*\\]\\s*|\\s*\\(.*\\)\\s*$");
+  private static final Pattern NOT_FAMILIAR_NAME = Pattern.compile("^.*\\]\\s*|\\s*\\(.*\\)\\s*$");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-            final String line, final LogDataHolder logData) {
-        // Parse the turn number.
-        // Note that a log by the AFH parser shows the turn on which the new
-        // familiar was first used, which has to be changed to adhere to the
-        // contract of the FamiliarChange class.
-        Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-        final int changedTurn;
-        if (logData.getParsedLogCreator() == ParsedLogClass.AFH_PARSER)
-            changedTurn = scanner.nextInt() - 1;
-        else
-            changedTurn = scanner.nextInt();
-        scanner.close();
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    // Parse the turn number.
+    // Note that a log by the AFH parser shows the turn on which the new
+    // familiar was first used, which has to be changed to adhere to the
+    // contract of the FamiliarChange class.
+    Scanner scanner = new Scanner(line);
+    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+    final int changedTurn;
+    if (logData.getParsedLogCreator() == ParsedLogClass.AFH_PARSER)
+      changedTurn = scanner.nextInt() - 1;
+    else
+      changedTurn = scanner.nextInt();
+    scanner.close();
 
-        // The name of the now used familiar.
-        scanner = new Scanner(line);
-        scanner.useDelimiter(NOT_FAMILIAR_NAME);
-        final String familiarName = scanner.next();
-        scanner.close();
+    // The name of the now used familiar.
+    scanner = new Scanner(line);
+    scanner.useDelimiter(NOT_FAMILIAR_NAME);
+    final String familiarName = scanner.next();
+    scanner.close();
 
-        // Add the familiar change
-        logData.addFamiliarChange(new FamiliarChange(familiarName, changedTurn));
-    }
+    // Add the familiar change
+    logData.addFamiliarChange(new FamiliarChange(familiarName, changedTurn));
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-            final String line) {
-        return familiarChangedMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return familiarChangedMatcher.reset(line).matches();
+  }
 }

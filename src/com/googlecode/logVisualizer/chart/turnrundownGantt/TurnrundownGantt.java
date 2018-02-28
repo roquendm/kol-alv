@@ -30,33 +30,38 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 
 public final class TurnrundownGantt extends GanttChartBuilder {
-    public TurnrundownGantt(
-                            final LogDataHolder logData) {
-        super("Turn rundown", logData);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = 2028122645909913996L;
 
-    @Override
-    protected SlidingGanttCategoryDataset createDataset() {
-        final TurnRundownDataset dataset = new TurnRundownDataset();
+  public TurnrundownGantt(
+      final LogDataHolder logData) {
+    super("Turn rundown", logData);
+  }
 
-        for (final TurnInterval ti : getLogData().getTurnIntervalsSpent())
-            dataset.addTurnInterval(ti, findCategoryName(ti));
+  @Override
+  protected SlidingGanttCategoryDataset createDataset() {
+    final TurnRundownDataset dataset = new TurnRundownDataset();
 
-        return new SlidingGanttCategoryDataset(dataset, 0, 30);
-    }
+    for (final TurnInterval ti : getLogData().getTurnIntervalsSpent())
+      dataset.addTurnInterval(ti, findCategoryName(ti));
 
-    private String findCategoryName(
-                                    final TurnInterval area) {
-        for (final TurnAreaCategory tac : getCategories())
-            for (final String s : tac.getTurnAreaNames())
-                if (area.getAreaName().startsWith(s))
-                    return tac.getCategoryName();
+    return new SlidingGanttCategoryDataset(dataset, 0, 30);
+  }
 
-        return null;
-    }
+  private String findCategoryName(
+      final TurnInterval area) {
+    for (final TurnAreaCategory tac : getCategories())
+      for (final String s : tac.getTurnAreaNames())
+        if (area.getAreaName().startsWith(s))
+          return tac.getCategoryName();
 
-    @Override
-    public LogDataHolder getLogData() {
-        return super.getLogData();
-    }
+    return null;
+  }
+
+  @Override
+  public LogDataHolder getLogData() {
+    return super.getLogData();
+  }
 }

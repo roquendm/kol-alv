@@ -30,8 +30,16 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.WindowConstants;
 
 import org.jfree.ui.RefineryUtilities;
 
@@ -42,76 +50,85 @@ import com.googlecode.logVisualizer.Settings;
  * Visualizer.
  */
 final class LafChangerDialog extends JDialog {
-    private final JComboBox lafLister;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6209770238324573047L;
+  @SuppressWarnings("rawtypes")
+  private final JComboBox lafLister;
 
-    LafChangerDialog(
-                     final JFrame owner) {
-        super(owner, true);
-        setLayout(new BorderLayout(0, 10));
-        setTitle("Look&Feel changer");
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+  @SuppressWarnings("rawtypes")
+  LafChangerDialog(
+      final JFrame owner) {
+    super(owner, true);
+    setLayout(new BorderLayout(0, 10));
+    setTitle("Look&Feel changer");
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        lafLister = new JComboBox();
-        lafLister.setEditable(false);
-        addLafs();
+    lafLister = new JComboBox();
+    lafLister.setEditable(false);
+    addLafs();
 
-        final JButton okButton = new JButton("OK");
-        final JButton cancelButton = new JButton("Cancel");
-        okButton.addActionListener(new ActionListener() {
+    final JButton okButton = new JButton("OK");
+    final JButton cancelButton = new JButton("Cancel");
+    okButton.addActionListener(new ActionListener() {
 
-            public void actionPerformed(
-                                        final ActionEvent e) {
-                changeUsedLaf(owner);
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(
+          final ActionEvent e) {
+        changeUsedLaf(owner);
+      }
+    });
+    cancelButton.addActionListener(new ActionListener() {
 
-            public void actionPerformed(
-                                        final ActionEvent e) {
-                dispose();
-            }
-        });
-
-        add(lafLister, BorderLayout.NORTH);
-
-        add(new JLabel("Note that changes to the Look&Feel will be remembered for future program starts."),
-            BorderLayout.CENTER);
-
-        final JPanel buttonPanel = new JPanel(new GridLayout(1, 0, 10, 0));
-        buttonPanel.setPreferredSize(new Dimension(150, 50));
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        pack();
-        RefineryUtilities.centerFrameOnScreen(this);
-        setVisible(true);
-    }
-
-    private void addLafs() {
-        for (final LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-            lafLister.addItem(lafi.getName());
-
-        lafLister.setSelectedItem(Settings.getSettingString("LookAndFeel"));
-    }
-
-    private void changeUsedLaf(
-                               final JFrame owner) {
-        final String lafName = (String) lafLister.getSelectedItem();
-
-        Settings.setSettingString("LookAndFeel", lafName);
-        for (final LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-            if (lafi.getName().equals(lafName)) {
-                try {
-                    UIManager.setLookAndFeel(lafi.getClassName());
-                    SwingUtilities.updateComponentTreeUI(owner);
-                    owner.pack();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-
+      @Override
+      public void actionPerformed(
+          final ActionEvent e) {
         dispose();
-    }
+      }
+    });
+
+    add(lafLister, BorderLayout.NORTH);
+
+    add(new JLabel("Note that changes to the Look&Feel will be remembered for future program starts."),
+        BorderLayout.CENTER);
+
+    final JPanel buttonPanel = new JPanel(new GridLayout(1, 0, 10, 0));
+    buttonPanel.setPreferredSize(new Dimension(150, 50));
+    buttonPanel.add(okButton);
+    buttonPanel.add(cancelButton);
+    add(buttonPanel, BorderLayout.SOUTH);
+
+    pack();
+    RefineryUtilities.centerFrameOnScreen(this);
+    setVisible(true);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void addLafs() {
+    for (final LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+      lafLister.addItem(lafi.getName());
+
+    lafLister.setSelectedItem(Settings.getSettingString("LookAndFeel"));
+  }
+
+  void changeUsedLaf(
+      final JFrame owner) {
+    final String lafName = (String) lafLister.getSelectedItem();
+
+    Settings.setSettingString("LookAndFeel", lafName);
+    for (final LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+      if (lafi.getName().equals(lafName)) {
+        try {
+          UIManager.setLookAndFeel(lafi.getClassName());
+          SwingUtilities.updateComponentTreeUI(owner);
+          owner.pack();
+        } catch (final Exception e) {
+          e.printStackTrace();
+        }
+        break;
+      }
+
+    dispose();
+  }
 }

@@ -37,53 +37,59 @@ import com.googlecode.logVisualizer.gui.LogGUI.GanttPaneButtonListener;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 final class GanttPanelGUI extends JSplitPane {
-    private GanttPaneButtonListener buttonListener;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 4585999174393109050L;
+  GanttPaneButtonListener buttonListener;
 
-    /**
-     * @param logData
-     *            The {@link LogDataHolder} with all the data of the ascension
-     *            log.
-     */
-    GanttPanelGUI(
-                  final LogDataHolder logData) {
-        super(VERTICAL_SPLIT);
-        final JPanel optionsArea = new JPanel(new GridLayout(1, 0, 10, 0));
-        final TurnrundownGantt turnrundown = new TurnrundownGantt(logData);
-        final JButton areaCategoryOptions = new JButton("Area categories");
-        final JButton familiarOptions = new JButton("Familiar usage");
+  /**
+   * @param logData
+   *            The {@link LogDataHolder} with all the data of the ascension
+   *            log.
+   */
+  GanttPanelGUI(
+      final LogDataHolder logData) {
+    super(VERTICAL_SPLIT);
+    final JPanel optionsArea = new JPanel(new GridLayout(1, 0, 10, 0));
+    final TurnrundownGantt turnrundown = new TurnrundownGantt(logData);
+    final JButton areaCategoryOptions = new JButton("Area categories");
+    final JButton familiarOptions = new JButton("Familiar usage");
 
-        areaCategoryOptions.setToolTipText("Customize categories of the turn rundown gantt chart.");
-        familiarOptions.setToolTipText("Set color coding for familiar usage.");
+    areaCategoryOptions.setToolTipText("Customize categories of the turn rundown gantt chart.");
+    familiarOptions.setToolTipText("Set color coding for familiar usage.");
 
-        areaCategoryOptions.addActionListener(new ActionListener() {
-            public void actionPerformed(
-                                        final ActionEvent ae) {
-                if (buttonListener != null)
-                    buttonListener.areaCategoryCustomizerPressed(turnrundown);
-            }
-        });
-        familiarOptions.addActionListener(new ActionListener() {
-            public void actionPerformed(
-                                        final ActionEvent ae) {
-                if (buttonListener != null)
-                    buttonListener.familiarColorizerPressed(turnrundown);
-            }
-        });
+    areaCategoryOptions.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(
+          final ActionEvent ae) {
+        if (buttonListener != null)
+          buttonListener.areaCategoryCustomizerPressed(turnrundown);
+      }
+    });
+    familiarOptions.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(
+          final ActionEvent ae) {
+        if (buttonListener != null)
+          buttonListener.familiarColorizerPressed(turnrundown);
+      }
+    });
 
-        optionsArea.add(areaCategoryOptions);
-        optionsArea.add(familiarOptions);
+    optionsArea.add(areaCategoryOptions);
+    optionsArea.add(familiarOptions);
 
-        setDividerLocation(50);
-        setTopComponent(optionsArea);
-        setBottomComponent(turnrundown);
-    }
+    setDividerLocation(50);
+    setTopComponent(optionsArea);
+    setBottomComponent(turnrundown);
+  }
 
-    /**
-     * @param buttonListener
-     *            The button listener to set.
-     */
-    void setButtonListener(
-                           final GanttPaneButtonListener buttonListener) {
-        this.buttonListener = buttonListener;
-    }
+  /**
+   * @param buttonListener
+   *            The button listener to set.
+   */
+  void setButtonListener(
+      final GanttPaneButtonListener buttonListener) {
+    this.buttonListener = buttonListener;
+  }
 }

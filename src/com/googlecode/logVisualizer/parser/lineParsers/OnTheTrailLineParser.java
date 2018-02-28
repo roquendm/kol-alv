@@ -40,27 +40,28 @@ import com.googlecode.logVisualizer.util.DataNumberPair;
  * {@code You acquire an effect: On the Trail (duration: 40 Adventures)}
  */
 public final class OnTheTrailLineParser extends AbstractLineParser {
-    private static final Pattern ON_THE_TRAIL_ACQUISITION = Pattern.compile("You acquire an effect:\\s*On the Trail.*$");
+  private static final Pattern ON_THE_TRAIL_ACQUISITION = Pattern.compile("You acquire an effect:\\s*On the Trail.*$");
 
-    private final Matcher trailMatcher = ON_THE_TRAIL_ACQUISITION.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher trailMatcher = ON_THE_TRAIL_ACQUISITION.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * @see AbstractLineParser#doParsing(String, LogDataHolder)
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final SingleTurn turn = (SingleTurn) logData.getLastTurnSpent();
-        logData.addHuntedCombat(DataNumberPair.of(turn.getEncounterName(), turn.getTurnNumber()));
-    }
+  /**
+   * @see AbstractLineParser#doParsing(String, LogDataHolder)
+   */
+  @SuppressWarnings("boxing")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final SingleTurn turn = (SingleTurn) logData.getLastTurnSpent();
+    logData.addHuntedCombat(DataNumberPair.of(turn.getEncounterName(), turn.getTurnNumber()));
+  }
 
-    /**
-     * @see AbstractLineParser#isCompatibleLine(String)
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return line.startsWith(UsefulPatterns.ACQUIRE_EFFECT_STRING) &&
-                trailMatcher.reset(line).matches();
-    }
+  /**
+   * @see AbstractLineParser#isCompatibleLine(String)
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return line.startsWith(UsefulPatterns.ACQUIRE_EFFECT_STRING) &&
+        trailMatcher.reset(line).matches();
+  }
 }

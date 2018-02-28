@@ -49,122 +49,130 @@ import com.googlecode.logVisualizer.logData.turn.SingleTurn;
 import com.googlecode.logVisualizer.util.Lists;
 
 public final class ConsumptionBarChart extends HorizontalStackedBarChartBuilder {
-    public ConsumptionBarChart(
-                               final LogDataHolder logData) {
-        super(logData, "Turns gained per consumable", "Consumable", "Adventures gained", true);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -7425827105137556677L;
+
+  public ConsumptionBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Turns gained per consumable", "Consumable", "Adventures gained", true);
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    final ChartPanel panel = super.createChartPanel();
+    final CategoryPlot plot = (CategoryPlot) panel.getChart().getPlot();
+    final StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
+    final CategoryDataset dataset = plot.getDataset();
+
+    for (int i = 0; i < dataset.getRowCount(); i++)
+      if (dataset.getRowKey(i).equals("Food"))
+        renderer.setSeriesPaint(i, new Color(255, 80, 80));
+      else if (dataset.getRowKey(i).equals("Booze"))
+        renderer.setSeriesPaint(i, new Color(100, 100, 255));
+      else if (dataset.getRowKey(i).equals("Spleen"))
+        renderer.setSeriesPaint(i, new Color(80, 255, 80));
+      else if (dataset.getRowKey(i).equals("Other"))
+        renderer.setSeriesPaint(i, Color.LIGHT_GRAY);
+
+    return panel;
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final List<Consumable> consumables = Lists.newArrayList(getLogData().getAllConsumablesUsed()
+        .size());
+
+    for (final Consumable c : getLogData().getAllConsumablesUsed())
+      if (c.getAdventureGain() > 0)
+        consumables.add(c);
+
+    // Sort consumables from highest to lowest adventure gain.
+    Collections.sort(consumables, new Comparator<Consumable>() {
+
+      @Override
+      public int compare(
+          final Consumable o1, final Consumable o2) {
+        return o2.getAdventureGain() - o1.getAdventureGain();
+      }
+    });
+
+    // Add consumables to the dataset. Differentiate between the consumable
+    // versions.
+    for (final Consumable c : consumables)
+      switch (c.getConsumableVersion()) {
+        case FOOD:
+          dataset.addValue(c.getAdventureGain(), "Food", c.getName() + " ("
+              + c.getAmount() + ")");
+          break;
+        case BOOZE:
+          dataset.addValue(c.getAdventureGain(), "Booze", c.getName() + " ("
+              + c.getAmount() + ")");
+          break;
+        case SPLEEN:
+          dataset.addValue(c.getAdventureGain(), "Spleen", c.getName() + " ("
+              + c.getAmount() + ")");
+          break;
+        default:
+          dataset.addValue(c.getAdventureGain(), "Other", c.getName() + " ("
+              + c.getAmount() + ")");
+      }
+
+    return dataset;
+  }
+
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new ConsumptionChartMouseEventListener());
+  }
+
+  final class ConsumptionChartMouseEventListener implements ChartMouseListener {
+    @Override
+    public void chartMouseMoved(
+        final ChartMouseEvent arg0) {}
 
     @Override
-    protected ChartPanel createChartPanel() {
-        final ChartPanel panel = super.createChartPanel();
-        final CategoryPlot plot = (CategoryPlot) panel.getChart().getPlot();
-        final StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
-        final CategoryDataset dataset = plot.getDataset();
-
-        for (int i = 0; i < dataset.getRowCount(); i++)
-            if (dataset.getRowKey(i).equals("Food"))
-                renderer.setSeriesPaint(i, new Color(255, 80, 80));
-            else if (dataset.getRowKey(i).equals("Booze"))
-                renderer.setSeriesPaint(i, new Color(100, 100, 255));
-            else if (dataset.getRowKey(i).equals("Spleen"))
-                renderer.setSeriesPaint(i, new Color(80, 255, 80));
-            else if (dataset.getRowKey(i).equals("Other"))
-                renderer.setSeriesPaint(i, Color.LIGHT_GRAY);
-
-        return panel;
-    }
-
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        final List<Consumable> consumables = Lists.newArrayList(getLogData().getAllConsumablesUsed()
-                                                                            .size());
-
+    @SuppressWarnings("null")
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof CategoryItemEntity) {
+        final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+        final String columnKeyName = (String) entity.getColumnKey();
+        final String consumableName = columnKeyName.substring(0,
+            columnKeyName.indexOf(" ("));
+        Consumable totalConsumable = null;
         for (final Consumable c : getLogData().getAllConsumablesUsed())
-            if (c.getAdventureGain() > 0)
-                consumables.add(c);
-
-        // Sort consumables from highest to lowest adventure gain.
-        Collections.sort(consumables, new Comparator<Consumable>() {
-
-            public int compare(
-                               final Consumable o1, final Consumable o2) {
-                return o2.getAdventureGain() - o1.getAdventureGain();
-            }
-        });
-
-        // Add consumables to the dataset. Differentiate between the consumable
-        // versions.
-        for (final Consumable c : consumables)
-            switch (c.getConsumableVersion()) {
-                case FOOD:
-                    dataset.addValue(c.getAdventureGain(), "Food", c.getName() + " ("
-                                                                   + c.getAmount() + ")");
-                    break;
-                case BOOZE:
-                    dataset.addValue(c.getAdventureGain(), "Booze", c.getName() + " ("
-                                                                    + c.getAmount() + ")");
-                    break;
-                case SPLEEN:
-                    dataset.addValue(c.getAdventureGain(), "Spleen", c.getName() + " ("
-                                                                     + c.getAmount() + ")");
-                    break;
-                default:
-                    dataset.addValue(c.getAdventureGain(), "Other", c.getName() + " ("
-                                                                    + c.getAmount() + ")");
+          if (c.getName().equals(consumableName)) {
+            totalConsumable = c;
+            break;
+          }
+        final List<Consumable> usedConsumables = Lists.newArrayList();
+        for (final SingleTurn st : getLogData().getTurnsSpent())
+          for (final Consumable c : st.getConsumablesUsed())
+            if (c.getName().equals(consumableName)) {
+              usedConsumables.add(c);
+              break;
             }
 
-        return dataset;
+        final StringBuilder str = new StringBuilder(100);
+        str.append("Total adventures gained from the consumable: "
+            + totalConsumable.getAdventureGain() + "\n");
+        str.append("Total stats gained from the consumable: "
+            + totalConsumable.getStatGain() + "\n\n");
+        str.append("Consumable used on the given turns:\n");
+        for (final Consumable c : usedConsumables)
+          str.append(c.getTurnNumberOfUsage() + ": " + c + "\n");
+
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(500, 250));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "Consumption of " + consumableName,
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new ConsumptionChartMouseEventListener());
-    }
-
-    private final class ConsumptionChartMouseEventListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent arg0) {}
-
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof CategoryItemEntity) {
-                final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-                final String columnKeyName = (String) entity.getColumnKey();
-                final String consumableName = columnKeyName.substring(0,
-                                                                      columnKeyName.indexOf(" ("));
-
-                Consumable totalConsumable = null;
-                for (final Consumable c : getLogData().getAllConsumablesUsed())
-                    if (c.getName().equals(consumableName)) {
-                        totalConsumable = c;
-                        break;
-                    }
-                final List<Consumable> usedConsumables = Lists.newArrayList();
-                for (final SingleTurn st : getLogData().getTurnsSpent())
-                    for (final Consumable c : st.getConsumablesUsed())
-                        if (c.getName().equals(consumableName)) {
-                            usedConsumables.add(c);
-                            break;
-                        }
-
-                final StringBuilder str = new StringBuilder(100);
-                str.append("Total adventures gained from the consumable: "
-                           + totalConsumable.getAdventureGain() + "\n");
-                str.append("Total stats gained from the consumable: "
-                           + totalConsumable.getStatGain() + "\n\n");
-                str.append("Consumable used on the given turns:\n");
-                for (final Consumable c : usedConsumables)
-                    str.append(c.getTurnNumberOfUsage() + ": " + c + "\n");
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(500, 250));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "Consumption of " + consumableName,
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
+  }
 }

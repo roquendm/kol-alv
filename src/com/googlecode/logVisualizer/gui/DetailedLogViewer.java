@@ -24,7 +24,11 @@
 
 package com.googlecode.logVisualizer.gui;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -33,7 +37,11 @@ import javax.swing.tree.TreeSelectionModel;
 import org.jfree.ui.RefineryUtilities;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
-import com.googlecode.logVisualizer.logData.turn.*;
+import com.googlecode.logVisualizer.logData.turn.Encounter;
+import com.googlecode.logVisualizer.logData.turn.SingleTurn;
+import com.googlecode.logVisualizer.logData.turn.Turn;
+import com.googlecode.logVisualizer.logData.turn.TurnEntity;
+import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.LogOutputFormat;
 import com.googlecode.logVisualizer.util.textualLogs.TextLogCreator;
@@ -43,138 +51,146 @@ import com.googlecode.logVisualizer.util.textualLogs.TextLogCreator;
  * detailed report of an ascension log.
  */
 final class DetailedLogViewer extends JFrame {
-    private final TurnDataPane dataPane = new TurnDataPane();
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6265655871955793328L;
 
-    private final String htmlLog;
+  final TurnDataPane dataPane = new TurnDataPane();
 
-    /**
-     * Constructs and opens a frame with a more detailed view of the given
-     * ascension log.
-     */
-    DetailedLogViewer(
-                      final LogDataHolder logData) {
-        super("DetailedLogViewer");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+  final String htmlLog;
 
-        if (logData == null)
-            throw new NullPointerException("The log data holder must not be null.");
+  /**
+   * Constructs and opens a frame with a more detailed view of the given
+   * ascension log.
+   */
+  DetailedLogViewer(
+      final LogDataHolder logData) {
+    super("DetailedLogViewer");
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        htmlLog = TextLogCreator.getTextualLog(logData, LogOutputFormat.HTML_LOG);
+    if (logData == null)
+      throw new NullPointerException("The log data holder must not be null.");
 
-        final JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitter.setLeftComponent(new JScrollPane(createTurnRundownTree(logData)));
-        splitter.setRightComponent(new JScrollPane(dataPane,
-                                                   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                                   JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-        splitter.setDividerLocation(300);
-        setContentPane(splitter);
+    htmlLog = TextLogCreator.getTextualLog(logData, LogOutputFormat.HTML_LOG);
 
-        setSize(800, 600);
-        RefineryUtilities.centerFrameOnScreen(this);
-        setVisible(true);
+    final JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    splitter.setLeftComponent(new JScrollPane(createTurnRundownTree(logData)));
+    splitter.setRightComponent(new JScrollPane(dataPane,
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+    splitter.setDividerLocation(300);
+    setContentPane(splitter);
+
+    setSize(800, 600);
+    RefineryUtilities.centerFrameOnScreen(this);
+    setVisible(true);
+  }
+
+  /**
+   * Creates the turn rundown tree menu to navigate between all turns.
+   */
+  private JTree createTurnRundownTree(
+      final LogDataHolder logData) {
+    final DefaultMutableTreeNode root = new DefaultMutableTreeNode(logData.getLogName());
+
+    for (final TurnInterval ti : logData.getTurnIntervalsSpent()) {
+      final DefaultMutableTreeNode tiRoot = new DefaultMutableTreeNode(new TurnIntervalContainer(ti));
+      for (final SingleTurn st : ti.getTurns()) {
+        final DefaultMutableTreeNode stRoot = new DefaultMutableTreeNode(new SingleEncounterContainer(st));
+        for (final Encounter e : st.getEncounters())
+          stRoot.add(new DefaultMutableTreeNode(new SingleEncounterContainer(e)));
+
+        tiRoot.add(stRoot);
+      }
+
+      root.add(tiRoot);
     }
 
-    /**
-     * Creates the turn rundown tree menu to navigate between all turns.
-     */
-    private JTree createTurnRundownTree(
-                                        final LogDataHolder logData) {
-        final DefaultMutableTreeNode root = new DefaultMutableTreeNode(logData.getLogName());
+    final JTree tree = new JTree(root);
+    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    tree.addTreeSelectionListener(new TreeSelectionListener() {
+      @Override
+      public void valueChanged(
+          final TreeSelectionEvent e) {
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
-        for (final TurnInterval ti : logData.getTurnIntervalsSpent()) {
-            final DefaultMutableTreeNode tiRoot = new DefaultMutableTreeNode(new TurnIntervalContainer(ti));
-            for (final SingleTurn st : ti.getTurns()) {
-                final DefaultMutableTreeNode stRoot = new DefaultMutableTreeNode(new SingleEncounterContainer(st));
-                for (final Encounter e : st.getEncounters())
-                    stRoot.add(new DefaultMutableTreeNode(new SingleEncounterContainer(e)));
-
-                tiRoot.add(stRoot);
-            }
-
-            root.add(tiRoot);
+        if (node != null) {
+          final Object nodeContents = node.getUserObject();
+          if (nodeContents instanceof TurnContainer)
+            dataPane.displayTurnEntityInfo(((TurnContainer) nodeContents).getTurnObject());
+          else
+            dataPane.setText(htmlLog);
+          dataPane.setCaretPosition(0);
         }
+      }
+    });
+    tree.setSelectionInterval(0, 0);
 
-        final JTree tree = new JTree(root);
-        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(
-                                     final TreeSelectionEvent e) {
-                final DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+    return tree;
+  }
 
-                if (node != null) {
-                    final Object nodeContents = node.getUserObject();
-                    if (nodeContents instanceof TurnContainer)
-                        dataPane.displayTurnEntityInfo(((TurnContainer) nodeContents).getTurnObject());
-                    else
-                        dataPane.setText(htmlLog);
-                    dataPane.setCaretPosition(0);
-                }
-            }
-        });
-        tree.setSelectionInterval(0, 0);
+  private static interface TurnContainer {
+    TurnEntity getTurnObject();
+  }
 
-        return tree;
+  private static class TurnIntervalContainer implements TurnContainer {
+    private final TurnInterval ti;
+
+    TurnIntervalContainer(
+        final TurnInterval ti) {
+      this.ti = ti;
     }
 
-    private static interface TurnContainer {
-        TurnEntity getTurnObject();
+    @Override
+    public Turn getTurnObject() {
+      return ti;
     }
 
-    private static class TurnIntervalContainer implements TurnContainer {
-        private final TurnInterval ti;
+    @Override
+    public String toString() {
+      final StringBuilder str = new StringBuilder(50);
 
-        TurnIntervalContainer(
-                              final TurnInterval ti) {
-            this.ti = ti;
-        }
+      str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
 
-        public Turn getTurnObject() {
-            return ti;
-        }
+      if (ti.getTotalTurns() > 1) {
+        str.append(ti.getStartTurn() + 1);
+        str.append(UsefulPatterns.MINUS);
+      }
 
-        @Override
-        public String toString() {
-            final StringBuilder str = new StringBuilder(50);
+      str.append(ti.getEndTurn());
+      str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+      str.append(UsefulPatterns.WHITE_SPACE);
+      str.append(ti.getAreaName());
 
-            str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+      return str.toString();
+    }
+  }
 
-            if (ti.getTotalTurns() > 1) {
-                str.append(ti.getStartTurn() + 1);
-                str.append(UsefulPatterns.MINUS);
-            }
+  private static class SingleEncounterContainer implements TurnContainer {
+    private final Encounter e;
 
-            str.append(ti.getEndTurn());
-            str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-            str.append(UsefulPatterns.WHITE_SPACE);
-            str.append(ti.getAreaName());
-
-            return str.toString();
-        }
+    SingleEncounterContainer(
+        final Encounter e) {
+      this.e = e;
     }
 
-    private static class SingleEncounterContainer implements TurnContainer {
-        private final Encounter e;
-
-        SingleEncounterContainer(
-                                 final Encounter e) {
-            this.e = e;
-        }
-
-        public Encounter getTurnObject() {
-            return e;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder str = new StringBuilder(40);
-
-            str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-            str.append(e.getTurnNumber());
-            str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-            str.append(UsefulPatterns.WHITE_SPACE);
-            str.append(e.getEncounterName());
-
-            return str.toString();
-        }
+    @Override
+    public Encounter getTurnObject() {
+      return e;
     }
+
+    @Override
+    public String toString() {
+      final StringBuilder str = new StringBuilder(40);
+
+      str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+      str.append(e.getTurnNumber());
+      str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+      str.append(UsefulPatterns.WHITE_SPACE);
+      str.append(e.getEncounterName());
+
+      return str.toString();
+    }
+  }
 }

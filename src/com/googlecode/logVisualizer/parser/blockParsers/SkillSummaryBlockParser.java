@@ -37,79 +37,79 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * A parser for the skill summary at the end of preparsed ascension logs.
  */
 public final class SkillSummaryBlockParser extends AbstractBlockParser {
-    private static final Pattern NOT_SKILL_NAME = Pattern.compile("Cast\\s+\\d+\\s+");
+  private static final Pattern NOT_SKILL_NAME = Pattern.compile("Cast\\s+\\d+\\s+");
 
-    private static final String CAST_STRING = "Cast";
+  private static final String CAST_STRING = "Cast";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final BufferedReader reader, final LogDataHolder logData)
-                                                                                      throws IOException {
-        int emptyLineCounter = 0;
-        String line;
-        Scanner scanner;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final BufferedReader reader, final LogDataHolder logData)
+          throws IOException {
+    int emptyLineCounter = 0;
+    String line;
+    Scanner scanner;
 
-        while ((line = reader.readLine()) != null)
-            if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
-                if (line.startsWith(CAST_STRING)) {
-                    final int numberOfCasts;
-                    final String skillName;
+    while ((line = reader.readLine()) != null)
+      if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
+        if (line.startsWith(CAST_STRING)) {
+          final int numberOfCasts;
+          final String skillName;
 
-                    // Parse number of casts
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-                    numberOfCasts = scanner.nextInt();
-                    scanner.close();
+          // Parse number of casts
+          scanner = new Scanner(line);
+          scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+          numberOfCasts = scanner.nextInt();
+          scanner.close();
 
-                    // Parse skill name
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(NOT_SKILL_NAME);
-                    skillName = scanner.next();
-                    scanner.close();
+          // Parse skill name
+          scanner = new Scanner(line);
+          scanner.useDelimiter(NOT_SKILL_NAME);
+          skillName = scanner.next();
+          scanner.close();
 
-                    // Add skill
-                    // This summary is already correctly sorted, so no
-                    // additional actions are necessary here.
-                    final Skill skill = new Skill(skillName);
-                    skill.setCasts(numberOfCasts, 0);
+          // Add skill
+          // This summary is already correctly sorted, so no
+          // additional actions are necessary here.
+          final Skill skill = new Skill(skillName);
+          skill.setCasts(numberOfCasts, 0);
 
-                    // Trivial combat skills don't cost MP for the natural
-                    // class.
-                    if (UsefulPatterns.TRIVIAL_COMBAT_SKILL_NAMES.contains(skillName)
-                        && logData.getCharacterClass() == UsefulPatterns.TRIVAL_COMBAT_SKILL_CHARACTER_CLASS_MAP.get(skillName))
-                        skill.setMpCost(0);
+          // Trivial combat skills don't cost MP for the natural
+          // class.
+          if (UsefulPatterns.TRIVIAL_COMBAT_SKILL_NAMES.contains(skillName)
+              && logData.getCharacterClass() == UsefulPatterns.TRIVAL_COMBAT_SKILL_CHARACTER_CLASS_MAP.get(skillName))
+            skill.setMpCost(0);
 
-                    logData.getLogSummary().getSkillsCast().add(skill);
-                }
-
-                emptyLineCounter = 0;
-            } else {
-                emptyLineCounter++;
-                if (emptyLineCounter >= 2)
-                    break;
-            }
-
-        // Calculate and set total amount of casts and MP used.
-        int totalSkillCasts = 0;
-        int totalMPUsed = 0;
-        for (final Skill s : logData.getLogSummary().getSkillsCast()) {
-            totalSkillCasts += s.getAmount();
-            totalMPUsed += s.getMpCost();
+          logData.getLogSummary().getSkillsCast().add(skill);
         }
 
-        logData.getLogSummary().setTotalAmountSkillCasts(totalSkillCasts);
-        logData.getLogSummary().setTotalMPUsed(totalMPUsed);
+        emptyLineCounter = 0;
+      } else {
+        emptyLineCounter++;
+        if (emptyLineCounter >= 2)
+          break;
+      }
+
+    // Calculate and set total amount of casts and MP used.
+    int totalSkillCasts = 0;
+    int totalMPUsed = 0;
+    for (final Skill s : logData.getLogSummary().getSkillsCast()) {
+      totalSkillCasts += s.getAmount();
+      totalMPUsed += s.getMpCost();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleBlock(
-                                        final String line) {
-        return line.contains("CASTS");
-    }
+    logData.getLogSummary().setTotalAmountSkillCasts(totalSkillCasts);
+    logData.getLogSummary().setTotalMPUsed(totalMPUsed);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleBlock(
+      final String line) {
+    return line.contains("CASTS");
+  }
 }

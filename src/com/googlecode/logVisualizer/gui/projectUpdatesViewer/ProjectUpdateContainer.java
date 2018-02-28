@@ -29,98 +29,98 @@ package com.googlecode.logVisualizer.gui.projectUpdatesViewer;
  * project feed entry.
  */
 final class ProjectUpdateContainer {
-    private final String title;
+  private final String title;
 
-    private final String updated;
+  private final String updated;
 
-    private final String content;
+  private final String content;
 
-    /**
-     * @param title
-     *            Contents of the title node of a project feed entry.
-     * @param updated
-     *            Contents of the updated node of a project feed entry.
-     * @param content
-     *            Contents of the content node of a project feed entry.
-     * @throws NullPointerException
-     *             if any of the parameters is {@code null}
-     */
-    ProjectUpdateContainer(
-                           final String title, final String updated, final String content) {
-        if (title == null)
-            throw new NullPointerException("title must not be null.");
-        if (updated == null)
-            throw new NullPointerException("updated must not be null.");
-        if (content == null)
-            throw new NullPointerException("content must not be null.");
+  /**
+   * @param title
+   *            Contents of the title node of a project feed entry.
+   * @param updated
+   *            Contents of the updated node of a project feed entry.
+   * @param content
+   *            Contents of the content node of a project feed entry.
+   * @throws NullPointerException
+   *             if any of the parameters is {@code null}
+   */
+  ProjectUpdateContainer(
+      final String title, final String updated, final String content) {
+    if (title == null)
+      throw new NullPointerException("title must not be null.");
+    if (updated == null)
+      throw new NullPointerException("updated must not be null.");
+    if (content == null)
+      throw new NullPointerException("content must not be null.");
 
-        this.title = title;
-        this.updated = updated;
-        this.content = content;
-    }
+    this.title = title;
+    this.updated = updated;
+    this.content = content;
+  }
 
-    /**
-     * @return The contents of the title node of a project feed entry.
-     */
-    String getTitle() {
-        return title;
-    }
+  /**
+   * @return The contents of the title node of a project feed entry.
+   */
+  String getTitle() {
+    return title;
+  }
 
-    /**
-     * @return The contents of the updated node of a project feed entry.
-     */
-    String getUpdated() {
-        return updated;
-    }
+  /**
+   * @return The contents of the updated node of a project feed entry.
+   */
+  String getUpdated() {
+    return updated;
+  }
 
-    /**
-     * @return The contents of the content node of a project feed entry.
-     */
-    String getContent() {
-        return content;
-    }
+  /**
+   * @return The contents of the content node of a project feed entry.
+   */
+  String getContent() {
+    return content;
+  }
 
-    @Override
-    public String toString() {
-        return title;
-    }
+  @Override
+  public String toString() {
+    return title;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 5545;
-        result = 31 * result + title.hashCode();
-        result = 31 * result + updated.hashCode();
-        result = 31 * result + content.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = 5545;
+    result = 31 * result + title.hashCode();
+    result = 31 * result + updated.hashCode();
+    result = 31 * result + content.hashCode();
+    return result;
+  }
 
-    @Override
-    public boolean equals(
-                          final Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+  @Override
+  public boolean equals(
+      final Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
 
-        final ProjectUpdateContainer other = (ProjectUpdateContainer) obj;
-        if (content == null) {
-            if (other.content != null)
-                return false;
-        } else if (!content.equals(other.content))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (updated == null) {
-            if (other.updated != null)
-                return false;
-        } else if (!updated.equals(other.updated))
-            return false;
+    final ProjectUpdateContainer other = (ProjectUpdateContainer) obj;
+    if (content == null) {
+      if (other.content != null)
+        return false;
+    } else if (!content.equals(other.content))
+      return false;
+    if (title == null) {
+      if (other.title != null)
+        return false;
+    } else if (!title.equals(other.title))
+      return false;
+    if (updated == null) {
+      if (other.updated != null)
+        return false;
+    } else if (!updated.equals(other.updated))
+      return false;
 
-        return true;
-    }
+    return true;
+  }
 }

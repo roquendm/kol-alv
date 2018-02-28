@@ -24,7 +24,11 @@
 
 package com.googlecode.logVisualizer.parser;
 
-import static com.googlecode.logVisualizer.parser.UsefulPatterns.*;
+import static com.googlecode.logVisualizer.parser.UsefulPatterns.ALL_BEFORE_COLON;
+import static com.googlecode.logVisualizer.parser.UsefulPatterns.BADMOON;
+import static com.googlecode.logVisualizer.parser.UsefulPatterns.HUNTED_COMBAT;
+import static com.googlecode.logVisualizer.parser.UsefulPatterns.NOT_A_NUMBER;
+import static com.googlecode.logVisualizer.parser.UsefulPatterns.SEMIRARE;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,8 +41,22 @@ import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.logSummary.LogSummaryData;
-import com.googlecode.logVisualizer.parser.blockParsers.*;
-import com.googlecode.logVisualizer.parser.lineParsers.*;
+import com.googlecode.logVisualizer.parser.blockParsers.BottleneckSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.FamiliarSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.LevelSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.MPSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.MeatSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.SemirareSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.SkillSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.blockParsers.StatsSummaryBlockParser;
+import com.googlecode.logVisualizer.parser.lineParsers.AbstractLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.ConsumableLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.DayChangeLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.DroppedItemLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.FamiliarChangeLineParse;
+import com.googlecode.logVisualizer.parser.lineParsers.FreeRunawaysLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.PullLineParser;
+import com.googlecode.logVisualizer.parser.lineParsers.TurnsSpentLineParser;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 import com.googlecode.logVisualizer.util.Lists;
 
@@ -53,240 +71,247 @@ import com.googlecode.logVisualizer.util.Lists;
  * Note that this class is immutable.
  */
 public final class PreparsedLogParser extends AbstractLogParser {
-    private static final String ASCENDED_STRING = "Ascended!";
+  private static final String ASCENDED_STRING = "Ascended!";
 
-    private static final String TURN_RUNDOWN_FINISHED_STRING = "Turn rundown finished!";
+  private static final String TURN_RUNDOWN_FINISHED_STRING = "Turn rundown finished!";
 
-    private final File log;
+  private final File log;
 
-    private final List<DataNumberPair<String>> semirares = Lists.newArrayList();
+  final List<DataNumberPair<String>> semirares = Lists.newArrayList();
 
-    private final List<DataNumberPair<String>> badMoonAdventures = Lists.newArrayList();
+  final List<DataNumberPair<String>> badMoonAdventures = Lists.newArrayList();
 
-    private final List<DataNumberPair<String>> disintegratedCombats = Lists.newArrayList();
+  final List<DataNumberPair<String>> disintegratedCombats = Lists.newArrayList();
 
-    /**
-     * @param log
-     *            The pre-parsed ascension log which is intended to be parsed to
-     *            set.
-     * @throws NullPointerException
-     *             if log is {@code null}
-     */
-    public PreparsedLogParser(
-                              final File log) {
-        super(new LogDataHolder(false));
-        this.log = log;
+  /**
+   * @param log
+   *            The pre-parsed ascension log which is intended to be parsed to
+   *            set.
+   * @throws NullPointerException
+   *             if log is {@code null}
+   */
+  @SuppressWarnings("resource")
+  public PreparsedLogParser(
+      final File log) {
+    super(new LogDataHolder(false));
+    this.log = log;
 
-        // Set the log name
-        if (log.getName().contains("_ascend")) {
-            final Scanner scanner = new Scanner(log.getName());
-            scanner.useDelimiter("_ascend|(?:_\\d+_\\d+)?\\..+$");
-            getLogData().setLogName(scanner.next() + "-" + scanner.next());
-            scanner.close();
-        } else
-            getLogData().setLogName(log.getName().replace(".txt", UsefulPatterns.EMPTY_STRING));
+    // Set the log name
+    if (log.getName().contains("_ascend")) {
+      final Scanner scanner = new Scanner(log.getName());
+      scanner.useDelimiter("_ascend|(?:_\\d+_\\d+)?\\..+$");
+      getLogData().setLogName(scanner.next() + "-" + scanner.next());
+      scanner.close();
+    } else
+      getLogData().setLogName(log.getName().replace(".txt", UsefulPatterns.EMPTY_STRING));
 
-        // Add line parsers for parsing the turn rundown data
-        addLineParser(new TurnsSpentLineParser());
-        addLineParser(new DroppedItemLineParser());
-        addLineParser(new ConsumableLineParser());
-        addLineParser(new FamiliarChangeLineParse());
-        addLineParser(new PullLineParser());
-        addLineParser(new FreeRunawaysLineParser());
-        addLineParser(new DayChangeLineParser());
-        addSpecialLineParsers();
+    // Add line parsers for parsing the turn rundown data
+    addLineParser(new TurnsSpentLineParser());
+    addLineParser(new DroppedItemLineParser());
+    addLineParser(new ConsumableLineParser());
+    addLineParser(new FamiliarChangeLineParse());
+    addLineParser(new PullLineParser());
+    addLineParser(new FreeRunawaysLineParser());
+    addLineParser(new DayChangeLineParser());
+    addSpecialLineParsers();
 
-        // Add block parsers for parsing the summaries at the end of the log.
-        addBlockParser(new LevelSummaryBlockParser());
-        addBlockParser(new StatsSummaryBlockParser());
-        addBlockParser(new FamiliarSummaryBlockParser());
-        addBlockParser(new SemirareSummaryBlockParser());
-        addBlockParser(new SkillSummaryBlockParser());
-        addBlockParser(new MPSummaryBlockParser());
-        addBlockParser(new MeatSummaryBlockParser());
-        addBlockParser(new BottleneckSummaryBlockParser());
-    }
+    // Add block parsers for parsing the summaries at the end of the log.
+    addBlockParser(new LevelSummaryBlockParser());
+    addBlockParser(new StatsSummaryBlockParser());
+    addBlockParser(new FamiliarSummaryBlockParser());
+    addBlockParser(new SemirareSummaryBlockParser());
+    addBlockParser(new SkillSummaryBlockParser());
+    addBlockParser(new MPSummaryBlockParser());
+    addBlockParser(new MeatSummaryBlockParser());
+    addBlockParser(new BottleneckSummaryBlockParser());
+  }
 
-    /**
-     * While line parsers normally should be put into their own classes, some of
-     * these have to have access to data structures inside this class and thus
-     * are implemented as anonymous classes.
-     * <p>
-     * This has to be done, because of deficits or design decisions of the
-     * {@link LogDataHolder} class. The most notable example for this is the
-     * fact that the {@link LogSummaryData} can only be created after the turn
-     * rundown data has been parsed and put into the {@link LogDataHolder}.
-     * Thus, access to members of the {@link LogSummaryData} class is only
-     * possible after the turn rundown part of preparsed ascension logs has been
-     * parsed. But some of the data present in the turn rundown part of the
-     * mentioned logs belongs inside {@link LogSummaryData}. Thus, this data has
-     * to be saved in data structures inside this class temporarily, which in
-     * turn can only be accessed be anonymous classes.
-     * <p>
-     * There might be other ways to accomplish this, but as long as the number
-     * special classes is relatively low this will do.
-     */
-    private void addSpecialLineParsers() {
-        // Semirare parser
-        addLineParser(new AbstractLineParser() {
-            private final Matcher semirareMatcher = SEMIRARE.matcher("");
+  /**
+   * While line parsers normally should be put into their own classes, some of
+   * these have to have access to data structures inside this class and thus
+   * are implemented as anonymous classes.
+   * <p>
+   * This has to be done, because of deficits or design decisions of the
+   * {@link LogDataHolder} class. The most notable example for this is the
+   * fact that the {@link LogSummaryData} can only be created after the turn
+   * rundown data has been parsed and put into the {@link LogDataHolder}.
+   * Thus, access to members of the {@link LogSummaryData} class is only
+   * possible after the turn rundown part of preparsed ascension logs has been
+   * parsed. But some of the data present in the turn rundown part of the
+   * mentioned logs belongs inside {@link LogSummaryData}. Thus, this data has
+   * to be saved in data structures inside this class temporarily, which in
+   * turn can only be accessed be anonymous classes.
+   * <p>
+   * There might be other ways to accomplish this, but as long as the number
+   * special classes is relatively low this will do.
+   */
+  private void addSpecialLineParsers() {
+    // Semirare parser
+    addLineParser(new AbstractLineParser() {
+      private final Matcher semirareMatcher = SEMIRARE.matcher("");
 
-            @Override
-            protected void doParsing(
-                                     final String line, final LogDataHolder logData) {
-                // Parse the turn number
-                Scanner scanner = new Scanner(line);
-                scanner.useDelimiter(NOT_A_NUMBER);
-                final int turnNumber = scanner.nextInt();
-                scanner.close();
+      @SuppressWarnings({ "resource", "boxing" })
+      @Override
+      protected void doParsing(
+          final String line, final LogDataHolder logData) {
+        // Parse the turn number
+        Scanner scanner = new Scanner(line);
+        scanner.useDelimiter(NOT_A_NUMBER);
+        final int turnNumber = scanner.nextInt();
+        scanner.close();
 
-                // Parse semirare name
-                scanner = new Scanner(line);
-                scanner.useDelimiter(ALL_BEFORE_COLON);
-                final String semirareName = scanner.next();
-                scanner.close();
+        // Parse semirare name
+        scanner = new Scanner(line);
+        scanner.useDelimiter(ALL_BEFORE_COLON);
+        final String semirareName = scanner.next();
+        scanner.close();
 
-                // Add semirare
-                semirares.add(DataNumberPair.of(semirareName, turnNumber));
-            }
+        // Add semirare
+        semirares.add(DataNumberPair.of(semirareName, turnNumber));
+      }
 
-            @Override
-            protected boolean isCompatibleLine(
-                                               final String line) {
-                return semirareMatcher.reset(line).matches();
-            }
-        });
+      @Override
+      protected boolean isCompatibleLine(
+          final String line) {
+        return semirareMatcher.reset(line).matches();
+      }
+    });
 
-        // Bad Moon Adventure parser
-        addLineParser(new AbstractLineParser() {
-            private final Matcher badmoonMatcher = BADMOON.matcher("");
+    // Bad Moon Adventure parser
+    addLineParser(new AbstractLineParser() {
+      private final Matcher badmoonMatcher = BADMOON.matcher("");
 
-            @Override
-            protected void doParsing(
-                                     final String line, final LogDataHolder logData) {
-                // Parse the turn number
-                Scanner scanner = new Scanner(line);
-                scanner.useDelimiter(NOT_A_NUMBER);
-                final int turnNumber = scanner.nextInt();
-                scanner.close();
+      @SuppressWarnings({ "resource", "boxing" })
+      @Override
+      protected void doParsing(
+          final String line, final LogDataHolder logData) {
+        // Parse the turn number
+        Scanner scanner = new Scanner(line);
+        scanner.useDelimiter(NOT_A_NUMBER);
+        final int turnNumber = scanner.nextInt();
+        scanner.close();
 
-                // Parse adventure name
-                scanner = new Scanner(line);
-                scanner.useDelimiter(ALL_BEFORE_COLON);
-                final String badMoonAdventureName = scanner.next();
-                scanner.close();
+        // Parse adventure name
+        scanner = new Scanner(line);
+        scanner.useDelimiter(ALL_BEFORE_COLON);
+        final String badMoonAdventureName = scanner.next();
+        scanner.close();
 
-                // Add Bad Moon adventure
-                badMoonAdventures.add(DataNumberPair.of(badMoonAdventureName, turnNumber));
-            }
+        // Add Bad Moon adventure
+        badMoonAdventures.add(DataNumberPair.of(badMoonAdventureName, turnNumber));
+      }
 
-            @Override
-            protected boolean isCompatibleLine(
-                                               final String line) {
-                return badmoonMatcher.reset(line).matches();
-            }
-        });
+      @Override
+      protected boolean isCompatibleLine(
+          final String line) {
+        return badmoonMatcher.reset(line).matches();
+      }
+    });
 
-        // Hunted combat parser
-        addLineParser(new AbstractLineParser() {
-            private final Matcher huntedCombatMatcher = HUNTED_COMBAT.matcher("");
+    // Hunted combat parser
+    addLineParser(new AbstractLineParser() {
+      private final Matcher huntedCombatMatcher = HUNTED_COMBAT.matcher("");
 
-            private final Pattern notCombatName = Pattern.compile("^.*Started hunting\\s+");
+      private final Pattern notCombatName = Pattern.compile("^.*Started hunting\\s+");
 
-            @Override
-            protected void doParsing(
-                                     final String line, final LogDataHolder logData) {
-                // Parse the turn number
-                Scanner scanner = new Scanner(line);
-                scanner.useDelimiter(NOT_A_NUMBER);
-                final int turnNumber = scanner.nextInt();
-                scanner.close();
+      @SuppressWarnings({ "resource", "boxing" })
+      @Override
+      protected void doParsing(
+          final String line, final LogDataHolder logData) {
+        // Parse the turn number
+        Scanner scanner = new Scanner(line);
+        scanner.useDelimiter(NOT_A_NUMBER);
+        final int turnNumber = scanner.nextInt();
+        scanner.close();
 
-                // Parse the combat name
-                scanner = new Scanner(line);
-                scanner.useDelimiter(notCombatName);
-                if (scanner.hasNext()) {
-                    final String combatName = scanner.next();
+        // Parse the combat name
+        scanner = new Scanner(line);
+        scanner.useDelimiter(notCombatName);
+        if (scanner.hasNext()) {
+          final String combatName = scanner.next();
 
-                    // Add hunted combat
-                    logData.addHuntedCombat(DataNumberPair.of(combatName, turnNumber));
-                }
-                scanner.close();
-            }
+          // Add hunted combat
+          logData.addHuntedCombat(DataNumberPair.of(combatName, turnNumber));
+        }
+        scanner.close();
+      }
 
-            @Override
-            protected boolean isCompatibleLine(
-                                               final String line) {
-                return huntedCombatMatcher.reset(line).matches();
-            }
-        });
+      @Override
+      protected boolean isCompatibleLine(
+          final String line) {
+        return huntedCombatMatcher.reset(line).matches();
+      }
+    });
 
-        // Disintegrated combat parser
-        addLineParser(new AbstractLineParser() {
-            private final Matcher disintegrateMatcher = UsefulPatterns.DISINTEGRATED_COMBAT.matcher(UsefulPatterns.EMPTY_STRING);
+    // Disintegrated combat parser
+    addLineParser(new AbstractLineParser() {
+      private final Matcher disintegrateMatcher = UsefulPatterns.DISINTEGRATED_COMBAT.matcher(UsefulPatterns.EMPTY_STRING);
 
-            private final Pattern notCombatName = Pattern.compile("^.*Disintegrated\\s+");
+      private final Pattern notCombatName = Pattern.compile("^.*Disintegrated\\s+");
 
-            @Override
-            protected void doParsing(
-                                     final String line, final LogDataHolder logData) {
-                // Parse the turn number
-                Scanner scanner = new Scanner(line);
-                scanner.useDelimiter(NOT_A_NUMBER);
-                final int turnNumber = scanner.nextInt();
-                scanner.close();
+      @SuppressWarnings({ "resource", "boxing" })
+      @Override
+      protected void doParsing(
+          final String line, final LogDataHolder logData) {
+        // Parse the turn number
+        Scanner scanner = new Scanner(line);
+        scanner.useDelimiter(NOT_A_NUMBER);
+        final int turnNumber = scanner.nextInt();
+        scanner.close();
 
-                // Parse the combat name
-                scanner = new Scanner(line);
-                scanner.useDelimiter(notCombatName);
-                if (scanner.hasNext()) {
-                    final String combatName = scanner.next();
+        // Parse the combat name
+        scanner = new Scanner(line);
+        scanner.useDelimiter(notCombatName);
+        if (scanner.hasNext()) {
+          final String combatName = scanner.next();
 
-                    // Add disintegrated combat
-                    disintegratedCombats.add(DataNumberPair.of(combatName, turnNumber));
-                }
-                scanner.close();
-            }
+          // Add disintegrated combat
+          disintegratedCombats.add(DataNumberPair.of(combatName, turnNumber));
+        }
+        scanner.close();
+      }
 
-            @Override
-            protected boolean isCompatibleLine(
-                                               final String line) {
-                return disintegrateMatcher.reset(line).matches();
-            }
-        });
-    }
+      @Override
+      protected boolean isCompatibleLine(
+          final String line) {
+        return disintegrateMatcher.reset(line).matches();
+      }
+    });
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void parse()
-                       throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(log));
-        String line;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @SuppressWarnings("resource")
+  public void parse()
+      throws IOException {
+    final BufferedReader reader = new BufferedReader(new FileReader(log));
+    String line;
 
-        // Parse the turn rundown part of the log.
-        while ((line = reader.readLine()) != null)
-            if (line.length() > 0) {
-                // Stop the loop if the turn rundown is finished.
-                if (line.startsWith(ASCENDED_STRING)
-                    || line.startsWith(TURN_RUNDOWN_FINISHED_STRING))
-                    break;
+    // Parse the turn rundown part of the log.
+    while ((line = reader.readLine()) != null)
+      if (line.length() > 0) {
+        // Stop the loop if the turn rundown is finished.
+        if (line.startsWith(ASCENDED_STRING)
+            || line.startsWith(TURN_RUNDOWN_FINISHED_STRING))
+          break;
 
-                parseLine(line);
-            }
+        parseLine(line);
+      }
 
-        // Create the log summary from the turn rundown data. Since these
-        // preparsed logs don't hold enough data, some of the summaries will
-        // stay empty.
-        getLogData().createLogSummary();
-        getLogData().getLogSummary().setSemirares(semirares);
-        getLogData().getLogSummary().setBadmoonAdventures(badMoonAdventures);
-        getLogData().getLogSummary().setDisintegratedCombats(disintegratedCombats);
+    // Create the log summary from the turn rundown data. Since these
+    // preparsed logs don't hold enough data, some of the summaries will
+    // stay empty.
+    getLogData().createLogSummary();
+    getLogData().getLogSummary().setSemirares(semirares);
+    getLogData().getLogSummary().setBadmoonAdventures(badMoonAdventures);
+    getLogData().getLogSummary().setDisintegratedCombats(disintegratedCombats);
 
-        // Parse the summaries at the end of the log.
-        while ((line = reader.readLine()) != null)
-            parseBlock(reader);
+    // Parse the summaries at the end of the log.
+    while ((line = reader.readLine()) != null)
+      parseBlock(reader);
 
-        reader.close();
-    }
+    reader.close();
+  }
 }

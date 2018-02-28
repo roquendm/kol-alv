@@ -31,109 +31,109 @@ import com.googlecode.logVisualizer.logData.LogComment;
  * of a turn interval and the textual description associated with it.
  */
 final class LogCommentContainer {
-    private final LogComment preComment;
+  private final LogComment preComment;
 
-    private final LogComment postComment;
+  private final LogComment postComment;
 
-    private final String description;
+  private final String description;
 
-    /**
-     * @param preIntervalComment
-     *            The pre-interval log comment.
-     * @param postIntervalComment
-     *            The log comment.
-     * @param description
-     *            The matching textual print-out associated with the log
-     *            comments.
-     */
-    LogCommentContainer(
-                        final LogComment logComment, final String description) {
-        if (logComment == null)
-            throw new IllegalArgumentException("The log comment must not be null.");
-        if (description == null)
-            throw new IllegalArgumentException("The description must not be null.");
+  /**
+   * @param preIntervalComment
+   *            The pre-interval log comment.
+   * @param postIntervalComment
+   *            The log comment.
+   * @param description
+   *            The matching textual print-out associated with the log
+   *            comments.
+   */
+  LogCommentContainer(
+      final LogComment logComment, final String description) {
+    if (logComment == null)
+      throw new IllegalArgumentException("The log comment must not be null.");
+    if (description == null)
+      throw new IllegalArgumentException("The description must not be null.");
 
-        preComment = null;
-        postComment = logComment;
-        this.description = description;
-    }
+    preComment = null;
+    postComment = logComment;
+    this.description = description;
+  }
 
-    /**
-     * @param preIntervalComment
-     *            The pre-interval log comment.
-     * @param postIntervalComment
-     *            The post-interval log comment.
-     * @param description
-     *            The matching textual print-out associated with the log
-     *            comments.
-     */
-    LogCommentContainer(
-                        final LogComment preIntervalComment, final LogComment postIntervalComment,
-                        final String description) {
-        if (preIntervalComment == null)
-            throw new IllegalArgumentException("The pre-interval log comment must not be null.");
-        if (postIntervalComment == null)
-            throw new IllegalArgumentException("The post-interval log comment must not be null.");
-        if (description == null)
-            throw new IllegalArgumentException("The description must not be null.");
+  /**
+   * @param preIntervalComment
+   *            The pre-interval log comment.
+   * @param postIntervalComment
+   *            The post-interval log comment.
+   * @param description
+   *            The matching textual print-out associated with the log
+   *            comments.
+   */
+  LogCommentContainer(
+      final LogComment preIntervalComment, final LogComment postIntervalComment,
+      final String description) {
+    if (preIntervalComment == null)
+      throw new IllegalArgumentException("The pre-interval log comment must not be null.");
+    if (postIntervalComment == null)
+      throw new IllegalArgumentException("The post-interval log comment must not be null.");
+    if (description == null)
+      throw new IllegalArgumentException("The description must not be null.");
 
-        preComment = preIntervalComment;
-        postComment = postIntervalComment;
-        this.description = description;
-    }
+    preComment = preIntervalComment;
+    postComment = postIntervalComment;
+    this.description = description;
+  }
 
-    boolean isSingleCommentContainer() {
-        return preComment == null;
-    }
+  boolean isSingleCommentContainer() {
+    return preComment == null;
+  }
 
-    /**
-     * @return The pre-interval log comment.
-     */
-    LogComment getPreIntervalComment() {
-        return preComment;
-    }
+  /**
+   * @return The pre-interval log comment.
+   */
+  LogComment getPreIntervalComment() {
+    return preComment;
+  }
 
-    /**
-     * @return The post-interval log comment.
-     */
-    LogComment getPostIntervalComment() {
-        return postComment;
-    }
+  /**
+   * @return The post-interval log comment.
+   */
+  LogComment getPostIntervalComment() {
+    return postComment;
+  }
 
-    /**
-     * @return The textual print-out description of the turn interval.
-     */
-    String getDescription() {
-        return description;
-    }
+  /**
+   * @return The textual print-out description of the turn interval.
+   */
+  String getDescription() {
+    return description;
+  }
 
-    @Override
-    public String toString() {
-        return description;
-    }
+  @Override
+  public String toString() {
+    return description;
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (o != null)
-            if (o instanceof LogCommentContainer) {
-                final LogCommentContainer that = (LogCommentContainer) o;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o != null)
+      if (o instanceof LogCommentContainer) {
+        final LogCommentContainer that = (LogCommentContainer) o;
 
-                return preComment.equals(that.getPreIntervalComment())
-                       && postComment.equals(that.getPostIntervalComment())
-                       && description.equals(that.getDescription());
-            }
+        return preComment.equals(that.getPreIntervalComment())
+            && postComment.equals(that.getPostIntervalComment())
+            && description.equals(that.getDescription());
+      }
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 12;
-        result = 31 * result + preComment.hashCode();
-        result = 31 * result + postComment.hashCode();
-        result = 31 * result + description.hashCode();
+  @Override
+  public int hashCode() {
+    int result = 12;
+    result = 31 * result + preComment.hashCode();
+    result = 31 * result + postComment.hashCode();
+    result = 31 * result + description.hashCode();
 
-        return result;
-    }
+    return result;
+  }
 }

@@ -41,31 +41,31 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * stat gains.
  */
 public final class MafiaRedRayStatsLineParser extends AbstractLineParser {
-    private static final String RED_RAY_STRING = " swings his eyestalk toward your opponent, "
-                                                 + "firing a searing ray of heat at it, dealing ";
+  private static final String RED_RAY_STRING = " swings his eyestalk toward your opponent, "
+      + "firing a searing ray of heat at it, dealing ";
 
-    private static final String YOU_GAIN_STRING = "You gain ";
+  private static final String YOU_GAIN_STRING = "You gain ";
 
-    private final StatLineParser statParser = new StatLineParser();
+  private final StatLineParser statParser = new StatLineParser();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final String[] gains = line.split("That was way more entertaining than fireworks!")[1].split("\\.|\\!");
-        for (final String s : gains)
-            statParser.parseLine(s, logData);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final String[] gains = line.split("That was way more entertaining than fireworks!")[1].split("\\.|\\!");
+    for (final String s : gains)
+      statParser.parseLine(s, logData);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return line.startsWith(UsefulPatterns.COMBAT_ROUND_LINE_BEGINNING_STRING)
-               && line.contains(RED_RAY_STRING) && line.contains(YOU_GAIN_STRING);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return line.startsWith(UsefulPatterns.COMBAT_ROUND_LINE_BEGINNING_STRING)
+        && line.contains(RED_RAY_STRING) && line.contains(YOU_GAIN_STRING);
+  }
 }

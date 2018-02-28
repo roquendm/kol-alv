@@ -31,7 +31,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import com.googlecode.logVisualizer.logData.turn.Encounter;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
@@ -43,61 +47,61 @@ import com.googlecode.logVisualizer.util.Pair;
  * parsing error occurred.
  */
 public final class ErrorLogTableDialog {
-    private static final String ERROR_PREFACE = "<html>There were problems parsing the following logs. Please check the underlaying mafia session logs to see<br>"
-                                                + "if they contained any corrupted data or lines longer than 500 characters and try to remove any problems.<br><br><br>"
-                                                + "The given list lists the erroneous ascension and turn number after which the error occurred in the mafia<br>"
-                                                + "session logs upon which the ascension is based on.<br><br></html>";
+  private static final String ERROR_PREFACE = "<html>There were problems parsing the following logs. Please check the underlaying mafia session logs to see<br>"
+      + "if they contained any corrupted data or lines longer than 500 characters and try to remove any problems.<br><br><br>"
+      + "The given list lists the erroneous ascension and turn number after which the error occurred in the mafia<br>"
+      + "session logs upon which the ascension is based on.<br><br></html>";
 
-    public static void showErrorLogTableDialog(
-                                               final Component owner,
-                                               final List<Pair<String, Encounter>> errorFileList) {
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel(ERROR_PREFACE), BorderLayout.NORTH);
-        panel.add(new JScrollPane(createErrorLogTable(errorFileList)), BorderLayout.CENTER);
+  public static void showErrorLogTableDialog(
+      final Component owner,
+      final List<Pair<String, Encounter>> errorFileList) {
+    final JPanel panel = new JPanel(new BorderLayout());
+    panel.add(new JLabel(ERROR_PREFACE), BorderLayout.NORTH);
+    panel.add(new JScrollPane(createErrorLogTable(errorFileList)), BorderLayout.CENTER);
 
-        JOptionPane.showMessageDialog(owner, panel, "Error occurred", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(owner, panel, "Error occurred", JOptionPane.ERROR_MESSAGE);
+  }
+
+  private static JTable createErrorLogTable(
+      final List<Pair<String, Encounter>> errorFileList) {
+    final NumberFormat formatter = NumberFormat.getNumberInstance(Locale.ENGLISH);
+    formatter.setMaximumFractionDigits(0);
+    formatter.setMinimumIntegerDigits(2);
+    final String[] columNames = { "Player name", "Ascension start date",
+        "Specific session log", "Turn number" };
+    final String[][] rowData = new String[errorFileList.size()][4];
+    for (int i = 0; i < errorFileList.size(); i++) {
+      final Calendar logDate = UsefulPatterns.getMafiaLogCalendarDate(errorFileList.get(i)
+          .getVar1());
+      for (int j = 1; j < errorFileList.get(i).getVar2().getDayNumber(); j++)
+        logDate.add(Calendar.DAY_OF_MONTH, 1);
+
+      final String[] logData = parseLogName(errorFileList.get(i).getVar1());
+      rowData[i][0] = logData[0];
+      rowData[i][1] = logData[1];
+      rowData[i][2] = logData[0] + "_" + logDate.get(Calendar.YEAR) + ""
+          + formatter.format(logDate.get(Calendar.MONTH) + 1) + ""
+          + formatter.format(logDate.get(Calendar.DAY_OF_MONTH));
+      rowData[i][3] = Integer.toString(errorFileList.get(i).getVar2().getTurnNumber());
     }
 
-    private static JTable createErrorLogTable(
-                                              final List<Pair<String, Encounter>> errorFileList) {
-        final NumberFormat formatter = NumberFormat.getNumberInstance(Locale.ENGLISH);
-        formatter.setMaximumFractionDigits(0);
-        formatter.setMinimumIntegerDigits(2);
-        final String[] columNames = { "Player name", "Ascension start date",
-                                     "Specific session log", "Turn number" };
-        final String[][] rowData = new String[errorFileList.size()][4];
-        for (int i = 0; i < errorFileList.size(); i++) {
-            final Calendar logDate = UsefulPatterns.getMafiaLogCalendarDate(errorFileList.get(i)
-                                                                                         .getVar1());
-            for (int j = 1; j < errorFileList.get(i).getVar2().getDayNumber(); j++)
-                logDate.add(Calendar.DAY_OF_MONTH, 1);
+    return new JTable(rowData, columNames);
+  }
 
-            final String[] logData = parseLogName(errorFileList.get(i).getVar1());
-            rowData[i][0] = logData[0];
-            rowData[i][1] = logData[1];
-            rowData[i][2] = logData[0] + "_" + logDate.get(Calendar.YEAR) + ""
-                            + formatter.format(logDate.get(Calendar.MONTH) + 1) + ""
-                            + formatter.format(logDate.get(Calendar.DAY_OF_MONTH));
-            rowData[i][3] = Integer.toString(errorFileList.get(i).getVar2().getTurnNumber());
-        }
+  private static String[] parseLogName(
+      final String logName) {
+    final String[] result = new String[2];
 
-        return new JTable(rowData, columNames);
+    if (logName.contains("_ascend")) {
+      final String[] tmp = logName.split("_ascend|\\.txt|\\.html");
+      result[0] = tmp[0];
+      result[1] = tmp[1];
+    } else {
+      final int delimiterIndex = logName.lastIndexOf("-");
+      result[0] = logName.substring(0, delimiterIndex);
+      result[1] = logName.substring(delimiterIndex + 1, logName.lastIndexOf("."));
     }
 
-    private static String[] parseLogName(
-                                         final String logName) {
-        final String[] result = new String[2];
-
-        if (logName.contains("_ascend")) {
-            final String[] tmp = logName.split("_ascend|\\.txt|\\.html");
-            result[0] = tmp[0];
-            result[1] = tmp[1];
-        } else {
-            final int delimiterIndex = logName.lastIndexOf("-");
-            result[0] = logName.substring(0, delimiterIndex);
-            result[1] = logName.substring(delimiterIndex + 1, logName.lastIndexOf("."));
-        }
-
-        return result;
-    }
+    return result;
+  }
 }

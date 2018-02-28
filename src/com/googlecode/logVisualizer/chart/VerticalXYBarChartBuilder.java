@@ -38,59 +38,64 @@ import org.jfree.data.xy.IntervalXYDataset;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public abstract class VerticalXYBarChartBuilder extends AbstractChart {
-    private final String xLable;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 2269399983947934370L;
 
-    private final String yLable;
+  private final String xLable;
 
-    protected VerticalXYBarChartBuilder(
-                                        final LogDataHolder logData, final String title,
-                                        final String xLable, final String yLable,
-                                        final boolean isIncludeLegend) {
-        super(title, logData, isIncludeLegend);
-        this.xLable = xLable;
-        this.yLable = yLable;
-        addChart();
-    }
+  private final String yLable;
 
-    protected abstract IntervalXYDataset createDataset();
+  protected VerticalXYBarChartBuilder(
+      final LogDataHolder logData, final String title,
+      final String xLable, final String yLable,
+      final boolean isIncludeLegend) {
+    super(title, logData, isIncludeLegend);
+    this.xLable = xLable;
+    this.yLable = yLable;
+    addChart();
+  }
 
-    private JFreeChart createChart(
-                                   final IntervalXYDataset dataset) {
-        final JFreeChart chart = ChartFactory.createXYBarChart(getTitle(),
-                                                               xLable,
-                                                               false,
-                                                               yLable,
-                                                               dataset,
-                                                               PlotOrientation.VERTICAL,
-                                                               isIncludeLegend(),
-                                                               true,
-                                                               false);
-        final XYPlot plot = (XYPlot) chart.getPlot();
-        final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+  protected abstract IntervalXYDataset createDataset();
 
-        double lastXValue = 0;
-        if (dataset.getSeriesCount() > 0)
-            lastXValue = dataset.getXValue(0, dataset.getItemCount(0) - 1);
+  private JFreeChart createChart(
+      final IntervalXYDataset dataset) {
+    final JFreeChart chart = ChartFactory.createXYBarChart(getTitle(),
+        xLable,
+        false,
+        yLable,
+        dataset,
+        PlotOrientation.VERTICAL,
+        isIncludeLegend(),
+        true,
+        false);
+    final XYPlot plot = (XYPlot) chart.getPlot();
+    final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
 
-        plot.setDomainAxis(new FixedZoomNumberAxis(lastXValue));
-        plot.setNoDataMessage("No data available");
-        plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-        setBarShadowVisible(chart, false);
+    double lastXValue = 0;
+    if (dataset.getSeriesCount() > 0)
+      lastXValue = dataset.getXValue(0, dataset.getItemCount(0) - 1);
 
-        plot.getDomainAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        if (dataset.getSeriesCount() > 0)
-            plot.getDomainAxis().setUpperBound(lastXValue);
-        plot.getDomainAxis().setLowerBound(0);
-        yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        yAxis.setUpperMargin(0.1);
+    plot.setDomainAxis(new FixedZoomNumberAxis(lastXValue));
+    plot.setNoDataMessage("No data available");
+    plot.setBackgroundPaint(Color.white);
+    plot.setRangeGridlinePaint(Color.black);
+    plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+    setBarShadowVisible(chart, false);
 
-        return chart;
-    }
+    plot.getDomainAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    if (dataset.getSeriesCount() > 0)
+      plot.getDomainAxis().setUpperBound(lastXValue);
+    plot.getDomainAxis().setLowerBound(0);
+    yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    yAxis.setUpperMargin(0.1);
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+    return chart;
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

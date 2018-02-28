@@ -29,27 +29,31 @@ import com.googlecode.logVisualizer.logData.logSummary.ConsumptionSummary.Consum
 import com.googlecode.logVisualizer.util.dataTables.DataTablesHandler;
 
 final class PerDayConsumptionBarChart extends ConsumptionBarChartBuilder {
-    private final ConsumptionDayStats consumptionStats;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3836830057108140815L;
+  private final ConsumptionDayStats consumptionStats;
 
-    PerDayConsumptionBarChart(
-                              final ConsumptionDayStats consumptionStats) {
-        super("Organ hit per consumable", "Consumable version", "Organ hit per consumable", false);
-        this.consumptionStats = consumptionStats;
-        addChart();
-    }
+  PerDayConsumptionBarChart(
+      final ConsumptionDayStats consumptionStats) {
+    super("Organ hit per consumable", "Consumable version", "Organ hit per consumable", false);
+    this.consumptionStats = consumptionStats;
+    addChart();
+  }
 
-    @Override
-    protected ConsumptionDataset createDataset() {
-        final ConsumptionDataset dataset = new ConsumptionDataset(consumptionStats);
+  @Override
+  protected ConsumptionDataset createDataset() {
+    final ConsumptionDataset dataset = new ConsumptionDataset(consumptionStats);
 
-        for (final Consumable c : consumptionStats.getConsumablesUsed())
-            if (DataTablesHandler.HANDLER.getFullnessHit(c.getName()) > 0
-                || DataTablesHandler.HANDLER.getDrunkennessHit(c.getName()) > 0
-                || DataTablesHandler.HANDLER.getSpleenHit(c.getName()) > 0)
-                dataset.addConsumable(c);
+    for (final Consumable c : consumptionStats.getConsumablesUsed())
+      if (DataTablesHandler.HANDLER.getFullnessHit(c.getName()) > 0
+          || DataTablesHandler.HANDLER.getDrunkennessHit(c.getName()) > 0
+          || DataTablesHandler.HANDLER.getSpleenHit(c.getName()) > 0)
+        dataset.addConsumable(c);
 
-        dataset.addLeftoverOrganHits(consumptionStats);
+    dataset.addLeftoverOrganHits(consumptionStats);
 
-        return dataset;
-    }
+    return dataset;
+  }
 }

@@ -27,8 +27,8 @@ package com.googlecode.logVisualizer.parser.lineParsers;
 import java.util.regex.Matcher;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
-import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.LogDataHolder.ParsedLogClass;
+import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.turn.SimpleTurnInterval;
 import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
@@ -45,88 +45,88 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code [_startTurn_-_endTurn_] _areaName_ [_mus_,_myst_,_mox_]}
  */
 public final class TurnsSpentLineParser extends AbstractLineParser {
-    private static final String ASCENSION_START_STRING = "Ascension Start";
+  private static final String ASCENSION_START_STRING = "Ascension Start";
 
-    private final Matcher turnsUsedMatcher = UsefulPatterns.TURNS_USED.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher turnsUsedMatcher = UsefulPatterns.TURNS_USED.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private final Matcher areaStatgainMatcher = UsefulPatterns.AREA_STATGAIN.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher areaStatgainMatcher = UsefulPatterns.AREA_STATGAIN.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final boolean isStatgainsPresent = areaStatgainMatcher.reset(line).matches();
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final boolean isStatgainsPresent = areaStatgainMatcher.reset(line).matches();
 
-        // Area name
-        final String areaName;
-        if (isStatgainsPresent)
-            areaName = line.substring(line.indexOf(UsefulPatterns.WHITE_SPACE) + 1,
-                                      line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) - 1);
-        else
-            areaName = line.substring(line.indexOf(UsefulPatterns.WHITE_SPACE) + 1);
+    // Area name
+    final String areaName;
+    if (isStatgainsPresent)
+      areaName = line.substring(line.indexOf(UsefulPatterns.WHITE_SPACE) + 1,
+          line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) - 1);
+    else
+      areaName = line.substring(line.indexOf(UsefulPatterns.WHITE_SPACE) + 1);
 
-        // Parse out the turncount string
-        final String turnCounts = line.substring(line.indexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
-                                                 line.indexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE));
+    // Parse out the turncount string
+    final String turnCounts = line.substring(line.indexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
+        line.indexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE));
 
-        // Depending on the turncount string format do further processing
-        // and create the turn interval.
-        final TurnInterval area;
-        if (!turnCounts.contains(UsefulPatterns.MINUS)) {
-            final int turnCount = Integer.parseInt(turnCounts);
+    // Depending on the turncount string format do further processing
+    // and create the turn interval.
+    final TurnInterval area;
+    if (!turnCounts.contains(UsefulPatterns.MINUS)) {
+      final int turnCount = Integer.parseInt(turnCounts);
 
-            if (turnCount == 0 && areaName.equals(ASCENSION_START_STRING))
-                area = new SimpleTurnInterval(areaName, turnCount, turnCount);
-            else
-                area = new SimpleTurnInterval(areaName, turnCount - 1, turnCount);
-        } else {
-            final int turnCountMin = Integer.parseInt(turnCounts.substring(0,
-                                                                           turnCounts.indexOf(UsefulPatterns.MINUS)));
-            final int turnCountMax = Integer.parseInt(turnCounts.substring(turnCounts.indexOf(UsefulPatterns.MINUS) + 1));
+      if (turnCount == 0 && areaName.equals(ASCENSION_START_STRING))
+        area = new SimpleTurnInterval(areaName, turnCount, turnCount);
+      else
+        area = new SimpleTurnInterval(areaName, turnCount - 1, turnCount);
+    } else {
+      final int turnCountMin = Integer.parseInt(turnCounts.substring(0,
+          turnCounts.indexOf(UsefulPatterns.MINUS)));
+      final int turnCountMax = Integer.parseInt(turnCounts.substring(turnCounts.indexOf(UsefulPatterns.MINUS) + 1));
 
-            area = new SimpleTurnInterval(areaName, turnCountMin - 1, turnCountMax);
-        }
-
-        // Check for area statgain string and add the statgains if it is
-        // present.
-        if (isStatgainsPresent) {
-            final String statGains = line.substring(line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
-                                                    line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE));
-
-            final int muscle = Integer.parseInt(statGains.substring(0,
-                                                                    statGains.indexOf(UsefulPatterns.COMMA)));
-            final int myst = Integer.parseInt(statGains.substring(statGains.indexOf(UsefulPatterns.COMMA) + 1,
-                                                                  statGains.lastIndexOf(UsefulPatterns.COMMA)));
-            final int moxie = Integer.parseInt(statGains.substring(statGains.lastIndexOf(UsefulPatterns.COMMA) + 1));
-
-            area.setStatGain(new Statgain(muscle, myst, moxie));
-        }
-
-        // Add the turn interval to the turn rundown.
-        logData.addTurnIntervalSpent(area);
-
-        // Set the log creator if it isn't set yet.
-        if (logData.getParsedLogCreator() == ParsedLogClass.NOT_DEFINED)
-            // Check for specific lines currently only used by the internal
-            // KolMafia log parser of the Ascension Log Visualizer.
-            // This is not really good design, but it should be the easiest way
-            // to find out the log creator. The header would also give it away,
-            // but it isn't always put into logs posted on forums.
-            if (area.getEndTurn() != 0 && !isStatgainsPresent)
-                logData.setParsedLogCreator(ParsedLogClass.AFH_PARSER);
-            else
-                logData.setParsedLogCreator(ParsedLogClass.LOG_VISUALIZER);
+      area = new SimpleTurnInterval(areaName, turnCountMin - 1, turnCountMax);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return turnsUsedMatcher.reset(line).matches();
+    // Check for area statgain string and add the statgains if it is
+    // present.
+    if (isStatgainsPresent) {
+      final String statGains = line.substring(line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_OPEN) + 1,
+          line.lastIndexOf(UsefulPatterns.SQUARE_BRACKET_CLOSE));
+
+      final int muscle = Integer.parseInt(statGains.substring(0,
+          statGains.indexOf(UsefulPatterns.COMMA)));
+      final int myst = Integer.parseInt(statGains.substring(statGains.indexOf(UsefulPatterns.COMMA) + 1,
+          statGains.lastIndexOf(UsefulPatterns.COMMA)));
+      final int moxie = Integer.parseInt(statGains.substring(statGains.lastIndexOf(UsefulPatterns.COMMA) + 1));
+
+      area.setStatGain(new Statgain(muscle, myst, moxie));
     }
+
+    // Add the turn interval to the turn rundown.
+    logData.addTurnIntervalSpent(area);
+
+    // Set the log creator if it isn't set yet.
+    if (logData.getParsedLogCreator() == ParsedLogClass.NOT_DEFINED)
+      // Check for specific lines currently only used by the internal
+      // KolMafia log parser of the Ascension Log Visualizer.
+      // This is not really good design, but it should be the easiest way
+      // to find out the log creator. The header would also give it away,
+      // but it isn't always put into logs posted on forums.
+      if (area.getEndTurn() != 0 && !isStatgainsPresent)
+        logData.setParsedLogCreator(ParsedLogClass.AFH_PARSER);
+      else
+        logData.setParsedLogCreator(ParsedLogClass.LOG_VISUALIZER);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return turnsUsedMatcher.reset(line).matches();
+  }
 
 }

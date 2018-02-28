@@ -38,109 +38,114 @@ import com.googlecode.logVisualizer.util.Lists;
  * between search modes.
  */
 final class SearchStringMatchers {
-    /**
-     * Matches turns based on their area name.
-     */
-    public static final SearchStringMatcher AREA_NAME_MATCHER = new SearchStringMatcher() {
-        public boolean matches(
-                               final TurnEntity t, final String searchString) {
-            return t.getAreaName().toLowerCase().contains(searchString);
-        }
-
-        @Override
-        public String toString() {
-            return "By Area Name";
-        }
-    };
-
-    /**
-     * Matches turns based on their encounter name. Only works with
-     * {@link Encounter} implementations. Other {@link TurnEntity}
-     * implementations will return {@code false} at all times.
-     */
-    public static final SearchStringMatcher ENCOUNTER_NAME_MATCHER = new SearchStringMatcher() {
-        public boolean matches(
-                               final TurnEntity t, final String searchString) {
-            if (t instanceof Encounter)
-                return ((Encounter) t).getEncounterName().toLowerCase().contains(searchString);
-            else
-                return false;
-        }
-
-        @Override
-        public String toString() {
-            return "By Encounter Name";
-        }
-    };
-
-    /**
-     * Matches turns based on the names of their itemdrops.
-     */
-    public static final SearchStringMatcher ITEMDROP_NAME_MATCHER = new SearchStringMatcher() {
-        public boolean matches(
-                               final TurnEntity t, final String searchString) {
-            for (final Item i : t.getDroppedItems())
-                if (i.getName().toLowerCase().contains(searchString))
-                    return true;
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "By Itemdrops";
-        }
-    };
-
-    /**
-     * Matches turns based on the names of their skill casts.
-     */
-    public static final SearchStringMatcher SKILL_NAME_MATCHER = new SearchStringMatcher() {
-        public boolean matches(
-                               final TurnEntity t, final String searchString) {
-            for (final Skill s : t.getSkillsCast())
-                if (s.getName().toLowerCase().contains(searchString))
-                    return true;
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "By Skills Cast";
-        }
-    };
-
-    /**
-     * Matches turns based on the names of their consumable usages.
-     */
-    public static final SearchStringMatcher CONSUMABLE_NAME_MATCHER = new SearchStringMatcher() {
-        public boolean matches(
-                               final TurnEntity t, final String searchString) {
-            for (final Consumable c : t.getConsumablesUsed())
-                if (c.getName().toLowerCase().contains(searchString))
-                    return true;
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return "By Consumable";
-        }
-    };
-
-    /**
-     * A read-only list of all existing search string matchers.
-     */
-    public static final List<SearchStringMatcher> MATCHERS = Lists.immutableListOf(AREA_NAME_MATCHER,
-                                                                                   ENCOUNTER_NAME_MATCHER,
-                                                                                   ITEMDROP_NAME_MATCHER,
-                                                                                   SKILL_NAME_MATCHER,
-                                                                                   CONSUMABLE_NAME_MATCHER);
-
-    public interface SearchStringMatcher {
-        boolean matches(
-                        final TurnEntity e, final String searchString);
+  /**
+   * Matches turns based on their area name.
+   */
+  public static final SearchStringMatcher AREA_NAME_MATCHER = new SearchStringMatcher() {
+    @Override
+    public boolean matches(
+        final TurnEntity t, final String searchString) {
+      return t.getAreaName().toLowerCase().contains(searchString);
     }
+
+    @Override
+    public String toString() {
+      return "By Area Name";
+    }
+  };
+
+  /**
+   * Matches turns based on their encounter name. Only works with
+   * {@link Encounter} implementations. Other {@link TurnEntity}
+   * implementations will return {@code false} at all times.
+   */
+  public static final SearchStringMatcher ENCOUNTER_NAME_MATCHER = new SearchStringMatcher() {
+    @Override
+    public boolean matches(
+        final TurnEntity t, final String searchString) {
+      if (t instanceof Encounter)
+        return ((Encounter) t).getEncounterName().toLowerCase().contains(searchString);
+      else
+        return false;
+    }
+
+    @Override
+    public String toString() {
+      return "By Encounter Name";
+    }
+  };
+
+  /**
+   * Matches turns based on the names of their itemdrops.
+   */
+  public static final SearchStringMatcher ITEMDROP_NAME_MATCHER = new SearchStringMatcher() {
+    @Override
+    public boolean matches(
+        final TurnEntity t, final String searchString) {
+      for (final Item i : t.getDroppedItems())
+        if (i.getName().toLowerCase().contains(searchString))
+          return true;
+
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return "By Itemdrops";
+    }
+  };
+
+  /**
+   * Matches turns based on the names of their skill casts.
+   */
+  public static final SearchStringMatcher SKILL_NAME_MATCHER = new SearchStringMatcher() {
+    @Override
+    public boolean matches(
+        final TurnEntity t, final String searchString) {
+      for (final Skill s : t.getSkillsCast())
+        if (s.getName().toLowerCase().contains(searchString))
+          return true;
+
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return "By Skills Cast";
+    }
+  };
+
+  /**
+   * Matches turns based on the names of their consumable usages.
+   */
+  public static final SearchStringMatcher CONSUMABLE_NAME_MATCHER = new SearchStringMatcher() {
+    @Override
+    public boolean matches(
+        final TurnEntity t, final String searchString) {
+      for (final Consumable c : t.getConsumablesUsed())
+        if (c.getName().toLowerCase().contains(searchString))
+          return true;
+
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return "By Consumable";
+    }
+  };
+
+  /**
+   * A read-only list of all existing search string matchers.
+   */
+  public static final List<SearchStringMatcher> MATCHERS = Lists.immutableListOf(AREA_NAME_MATCHER,
+      ENCOUNTER_NAME_MATCHER,
+      ITEMDROP_NAME_MATCHER,
+      SKILL_NAME_MATCHER,
+      CONSUMABLE_NAME_MATCHER);
+
+  public interface SearchStringMatcher {
+    boolean matches(
+        final TurnEntity e, final String searchString);
+  }
 }

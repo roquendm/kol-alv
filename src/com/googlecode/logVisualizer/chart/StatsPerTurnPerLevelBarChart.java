@@ -34,30 +34,34 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.logSummary.LevelData;
 
 public final class StatsPerTurnPerLevelBarChart extends HorizontalBarChartBuilder {
-    private static final Pattern LEVEL_EXTRACTOR = Pattern.compile("Level (\\d+)");
+  /**
+   *
+   */
+  private static final long serialVersionUID = 336017194959020895L;
+  private static final Pattern LEVEL_EXTRACTOR = Pattern.compile("Level (\\d+)");
 
-    public StatsPerTurnPerLevelBarChart(
-                                        final LogDataHolder logData) {
-        super(logData, "Stats per turn per level", "Level", "Mainstat substats per turn", true);
-    }
+  public StatsPerTurnPerLevelBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Stats per turn per level", "Level", "Mainstat substats per turn", true);
+  }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (final LevelData ld : getLogData().getLevels())
-            if (ld.getStatGainPerTurn() > 0)
-                dataset.addValue(ld.getStatGainPerTurn(),
-                                 "Mainstat substats per turn",
-                                 "Level " + ld.getLevelNumber());
+    for (final LevelData ld : getLogData().getLevels())
+      if (ld.getStatGainPerTurn() > 0)
+        dataset.addValue(ld.getStatGainPerTurn(),
+            "Mainstat substats per turn",
+            "Level " + ld.getLevelNumber());
 
-        return dataset;
-    }
+    return dataset;
+  }
 
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new TurnsSpentInLevelChartMouseEventListener(getLogData(),
-                                                                              LEVEL_EXTRACTOR));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new TurnsSpentInLevelChartMouseEventListener(getLogData(),
+        LEVEL_EXTRACTOR));
+  }
 }

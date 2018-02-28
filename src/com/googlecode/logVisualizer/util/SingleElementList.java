@@ -24,7 +24,12 @@
 
 package com.googlecode.logVisualizer.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * This is an immutable list implementation that only holds a single element.
@@ -34,310 +39,342 @@ import java.util.*;
  * Note that this list implementation does not allow null values as elements.
  */
 public final class SingleElementList<E> implements List<E> {
+  private final E element;
+
+  /**
+   * Creates the {@link SingleElementList}.
+   *
+   * @param element
+   *            The element making up this {@link SingleElementList}.
+   * @throws NullPointerException
+   *             if the given element is {@code null}
+   */
+  public SingleElementList(
+      final E element) {
+    if (element == null)
+      throw new NullPointerException("SingleElementLists do not support null references.");
+
+    this.element = element;
+  }
+
+  /**
+   * @see List#contains(Object)
+   */
+  @Override
+  public boolean contains(
+      Object o) {
+    return element.equals(o);
+  }
+
+  /**
+   * @see List#containsAll(Collection)
+   */
+  @Override
+  public boolean containsAll(
+      Collection<?> c) {
+    if (c.size() != 1)
+      return false;
+
+    final Object other = c.iterator().next();
+
+    return contains(other);
+  }
+
+  /**
+   * @see List#indexOf(Object)
+   */
+  @Override
+  public int indexOf(
+      Object o) {
+    return contains(o) ? 0 : -1;
+  }
+
+  /**
+   * @see List#lastIndexOf(Object)
+   */
+  @Override
+  public int lastIndexOf(
+      Object o) {
+    return indexOf(o);
+  }
+
+  /**
+   * @see List#get(int)
+   */
+  @Override
+  public E get(
+      int index) {
+    if (index != 0)
+      throw new IndexOutOfBoundsException();
+
+    return element;
+  }
+
+  /**
+   * @see List#isEmpty()
+   */
+  @Override
+  public boolean isEmpty() {
+    return false;
+  }
+
+  /**
+   * @see List#size()
+   */
+  @Override
+  public int size() {
+    return 1;
+  }
+
+  /**
+   * @see List#subList(int, int)
+   */
+  @Override
+  public List<E> subList(
+      int fromIndex, int toIndex) {
+    if (fromIndex == 0 && toIndex == 1)
+      return this;
+
+    if (fromIndex == 0 && toIndex == 0)
+      return Collections.emptyList();
+
+    throw new IndexOutOfBoundsException();
+  }
+
+  /**
+   * @see List#toArray()
+   */
+  @Override
+  public Object[] toArray() {
+    return new Object[] { element };
+  }
+
+  /**
+   * @see List#toArray(T[])
+   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T[] toArray(
+      T[] a) {
+    // If using reflection is good enough for LinkedList in the standard
+    // library, then it is good enough here.
+    if (a.length < 1)
+      a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), 1);
+
+    if (a.length == 1)
+      a[0] = (T) element;
+    else if (a.length > 1) {
+      a[0] = (T) element;
+      a[1] = null;
+    }
+
+    return a;
+  }
+
+  /**
+   * @see List#iterator()
+   */
+  @Override
+  public Iterator<E> iterator() {
+    return new SingleElementIterator<E>(element);
+  }
+
+  /**
+   * @see List#listIterator()
+   */
+  @Override
+  public ListIterator<E> listIterator() {
+    return new SingleElementIterator<E>(element);
+  }
+
+  /**
+   * @see List#listIterator(int)
+   */
+  @Override
+  public ListIterator<E> listIterator(
+      int index) {
+    if (index != 0)
+      throw new IndexOutOfBoundsException();
+
+    return new SingleElementIterator<E>(element);
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean add(
+      E e) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public void add(
+      int index, E element) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean addAll(
+      Collection<? extends E> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean addAll(
+      int index, Collection<? extends E> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public E set(
+      int index, E element) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean remove(
+      Object o) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public E remove(
+      int index) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean removeAll(
+      Collection<?> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public boolean retainAll(
+      Collection<?> c) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException
+   */
+  @Override
+  public void clear() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o == null)
+      return false;
+
+    if (o == this)
+      return true;
+
+    if (o instanceof List<?>) {
+      final List<?> other = (List<?>) o;
+      return other.size() == 1 ? element.equals(other.get(0)) : false;
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return element.hashCode();
+  }
+
+  private static final class SingleElementIterator<E> implements ListIterator<E> {
     private final E element;
 
-    /**
-     * Creates the {@link SingleElementList}.
-     * 
-     * @param element
-     *            The element making up this {@link SingleElementList}.
-     * @throws NullPointerException
-     *             if the given element is {@code null}
-     */
-    public SingleElementList(
-                             final E element) {
-        if (element == null)
-            throw new NullPointerException("SingleElementLists do not support null references.");
+    private boolean hasNext = true;
 
-        this.element = element;
+    SingleElementIterator(
+        final E element) {
+      this.element = element;
     }
 
-    /**
-     * @see List#contains(Object)
-     */
-    public boolean contains(
-                            Object o) {
-        return element.equals(o);
+    @Override
+    public boolean hasNext() {
+      return hasNext;
     }
 
-    /**
-     * @see List#containsAll(Collection)
-     */
-    public boolean containsAll(
-                               Collection<?> c) {
-        if (c.size() != 1)
-            return false;
-
-        final Object other = c.iterator().next();
-
-        return contains(other);
+    @Override
+    public boolean hasPrevious() {
+      return !hasNext;
     }
 
-    /**
-     * @see List#indexOf(Object)
-     */
-    public int indexOf(
-                       Object o) {
-        return contains(o) ? 0 : -1;
+    @Override
+    public E next() {
+      if (!hasNext)
+        throw new NoSuchElementException();
+
+      hasNext = false;
+
+      return element;
     }
 
-    /**
-     * @see List#lastIndexOf(Object)
-     */
-    public int lastIndexOf(
-                           Object o) {
-        return indexOf(o);
+    @Override
+    public E previous() {
+      if (hasNext)
+        throw new NoSuchElementException();
+
+      hasNext = true;
+
+      return element;
     }
 
-    /**
-     * @see List#get(int)
-     */
-    public E get(
-                 int index) {
-        if (index != 0)
-            throw new IndexOutOfBoundsException();
-
-        return element;
+    @Override
+    public int nextIndex() {
+      return hasNext ? 0 : 1;
     }
 
-    /**
-     * @see List#isEmpty()
-     */
-    public boolean isEmpty() {
-        return false;
+    @Override
+    public int previousIndex() {
+      return !hasNext ? 0 : -1;
     }
 
-    /**
-     * @see List#size()
-     */
-    public int size() {
-        return 1;
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
     }
 
-    /**
-     * @see List#subList(int, int)
-     */
-    public List<E> subList(
-                           int fromIndex, int toIndex) {
-        if (fromIndex == 0 && toIndex == 1)
-            return this;
-
-        if (fromIndex == 0 && toIndex == 0)
-            return Collections.emptyList();
-
-        throw new IndexOutOfBoundsException();
-    }
-
-    /**
-     * @see List#toArray()
-     */
-    public Object[] toArray() {
-        return new Object[] { element };
-    }
-
-    /**
-     * @see List#toArray(T[])
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T[] toArray(
-                           T[] a) {
-        // If using reflection is good enough for LinkedList in the standard
-        // library, then it is good enough here.
-        if (a.length < 1)
-            a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), 1);
-
-        if (a.length == 1)
-            a[0] = (T) element;
-        else if (a.length > 1) {
-            a[0] = (T) element;
-            a[1] = null;
-        }
-
-        return a;
-    }
-
-    /**
-     * @see List#iterator()
-     */
-    public Iterator<E> iterator() {
-        return new SingleElementIterator<E>(element);
-    }
-
-    /**
-     * @see List#listIterator()
-     */
-    public ListIterator<E> listIterator() {
-        return new SingleElementIterator<E>(element);
-    }
-
-    /**
-     * @see List#listIterator(int)
-     */
-    public ListIterator<E> listIterator(
-                                        int index) {
-        if (index != 0)
-            throw new IndexOutOfBoundsException();
-
-        return new SingleElementIterator<E>(element);
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean add(
-                       E e) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
+    @Override
     public void add(
-                    int index, E element) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean addAll(
-                          Collection<? extends E> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean addAll(
-                          int index, Collection<? extends E> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public E set(
-                 int index, E element) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean remove(
-                          Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public E remove(
-                    int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean removeAll(
-                             Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public boolean retainAll(
-                             Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     */
-    public void clear() {
-        throw new UnsupportedOperationException();
+        E e) {
+      throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean equals(
-                          final Object o) {
-        if (o == null)
-            return false;
-
-        if (o == this)
-            return true;
-
-        if (o instanceof List<?>) {
-            final List<?> other = (List<?>) o;
-            return other.size() == 1 ? element.equals(other.get(0)) : false;
-        }
-
-        return false;
+    public void set(
+        E e) {
+      throw new UnsupportedOperationException();
     }
-
-    @Override
-    public int hashCode() {
-        return element.hashCode();
-    }
-
-    private static final class SingleElementIterator<E> implements ListIterator<E> {
-        private final E element;
-
-        private boolean hasNext = true;
-
-        SingleElementIterator(
-                              final E element) {
-            this.element = element;
-        }
-
-        public boolean hasNext() {
-            return hasNext;
-        }
-
-        public boolean hasPrevious() {
-            return !hasNext;
-        }
-
-        public E next() {
-            if (!hasNext)
-                throw new NoSuchElementException();
-
-            hasNext = false;
-
-            return element;
-        }
-
-        public E previous() {
-            if (hasNext)
-                throw new NoSuchElementException();
-
-            hasNext = true;
-
-            return element;
-        }
-
-        public int nextIndex() {
-            return hasNext ? 0 : 1;
-        }
-
-        public int previousIndex() {
-            return !hasNext ? 0 : -1;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void add(
-                        E e) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void set(
-                        E e) {
-            throw new UnsupportedOperationException();
-        }
-    }
+  }
 }

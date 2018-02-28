@@ -34,40 +34,40 @@ import com.googlecode.logVisualizer.logData.turn.turnAction.FamiliarChange;
  * {@link SingleTurn} instances when needed.
  */
 public interface Encounter extends TurnEntity {
-    /**
-     * @return The number of the day on which this turn was spent on.
-     */
-    public int getDayNumber();
+  /**
+   * @return The number of the day on which this turn was spent on.
+   */
+  public int getDayNumber();
 
-    /**
-     * @return The name of the encounter found on this turn.
-     */
-    public String getEncounterName();
+  /**
+   * @return The name of the encounter found on this turn.
+   */
+  public String getEncounterName();
 
-    /**
-     * @return The familiar used on this turn.
-     */
-    public FamiliarChange getUsedFamiliar();
+  /**
+   * @return The familiar used on this turn.
+   */
+  public FamiliarChange getUsedFamiliar();
 
-    /**
-     * @return The equipment used on this turn.
-     */
-    public EquipmentChange getUsedEquipment();
+  /**
+   * @return The equipment used on this turn.
+   */
+  public EquipmentChange getUsedEquipment();
 
-    /**
-     * @return {@code true} if this combat was disintegrated. Will always return
-     *         {@code false} if this turn is not a combat.
-     */
-    public boolean isDisintegrated();
-    
-    /**
-     * @return {@code true} if during this combat a banishment occurred. Will always return
-     *         {@code false} if this turn is not a combat.
-     */
-    public boolean isBanished();
-    
-    /**
-     * @return {@code null} if isBanished == false, else returns the banishment string.
-     */
-    public String getBanishedInfo();
+  /**
+   * @return {@code true} if this combat was disintegrated. Will always return
+   *         {@code false} if this turn is not a combat.
+   */
+  public boolean isDisintegrated();
+
+  /**
+   * @return {@code true} if during this combat a banishment occurred. Will always return
+   *         {@code false} if this turn is not a combat.
+   */
+  public boolean isBanished();
+
+  /**
+   * @return {@code null} if isBanished == false, else returns the banishment string.
+   */
+  public String getBanishedInfo();
 }

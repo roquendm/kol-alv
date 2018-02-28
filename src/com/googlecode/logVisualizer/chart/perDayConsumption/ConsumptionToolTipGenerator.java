@@ -31,21 +31,22 @@ import com.googlecode.logVisualizer.logData.consumables.Consumable;
 
 final class ConsumptionToolTipGenerator implements CategoryToolTipGenerator {
 
-    public String generateToolTip(
-                                  final CategoryDataset dataset, final int row, final int column) {
-        final ConsumptionDataset data = (ConsumptionDataset) dataset;
-        final Consumable c = data.getConsumable(data.getRowKey(row).toString());
-        if (c != null) {
-            final StringBuilder str = new StringBuilder(50);
-            str.append("Amount: ");
-            str.append(c.getAmount());
-            str.append("; Fullness used: ");
-            str.append(data.getValue(row, column).intValue());
-            str.append("; Stats: ");
-            str.append(c.getStatGain());
+  @Override
+  public String generateToolTip(
+      final CategoryDataset dataset, final int row, final int column) {
+    final ConsumptionDataset data = (ConsumptionDataset) dataset;
+    final Consumable c = data.getConsumable(data.getRowKey(row).toString());
+    if (c != null) {
+      final StringBuilder str = new StringBuilder(50);
+      str.append("Amount: ");
+      str.append(c.getAmount());
+      str.append("; Fullness used: ");
+      str.append(data.getValue(row, column).intValue());
+      str.append("; Stats: ");
+      str.append(c.getStatGain());
 
-            return str.toString();
-        }
-        return null;
+      return str.toString();
     }
+    return null;
+  }
 }

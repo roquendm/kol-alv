@@ -34,33 +34,37 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.logSummary.LevelData;
 
 public final class TurnsSpentPerLevelBarChart extends HorizontalStackedBarChartBuilder {
-    private static final Pattern LEVEL_EXTRACTOR = Pattern.compile("Level (\\d+) \\(.+\\)");
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1497480021394710513L;
+  private static final Pattern LEVEL_EXTRACTOR = Pattern.compile("Level (\\d+) \\(.+\\)");
 
-    public TurnsSpentPerLevelBarChart(
-                                      final LogDataHolder logData) {
-        super(logData, "Turns spent per level", "Level", "Turns spent", true);
-    }
+  public TurnsSpentPerLevelBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Turns spent per level", "Level", "Turns spent", true);
+  }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (final LevelData ld : getLogData().getLevels())
-            if (ld.getTotalTurns() > 0) {
-                final String levelCatagoryName = "Level " + ld.getLevelNumber() + " ("
-                                                 + ld.getTotalTurns() + ")";
-                dataset.addValue(ld.getCombatTurns(), "Combat", levelCatagoryName);
-                dataset.addValue(ld.getNoncombatTurns(), "Noncombat", levelCatagoryName);
-                dataset.addValue(ld.getOtherTurns(), "Other", levelCatagoryName);
-            }
+    for (final LevelData ld : getLogData().getLevels())
+      if (ld.getTotalTurns() > 0) {
+        final String levelCatagoryName = "Level " + ld.getLevelNumber() + " ("
+            + ld.getTotalTurns() + ")";
+        dataset.addValue(ld.getCombatTurns(), "Combat", levelCatagoryName);
+        dataset.addValue(ld.getNoncombatTurns(), "Noncombat", levelCatagoryName);
+        dataset.addValue(ld.getOtherTurns(), "Other", levelCatagoryName);
+      }
 
-        return dataset;
-    }
+    return dataset;
+  }
 
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new TurnsSpentInLevelChartMouseEventListener(getLogData(),
-                                                                              LEVEL_EXTRACTOR));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new TurnsSpentInLevelChartMouseEventListener(getLogData(),
+        LEVEL_EXTRACTOR));
+  }
 }

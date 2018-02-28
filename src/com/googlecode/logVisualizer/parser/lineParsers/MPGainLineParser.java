@@ -37,88 +37,88 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code You gain _amount_ Mana/Mojo/Muscularity Points}
  */
 public final class MPGainLineParser extends AbstractLineParser {
-    private static final String LOSE_STRING = "You lose";
+  private static final String LOSE_STRING = "You lose";
 
-    private static final int GAIN_START_STRING_LENGTH = 9;
+  private static final int GAIN_START_STRING_LENGTH = 9;
 
-    private final Matcher gainLoseMatcher = UsefulPatterns.GAIN_LOSE.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher gainLoseMatcher = UsefulPatterns.GAIN_LOSE.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private final MPGainType mpGainType;
+  private final MPGainType mpGainType;
 
-    /**
-     * @param type
-     *            The mp gain type which decides to which kind of mp gain all
-     *            parsed mp gains from this line parser will be added to.
-     */
-    public MPGainLineParser(
-                            final MPGainType type) {
-        mpGainType = type;
+  /**
+   * @param type
+   *            The mp gain type which decides to which kind of mp gain all
+   *            parsed mp gains from this line parser will be added to.
+   */
+  public MPGainLineParser(
+      final MPGainType type) {
+    mpGainType = type;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    int substrLength = GAIN_START_STRING_LENGTH;
+
+    if (line.startsWith(UsefulPatterns.AFTER_BATTLE_STRING)) {
+      substrLength += UsefulPatterns.AFTER_BATTLE_STRING.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        int substrLength = GAIN_START_STRING_LENGTH;
+    final String informationPart = line.substring(substrLength);
 
-        if (line.startsWith(UsefulPatterns.AFTER_BATTLE_STRING)) {
-            substrLength += UsefulPatterns.AFTER_BATTLE_STRING.length();
-        }
+    final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
 
-        final String informationPart = line.substring(substrLength);
+    final String amountString = informationPart.substring(0, whiteSpaceIndex);
 
-        final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
-
-        final String amountString = informationPart.substring(0, whiteSpaceIndex);
-
-        // MP gains higher than the integer limit should not happen and will be
-        // ignored.
-        final int amount;
-        try {
-            amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
-                                                           UsefulPatterns.EMPTY_STRING));
-        } catch (final NumberFormatException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        final Turn lastInterval = logData.getLastTurnSpent();
-        switch (mpGainType) {
-            case ENCOUNTER:
-                if (lastInterval.getAreaName().equals("Rest in your dwelling"))
-                    lastInterval.addMPGain(new MPGain(0, 0, amount, 0, 0));
-                else if (lastInterval.getAreaName().equals(
-                        "Rest in your bed in the Chateau"))
-                    lastInterval.addMPGain(new MPGain(0, 0, amount, 0, 0));
-                else
-                    lastInterval.addMPGain(new MPGain(amount, 0, 0, 0, 0));
-                break;
-            case NOT_ENCOUNTER:
-                lastInterval.addMPGain(new MPGain(0, 0, 0, amount, 0));
-                break;
-            case CONSUMABLE:
-                lastInterval.addMPGain(new MPGain(0, 0, 0, 0, amount));
-                break;
-        }
+    // MP gains higher than the integer limit should not happen and will be
+    // ignored.
+    final int amount;
+    try {
+      amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
+          UsefulPatterns.EMPTY_STRING));
+    } catch (final NumberFormatException e) {
+      e.printStackTrace();
+      return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        if (gainLoseMatcher.reset(line).matches() && !line.startsWith(LOSE_STRING))
-            for (final String s : UsefulPatterns.MP_NAMES)
-                if (line.endsWith(s))
-                    return true;
-
-        return false;
+    final Turn lastInterval = logData.getLastTurnSpent();
+    switch (mpGainType) {
+      case ENCOUNTER:
+        if (lastInterval.getAreaName().equals("Rest in your dwelling"))
+          lastInterval.addMPGain(new MPGain(0, 0, amount, 0, 0));
+        else if (lastInterval.getAreaName().equals(
+            "Rest in your bed in the Chateau"))
+          lastInterval.addMPGain(new MPGain(0, 0, amount, 0, 0));
+        else
+          lastInterval.addMPGain(new MPGain(amount, 0, 0, 0, 0));
+        break;
+      case NOT_ENCOUNTER:
+        lastInterval.addMPGain(new MPGain(0, 0, 0, amount, 0));
+        break;
+      case CONSUMABLE:
+        lastInterval.addMPGain(new MPGain(0, 0, 0, 0, amount));
+        break;
     }
+  }
 
-    public static enum MPGainType {
-        ENCOUNTER, NOT_ENCOUNTER, CONSUMABLE;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    if (gainLoseMatcher.reset(line).matches() && !line.startsWith(LOSE_STRING))
+      for (final String s : UsefulPatterns.MP_NAMES)
+        if (line.endsWith(s))
+          return true;
+
+    return false;
+  }
+
+  public static enum MPGainType {
+    ENCOUNTER, NOT_ENCOUNTER, CONSUMABLE;
+  }
 }

@@ -30,7 +30,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 
 import com.googlecode.logVisualizer.gui.MultiLineCellRenderer;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
@@ -43,91 +49,101 @@ import com.googlecode.logVisualizer.util.textualLogs.TextLogCreator;
  * field to search for specific intervals by name.
  */
 final class AreaSearchDialog extends TurnEntitySearchDialog {
-    private JList turnIntervalResultsList;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+  @SuppressWarnings("rawtypes")
+  JList turnIntervalResultsList;
 
-    AreaSearchDialog(
-                     final JFrame owner, final LogDataHolder logData) {
-        super(owner, logData, "Search For Specific Areas");
+  AreaSearchDialog(
+      final JFrame owner, final LogDataHolder logData) {
+    super(owner, logData, "Search For Specific Areas");
 
-        turnIntervalResultsList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(
-                                     final MouseEvent e) {
-                if (e.getClickCount() >= 2 && !turnIntervalResultsList.isSelectionEmpty()) {
-                    final DefaultListModel model = (DefaultListModel) turnIntervalResultsList.getModel();
-                    setSelectedTurn(((TurnContainer) model.getElementAt(turnIntervalResultsList.getSelectedIndex())).getTurn());
-                    dispose();
-                }
-            }
-        });
-
-        setVisible(true);
-    }
-
-    @Override
-    protected JComponent createResultsPane() {
-        turnIntervalResultsList = new JList(new DefaultListModel());
-
-        turnIntervalResultsList.setToolTipText("Double-click area to jump to it in the proper ascension log");
-        turnIntervalResultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        turnIntervalResultsList.setCellRenderer(new MultiLineCellRenderer());
-        for (final TurnContainer tc : getTurnsList())
-            addResult(tc);
-
-        return new JScrollPane(turnIntervalResultsList,
-                               JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                               JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    }
-
-    @Override
-    protected List<TurnContainer> createTurnList(
-                                                 final LogDataHolder logData) {
-        final List<TurnContainer> result = Lists.newArrayList(logData.getTurnIntervalsSpent()
-                                                                     .size());
-
-        final Iterator<String> turnIntervalStrings = TextLogCreator.getTurnRundownList(logData)
-                                                                   .iterator();
-        for (final TurnInterval ti : logData.getTurnIntervalsSpent())
-            result.add(new TurnContainer(ti, turnIntervalStrings.next()));
-
-        return result;
-    }
-
-    @Override
-    protected void clearResults() {
-        ((DefaultListModel) turnIntervalResultsList.getModel()).clear();
-    }
-
-    @Override
-    protected void addResult(
-                             final TurnContainer tc) {
-        ((DefaultListModel) turnIntervalResultsList.getModel()).addElement(tc);
-    }
-
-    @Override
-    protected void addResults(
-                              final Collection<TurnContainer> results) {
-        // Default models already in use fire a lot of events when elements get
-        // added, to the point that there are very noticeable slow-downs.
-        // We can side-step this issue by simply using a new model in case there
-        // are a lot of elements to be added.
-        // A cleaner approach would probably be to implement a ListModel that
-        // doesn't fire events when they are not needed, but this is adequate
-        // enough for now.
-        if (results.size() <= 25)
-            for (final TurnContainer tc : results)
-                addResult(tc);
-        else {
-            final DefaultListModel newModel = new DefaultListModel();
-            final DefaultListModel currentModel = (DefaultListModel) turnIntervalResultsList.getModel();
-            if (!currentModel.isEmpty())
-                for (int i = 0; i < currentModel.size(); i++)
-                    newModel.addElement(currentModel.get(i));
-
-            for (final TurnContainer tc : results)
-                newModel.addElement(tc);
-
-            turnIntervalResultsList.setModel(newModel);
+    turnIntervalResultsList.addMouseListener(new MouseAdapter() {
+      @SuppressWarnings("rawtypes")
+      @Override
+      public void mouseClicked(
+          final MouseEvent e) {
+        if (e.getClickCount() >= 2 && !turnIntervalResultsList.isSelectionEmpty()) {
+          final DefaultListModel model = (DefaultListModel) turnIntervalResultsList.getModel();
+          setSelectedTurn(((TurnContainer) model.getElementAt(turnIntervalResultsList.getSelectedIndex())).getTurn());
+          dispose();
         }
+      }
+    });
+
+    setVisible(true);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  protected JComponent createResultsPane() {
+    turnIntervalResultsList = new JList(new DefaultListModel());
+
+    turnIntervalResultsList.setToolTipText("Double-click area to jump to it in the proper ascension log");
+    turnIntervalResultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    turnIntervalResultsList.setCellRenderer(new MultiLineCellRenderer());
+    for (final TurnContainer tc : getTurnsList())
+      addResult(tc);
+
+    return new JScrollPane(turnIntervalResultsList,
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+  }
+
+  @Override
+  protected List<TurnContainer> createTurnList(
+      final LogDataHolder logData) {
+    final List<TurnContainer> result = Lists.newArrayList(logData.getTurnIntervalsSpent()
+        .size());
+
+    final Iterator<String> turnIntervalStrings = TextLogCreator.getTurnRundownList(logData)
+        .iterator();
+    for (final TurnInterval ti : logData.getTurnIntervalsSpent())
+      result.add(new TurnContainer(ti, turnIntervalStrings.next()));
+
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void clearResults() {
+    ((DefaultListModel<TurnContainer>) turnIntervalResultsList.getModel()).clear();
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  protected void addResult(
+      final TurnContainer tc) {
+    ((DefaultListModel) turnIntervalResultsList.getModel()).addElement(tc);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  protected void addResults(
+      final Collection<TurnContainer> results) {
+    // Default models already in use fire a lot of events when elements get
+    // added, to the point that there are very noticeable slow-downs.
+    // We can side-step this issue by simply using a new model in case there
+    // are a lot of elements to be added.
+    // A cleaner approach would probably be to implement a ListModel that
+    // doesn't fire events when they are not needed, but this is adequate
+    // enough for now.
+    if (results.size() <= 25)
+      for (final TurnContainer tc : results)
+        addResult(tc);
+    else {
+      final DefaultListModel newModel = new DefaultListModel();
+      final DefaultListModel currentModel = (DefaultListModel) turnIntervalResultsList.getModel();
+      if (!currentModel.isEmpty())
+        for (int i = 0; i < currentModel.size(); i++)
+          newModel.addElement(currentModel.get(i));
+
+      for (final TurnContainer tc : results)
+        newModel.addElement(tc);
+
+      turnIntervalResultsList.setModel(newModel);
     }
+  }
 }

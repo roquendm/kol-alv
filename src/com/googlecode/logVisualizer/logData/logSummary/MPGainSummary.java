@@ -30,9 +30,9 @@ import com.googlecode.logVisualizer.logData.MPGain;
  * Data class for mp gains data summaries by level.
  */
 public final class MPGainSummary extends DataPerLevelSummary<MPGain> {
-    @Override
-    MPGain getDataAddition(
-                           final MPGain data1, final MPGain data2) {
-        return data1.addMPGains(data2);
-    }
+  @Override
+  MPGain getDataAddition(
+      final MPGain data1, final MPGain data2) {
+    return data1.addMPGains(data2);
+  }
 }

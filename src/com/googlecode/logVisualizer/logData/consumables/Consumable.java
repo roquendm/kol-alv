@@ -45,426 +45,428 @@ import com.googlecode.logVisualizer.util.Maps;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public abstract class Consumable extends AbstractCountable<Consumable> {
-    static final String ADVENTURES_GAINED_STRING = "adventures gained";
+  static final String ADVENTURES_GAINED_STRING = "adventures gained";
 
-    private int adventureGain;
+  private int adventureGain;
 
-    private int turnNumberOfUsage = -1;
+  private int turnNumberOfUsage = -1;
 
-    private int dayNumberOfUsage = -1;
+  int dayNumberOfUsage = -1;
 
-    private Statgain statGain = Statgain.NO_STATS;
+  private Statgain statGain = Statgain.NO_STATS;
 
-    private final ConsumableComparator comparator = new ConsumableComparator();
+  private final ConsumableComparator comparator = new ConsumableComparator();
 
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set. A value below 0
-     *            isn't a valid parameter.
-     * @param amountUsed
-     *            The amount used of this consumable to set. A value below 1
-     *            isn't a valid parameter.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1
-     */
-    Consumable(
-               final String name, final int adventureGain, final int amountUsed) {
-        super(name, amountUsed);
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set. A value below 0
+   *            isn't a valid parameter.
+   * @param amountUsed
+   *            The amount used of this consumable to set. A value below 1
+   *            isn't a valid parameter.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1
+   */
+  Consumable(
+      final String name, final int adventureGain, final int amountUsed) {
+    super(name, amountUsed);
 
-        if (adventureGain < 0)
-            throw new IllegalArgumentException("Adventure gain below 0.");
-        if (amountUsed < 1)
-            throw new IllegalArgumentException("Amount used below 1.");
+    if (adventureGain < 0)
+      throw new IllegalArgumentException("Adventure gain below 0.");
+    if (amountUsed < 1)
+      throw new IllegalArgumentException("Amount used below 1.");
 
-        this.adventureGain = adventureGain;
+    this.adventureGain = adventureGain;
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set. A value below 0
+   *            isn't a valid parameter.
+   * @param amountUsed
+   *            The amount used of this consumable to set. A value below 1
+   *            isn't a valid parameter.
+   * @param turnNumberOfUsage
+   *            The turn this consumable was used on to set. A value below 0
+   *            isn't a valid parameter.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1; if
+   *             turnNumberOfUsage is below 0
+   */
+  Consumable(
+      final String name, final int adventureGain, final int amountUsed,
+      final int turnNumberOfUsage) {
+    this(name, adventureGain, amountUsed);
+
+    if (turnNumberOfUsage < 0)
+      throw new IllegalArgumentException("Turn number below 0.");
+
+    this.turnNumberOfUsage = turnNumberOfUsage;
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1
+   */
+  public static Consumable newFoodConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed) {
+    return new FoodConsumable(name, adventureGain, amountUsed);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @param turnNumberOfUsage
+   *            The turn this consumable was used on to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1; if
+   *             turnNumberOfUsage is below 0
+   */
+  public static Consumable newFoodConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed, final int turnNumberOfUsage) {
+    return new FoodConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1
+   */
+  public static Consumable newBoozeConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed) {
+    return new BoozeConsumable(name, adventureGain, amountUsed);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @param turnNumberOfUsage
+   *            The turn this consumable was used on to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1; if
+   *             turnNumberOfUsage is below 0
+   */
+  public static Consumable newBoozeConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed, final int turnNumberOfUsage) {
+    return new BoozeConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1
+   */
+  public static Consumable newSpleenConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed) {
+    return new SpleenConsumable(name, adventureGain, amountUsed);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @param turnNumberOfUsage
+   *            The turn this consumable was used on to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1; if
+   *             turnNumberOfUsage is below 0
+   */
+  public static Consumable newSpleenConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed, final int turnNumberOfUsage) {
+    return new SpleenConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1
+   */
+  public static Consumable newOtherConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed) {
+    return new OtherConsumable(name, adventureGain, amountUsed);
+  }
+
+  /**
+   * @param name
+   *            The name of this consumable to set.
+   * @param adventureGain
+   *            The adventure gain of this consumable to set.
+   * @param amountUsed
+   *            The amount used of this consumable to set.
+   * @param turnNumberOfUsage
+   *            The turn this consumable was used on to set.
+   * @return A new Consumable with the specified parameters.
+   * @throws IllegalArgumentException
+   *             if adventureGain is below 0; if amountUsed is below 1; if
+   *             turnNumberOfUsage is below 0
+   */
+  public static Consumable newOtherConsumable(
+      final String name, final int adventureGain,
+      final int amountUsed, final int turnNumberOfUsage) {
+    return new OtherConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
+
+  /**
+   * @return The {@link ConsumableVersion} of this consumable.
+   */
+  public abstract ConsumableVersion getConsumableVersion();
+
+  /**
+   * @return The adventure gain of this consumable.
+   */
+  public int getAdventureGain() {
+    return adventureGain;
+  }
+
+  /**
+   * @param amountUsed
+   *            The amount used of this consumable to set. A value below 1
+   *            isn't a valid parameter.
+   * @see Countable
+   * @throws IllegalArgumentException
+   *             if amountUsed is below 1
+   */
+  @Override
+  public void setAmount(
+      final int amountUsed) {
+    if (amountUsed < 1)
+      throw new IllegalArgumentException("Amount used below 1.");
+
+    super.setAmount(amountUsed);
+  }
+
+  /**
+   * @param turnNumberOfUsage
+   *            The turn number of when this consumable was used to set.
+   * @throws IllegalArgumentException
+   *             if turnNumberOfUsage is below 0
+   */
+  public void setTurnNumberOfUsage(
+      final int turnNumberOfUsage) {
+    if (turnNumberOfUsage < 0)
+      throw new IllegalArgumentException("Turn number must not be below 0.");
+
+    this.turnNumberOfUsage = turnNumberOfUsage;
+  }
+
+  /**
+   * @return The turn number of when this consumable was used. If no value has
+   *         been specified, -1 will be return.
+   */
+  public int getTurnNumberOfUsage() {
+    return turnNumberOfUsage;
+  }
+
+  /**
+   * @param dayNumberOfUsage
+   *            The day number of when this consumable was used to set.
+   * @throws IllegalArgumentException
+   *             if dayNumberOfUsage is below 1
+   */
+  public void setDayNumberOfUsage(
+      final int dayNumberOfUsage) {
+    if (dayNumberOfUsage < 1)
+      throw new IllegalArgumentException("Day number must not be below 1.");
+
+    this.dayNumberOfUsage = dayNumberOfUsage;
+  }
+
+  /**
+   * @return The day number of when this consumable was used. If no value has
+   *         been specified, -1 will be return.
+   */
+  public int getDayNumberOfUsage() {
+    return dayNumberOfUsage;
+  }
+
+  /**
+   * @param statGain
+   *            The stat gain of this consumable to set.
+   */
+  public void setStatGain(
+      final Statgain statGain) {
+    this.statGain = statGain;
+  }
+
+  /**
+   * @return The stat gain of this consumable.
+   */
+  public Statgain getStatGain() {
+    return statGain;
+  }
+
+  /**
+   * @return The name of this consumable and the day it was used on.
+   * @see Countable
+   */
+  @Override
+  public ConsumableComparator getComparator() {
+    return comparator;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void merge(
+      final Consumable c) {
+    super.merge(c);
+    adventureGain += c.getAdventureGain();
+    statGain = statGain.addStats(c.getStatGain());
+  }
+
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (super.equals(o) && o instanceof Consumable) {
+      final Consumable c = (Consumable) o;
+
+      return c.getAdventureGain() == adventureGain
+          && c.getTurnNumberOfUsage() == turnNumberOfUsage
+          && c.getDayNumberOfUsage() == dayNumberOfUsage
+          && c.getConsumableVersion() == getConsumableVersion()
+          && statGain.equals(c.getStatGain());
     }
 
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set. A value below 0
-     *            isn't a valid parameter.
-     * @param amountUsed
-     *            The amount used of this consumable to set. A value below 1
-     *            isn't a valid parameter.
-     * @param turnNumberOfUsage
-     *            The turn this consumable was used on to set. A value below 0
-     *            isn't a valid parameter.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1; if
-     *             turnNumberOfUsage is below 0
-     */
-    Consumable(
-               final String name, final int adventureGain, final int amountUsed,
-               final int turnNumberOfUsage) {
-        this(name, adventureGain, amountUsed);
+    return false;
+  }
 
-        if (turnNumberOfUsage < 0)
-            throw new IllegalArgumentException("Turn number below 0.");
+  @Override
+  public int hashCode() {
+    int result = 1701;
+    result = 31 * result + adventureGain;
+    result = 31 * result + turnNumberOfUsage;
+    result = 31 * result + dayNumberOfUsage;
+    result = 31 * result + getConsumableVersion().hashCode();
+    result = 31 * result + statGain.hashCode();
 
-        this.turnNumberOfUsage = turnNumberOfUsage;
+    return result;
+  }
+
+  /**
+   * Helper class to handle comparator implementation of the {@link Countable}
+   * interface.
+   */
+  class ConsumableComparator implements Comparable<ConsumableComparator> {
+    private String getName() {
+      return Consumable.this.getName();
     }
 
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1
-     */
-    public static Consumable newFoodConsumable(
-                                               final String name, final int adventureGain,
-                                               final int amountUsed) {
-        return new FoodConsumable(name, adventureGain, amountUsed);
+    private int getDayNumber() {
+      return dayNumberOfUsage;
     }
 
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @param turnNumberOfUsage
-     *            The turn this consumable was used on to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1; if
-     *             turnNumberOfUsage is below 0
-     */
-    public static Consumable newFoodConsumable(
-                                               final String name, final int adventureGain,
-                                               final int amountUsed, final int turnNumberOfUsage) {
-        return new FoodConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1
-     */
-    public static Consumable newBoozeConsumable(
-                                                final String name, final int adventureGain,
-                                                final int amountUsed) {
-        return new BoozeConsumable(name, adventureGain, amountUsed);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @param turnNumberOfUsage
-     *            The turn this consumable was used on to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1; if
-     *             turnNumberOfUsage is below 0
-     */
-    public static Consumable newBoozeConsumable(
-                                                final String name, final int adventureGain,
-                                                final int amountUsed, final int turnNumberOfUsage) {
-        return new BoozeConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1
-     */
-    public static Consumable newSpleenConsumable(
-                                                 final String name, final int adventureGain,
-                                                 final int amountUsed) {
-        return new SpleenConsumable(name, adventureGain, amountUsed);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @param turnNumberOfUsage
-     *            The turn this consumable was used on to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1; if
-     *             turnNumberOfUsage is below 0
-     */
-    public static Consumable newSpleenConsumable(
-                                                 final String name, final int adventureGain,
-                                                 final int amountUsed, final int turnNumberOfUsage) {
-        return new SpleenConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1
-     */
-    public static Consumable newOtherConsumable(
-                                                final String name, final int adventureGain,
-                                                final int amountUsed) {
-        return new OtherConsumable(name, adventureGain, amountUsed);
-    }
-
-    /**
-     * @param name
-     *            The name of this consumable to set.
-     * @param adventureGain
-     *            The adventure gain of this consumable to set.
-     * @param amountUsed
-     *            The amount used of this consumable to set.
-     * @param turnNumberOfUsage
-     *            The turn this consumable was used on to set.
-     * @return A new Consumable with the specified parameters.
-     * @throws IllegalArgumentException
-     *             if adventureGain is below 0; if amountUsed is below 1; if
-     *             turnNumberOfUsage is below 0
-     */
-    public static Consumable newOtherConsumable(
-                                                final String name, final int adventureGain,
-                                                final int amountUsed, final int turnNumberOfUsage) {
-        return new OtherConsumable(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
-
-    /**
-     * @return The {@link ConsumableVersion} of this consumable.
-     */
-    public abstract ConsumableVersion getConsumableVersion();
-
-    /**
-     * @return The adventure gain of this consumable.
-     */
-    public int getAdventureGain() {
-        return adventureGain;
-    }
-
-    /**
-     * @param amountUsed
-     *            The amount used of this consumable to set. A value below 1
-     *            isn't a valid parameter.
-     * @see Countable
-     * @throws IllegalArgumentException
-     *             if amountUsed is below 1
-     */
     @Override
-    public void setAmount(
-                          final int amountUsed) {
-        if (amountUsed < 1)
-            throw new IllegalArgumentException("Amount used below 1.");
+    public int compareTo(
+        final ConsumableComparator o) {
+      final int tmp = Consumable.this.getName().compareTo(o.getName());
 
-        super.setAmount(amountUsed);
-    }
-
-    /**
-     * @param turnNumberOfUsage
-     *            The turn number of when this consumable was used to set.
-     * @throws IllegalArgumentException
-     *             if turnNumberOfUsage is below 0
-     */
-    public void setTurnNumberOfUsage(
-                                     final int turnNumberOfUsage) {
-        if (turnNumberOfUsage < 0)
-            throw new IllegalArgumentException("Turn number must not be below 0.");
-
-        this.turnNumberOfUsage = turnNumberOfUsage;
-    }
-
-    /**
-     * @return The turn number of when this consumable was used. If no value has
-     *         been specified, -1 will be return.
-     */
-    public int getTurnNumberOfUsage() {
-        return turnNumberOfUsage;
-    }
-
-    /**
-     * @param dayNumberOfUsage
-     *            The day number of when this consumable was used to set.
-     * @throws IllegalArgumentException
-     *             if dayNumberOfUsage is below 1
-     */
-    public void setDayNumberOfUsage(
-                                    final int dayNumberOfUsage) {
-        if (dayNumberOfUsage < 1)
-            throw new IllegalArgumentException("Day number must not be below 1.");
-
-        this.dayNumberOfUsage = dayNumberOfUsage;
-    }
-
-    /**
-     * @return The day number of when this consumable was used. If no value has
-     *         been specified, -1 will be return.
-     */
-    public int getDayNumberOfUsage() {
-        return dayNumberOfUsage;
-    }
-
-    /**
-     * @param statGain
-     *            The stat gain of this consumable to set.
-     */
-    public void setStatGain(
-                            final Statgain statGain) {
-        this.statGain = statGain;
-    }
-
-    /**
-     * @return The stat gain of this consumable.
-     */
-    public Statgain getStatGain() {
-        return statGain;
-    }
-
-    /**
-     * @return The name of this consumable and the day it was used on.
-     * @see Countable
-     */
-    public ConsumableComparator getComparator() {
-        return comparator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void merge(
-                      final Consumable c) {
-        super.merge(c);
-        adventureGain += c.getAdventureGain();
-        statGain = statGain.addStats(c.getStatGain());
+      return tmp != 0 ? tmp : dayNumberOfUsage - o.getDayNumber();
     }
 
     @Override
     public boolean equals(
-                          final Object o) {
-        if (super.equals(o) && o instanceof Consumable) {
-            final Consumable c = (Consumable) o;
-
-            return c.getAdventureGain() == adventureGain
-                   && c.getTurnNumberOfUsage() == turnNumberOfUsage
-                   && c.getDayNumberOfUsage() == dayNumberOfUsage
-                   && c.getConsumableVersion() == getConsumableVersion()
-                   && statGain.equals(c.getStatGain());
-        }
-
+        final Object obj) {
+      if (obj == null)
         return false;
+
+      if (this == obj)
+        return true;
+
+      if (obj instanceof ConsumableComparator) {
+        final ConsumableComparator that = (ConsumableComparator) obj;
+        return getDayNumber() == that.getDayNumber() && getName().equals(that.getName());
+      }
+
+      return false;
     }
 
     @Override
     public int hashCode() {
-        int result = 1701;
-        result = 31 * result + adventureGain;
-        result = 31 * result + turnNumberOfUsage;
-        result = 31 * result + dayNumberOfUsage;
-        result = 31 * result + getConsumableVersion().hashCode();
-        result = 31 * result + statGain.hashCode();
+      int result = 579;
+      result = 31 * result + getDayNumber();
+      result = 31 * result + getName().hashCode();
 
-        return result;
+      return result;
+    }
+  }
+
+  /**
+   * A simple enumeration for various consumable types.
+   */
+  public static enum ConsumableVersion {
+    FOOD, BOOZE, SPLEEN, OTHER;
+
+    private static final Map<String, ConsumableVersion> stringToEnum = Maps.newHashMap();
+
+    static {
+      for (final ConsumableVersion op : values())
+        stringToEnum.put(op.toString(), op);
     }
 
     /**
-     * Helper class to handle comparator implementation of the {@link Countable}
-     * interface.
+     * @return The enum whose toString method returns a string which is
+     *         equal to the given string. If no match is found this method
+     *         will return {@code OTHER}.
      */
-    private class ConsumableComparator implements Comparable<ConsumableComparator> {
-        private String getName() {
-            return Consumable.this.getName();
-        }
+    public static ConsumableVersion fromString(
+        final String consumableVersionName) {
+      if (consumableVersionName == null)
+        throw new NullPointerException("The turn version name must not be null.");
 
-        private int getDayNumber() {
-            return dayNumberOfUsage;
-        }
+      final ConsumableVersion turnVersion = stringToEnum.get(consumableVersionName);
 
-        public int compareTo(
-                             final ConsumableComparator o) {
-            final int tmp = Consumable.this.getName().compareTo(o.getName());
-
-            return tmp != 0 ? tmp : dayNumberOfUsage - o.getDayNumber();
-        }
-
-        @Override
-        public boolean equals(
-                              final Object obj) {
-            if (obj == null)
-                return false;
-
-            if (this == obj)
-                return true;
-
-            if (obj instanceof ConsumableComparator) {
-                final ConsumableComparator that = (ConsumableComparator) obj;
-                return getDayNumber() == that.getDayNumber() && getName().equals(that.getName());
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = 579;
-            result = 31 * result + getDayNumber();
-            result = 31 * result + getName().hashCode();
-
-            return result;
-        }
+      return turnVersion != null ? turnVersion : OTHER;
     }
-
-    /**
-     * A simple enumeration for various consumable types.
-     */
-    public static enum ConsumableVersion {
-        FOOD, BOOZE, SPLEEN, OTHER;
-
-        private static final Map<String, ConsumableVersion> stringToEnum = Maps.newHashMap();
-
-        static {
-            for (final ConsumableVersion op : values())
-                stringToEnum.put(op.toString(), op);
-        }
-
-        /**
-         * @return The enum whose toString method returns a string which is
-         *         equal to the given string. If no match is found this method
-         *         will return {@code OTHER}.
-         */
-        public static ConsumableVersion fromString(
-                                                   final String consumableVersionName) {
-            if (consumableVersionName == null)
-                throw new NullPointerException("The turn version name must not be null.");
-
-            final ConsumableVersion turnVersion = stringToEnum.get(consumableVersionName);
-
-            return turnVersion != null ? turnVersion : OTHER;
-        }
-    }
+  }
 }

@@ -41,62 +41,67 @@ import org.jfree.ui.RectangleInsets;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public abstract class LineChartBuilder extends AbstractChart {
-    private final String xLable;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6141827860676503578L;
 
-    private final String yLable;
+  private final String xLable;
 
-    protected LineChartBuilder(
-                               final LogDataHolder logData, final String title,
-                               final String xLable, final String yLable,
-                               final boolean isIncludeLegend) {
-        super(title, logData, isIncludeLegend);
-        this.xLable = xLable;
-        this.yLable = yLable;
-        addChart();
+  private final String yLable;
+
+  protected LineChartBuilder(
+      final LogDataHolder logData, final String title,
+      final String xLable, final String yLable,
+      final boolean isIncludeLegend) {
+    super(title, logData, isIncludeLegend);
+    this.xLable = xLable;
+    this.yLable = yLable;
+    addChart();
+  }
+
+  protected abstract XYDataset createDataset();
+
+  private JFreeChart createChart(
+      final XYDataset dataset) {
+    final JFreeChart chart = ChartFactory.createXYLineChart(getTitle(),
+        xLable,
+        yLable,
+        dataset,
+        PlotOrientation.VERTICAL,
+        isIncludeLegend(),
+        true,
+        false);
+    final XYPlot plot = (XYPlot) chart.getPlot();
+
+    double lastXValue = 0;
+    if (dataset.getSeriesCount() > 0)
+      lastXValue = dataset.getXValue(0, dataset.getItemCount(0) - 1);
+
+    plot.setDomainAxis(new FixedZoomNumberAxis(lastXValue));
+    plot.getDomainAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
+    plot.setBackgroundPaint(Color.white);
+    plot.setDomainGridlinePaint(Color.black);
+    plot.setRangeGridlinePaint(Color.black);
+    plot.setNoDataMessage("No data available");
+    if (dataset.getSeriesCount() > 0)
+      ((NumberAxis) plot.getDomainAxis()).setUpperBound(lastXValue);
+    ((NumberAxis) plot.getRangeAxis()).setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+    final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+    for (int i = 0; i < dataset.getSeriesCount(); i++) {
+      renderer.setSeriesShapesVisible(i, false);
+      renderer.setSeriesStroke(i, new BasicStroke(2));
     }
+    renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
+    plot.setRenderer(renderer);
 
-    protected abstract XYDataset createDataset();
+    return chart;
+  }
 
-    private JFreeChart createChart(
-                                   final XYDataset dataset) {
-        final JFreeChart chart = ChartFactory.createXYLineChart(getTitle(),
-                                                                xLable,
-                                                                yLable,
-                                                                dataset,
-                                                                PlotOrientation.VERTICAL,
-                                                                isIncludeLegend(),
-                                                                true,
-                                                                false);
-        final XYPlot plot = (XYPlot) chart.getPlot();
-
-        double lastXValue = 0;
-        if (dataset.getSeriesCount() > 0)
-            lastXValue = dataset.getXValue(0, dataset.getItemCount(0) - 1);
-
-        plot.setDomainAxis(new FixedZoomNumberAxis(lastXValue));
-        plot.getDomainAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-        plot.setBackgroundPaint(Color.white);
-        plot.setDomainGridlinePaint(Color.black);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setNoDataMessage("No data available");
-        if (dataset.getSeriesCount() > 0)
-            ((NumberAxis) plot.getDomainAxis()).setUpperBound(lastXValue);
-        ((NumberAxis) plot.getRangeAxis()).setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-
-        final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        for (int i = 0; i < dataset.getSeriesCount(); i++) {
-            renderer.setSeriesShapesVisible(i, false);
-            renderer.setSeriesStroke(i, new BasicStroke(2));
-        }
-        renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
-        plot.setRenderer(renderer);
-
-        return chart;
-    }
-
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

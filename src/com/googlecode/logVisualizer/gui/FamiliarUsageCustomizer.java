@@ -27,58 +27,69 @@ package com.googlecode.logVisualizer.gui;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
-import javax.swing.*;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.jfree.ui.RefineryUtilities;
 
-import com.googlecode.logVisualizer.chart.turnrundownGantt.TurnrundownGantt;
 import com.googlecode.logVisualizer.chart.turnrundownGantt.FamiliarColor.Colors;
+import com.googlecode.logVisualizer.chart.turnrundownGantt.TurnrundownGantt;
 
 public final class FamiliarUsageCustomizer extends JDialog {
-    private final TurnrundownGantt turnrundownChart;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1630895036085140160L;
+  private final TurnrundownGantt turnrundownChart;
 
-    /**
-     * @param owner
-     *            The JFrame which owns this dialog.
-     * @param turnrundownChart
-     *            The turnrundown gantt chart on which certain actions can be
-     *            performed.
-     */
-    public FamiliarUsageCustomizer(
-                                   final JFrame owner, final TurnrundownGantt turnrundownChart) {
-        super(owner, true);
-        this.turnrundownChart = turnrundownChart;
-        final FamiliarCustomizationTableModel familiarTableData = new FamiliarCustomizationTableModel(turnrundownChart.getFamiliarColors());
-        final JTable familiarTable = new JTable(familiarTableData);
-        final JComboBox box = new JComboBox();
-        final DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+  /**
+   * @param owner
+   *            The JFrame which owns this dialog.
+   * @param turnrundownChart
+   *            The turnrundown gantt chart on which certain actions can be
+   *            performed.
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public FamiliarUsageCustomizer(
+      final JFrame owner, final TurnrundownGantt turnrundownChart) {
+    super(owner, true);
+    this.turnrundownChart = turnrundownChart;
+    final FamiliarCustomizationTableModel familiarTableData = new FamiliarCustomizationTableModel(turnrundownChart.getFamiliarColors());
+    final JTable familiarTable = new JTable(familiarTableData);
+    final JComboBox box = new JComboBox();
+    final DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 
-        // Special combobox renderer to be able to choose a familiar colour.
-        for (final Colors c : Colors.values())
-            box.addItem(c);
+    // Special combobox renderer to be able to choose a familiar colour.
+    for (final Colors c : Colors.values())
+      box.addItem(c);
 
-        familiarTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(box));
-        familiarTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-        renderer.setToolTipText("Click to choose a color");
+    familiarTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(box));
+    familiarTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+    renderer.setToolTipText("Click to choose a color");
 
-        // Size set so when the dialog is opened, the table will always have at
-        // least this size.
-        familiarTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
+    // Size set so when the dialog is opened, the table will always have at
+    // least this size.
+    familiarTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
 
-        setLayout(new GridLayout());
-        add(new JScrollPane(familiarTable));
-        pack();
+    setLayout(new GridLayout());
+    add(new JScrollPane(familiarTable));
+    pack();
 
-        setTitle("Familiar usage customization");
-        RefineryUtilities.centerFrameOnScreen(this);
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setVisible(true);
-    }
+    setTitle("Familiar usage customization");
+    RefineryUtilities.centerFrameOnScreen(this);
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    setVisible(true);
+  }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        turnrundownChart.updateChart();
-    }
+  @Override
+  public void dispose() {
+    super.dispose();
+    turnrundownChart.updateChart();
+  }
 }

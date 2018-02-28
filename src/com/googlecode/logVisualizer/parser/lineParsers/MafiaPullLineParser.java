@@ -40,46 +40,46 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * be appended as long as needed->, _amount_ _itemName_)}
  */
 public final class MafiaPullLineParser extends AbstractLineParser {
-    private static final Pattern PULL_PATTERN = Pattern.compile("pull: \\d+ .+");
+  private static final Pattern PULL_PATTERN = Pattern.compile("pull: \\d+ .+");
 
-    private static final Pattern COMMA_WHITESPACE_PATTERN = Pattern.compile(", ");
+  //private static final Pattern COMMA_WHITESPACE_PATTERN = Pattern.compile(", ");
 
-    private final Matcher pullMatcher = PULL_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher pullMatcher = PULL_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private static final Pattern PULLED_ITEM_PATTERN = Pattern.compile("([0-9]+ ((?:[^,]+)|(?:, [^0-9]))*)(?:, )?");
+  private static final Pattern PULLED_ITEM_PATTERN = Pattern.compile("([0-9]+ ((?:[^,]+)|(?:, [^0-9]))*)(?:, )?");
 
-    private final Matcher itemMatcher = PULLED_ITEM_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher itemMatcher = PULLED_ITEM_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
 
-        itemMatcher.reset(line);
-        while (itemMatcher.find()) {
-            String s = itemMatcher.group(1);
+    itemMatcher.reset(line);
+    while (itemMatcher.find()) {
+      String s = itemMatcher.group(1);
 
-            final int firstWhiteSpacePosition = s.indexOf(UsefulPatterns.WHITE_SPACE);
-            final int amount = Math.max(1,
-                                        Integer.parseInt(s.substring(0, firstWhiteSpacePosition)));
-            final String itemName = s.substring(firstWhiteSpacePosition + 1);
+      final int firstWhiteSpacePosition = s.indexOf(UsefulPatterns.WHITE_SPACE);
+      final int amount = Math.max(1,
+          Integer.parseInt(s.substring(0, firstWhiteSpacePosition)));
+      final String itemName = s.substring(firstWhiteSpacePosition + 1);
 
-            logData.addPull(new Pull(itemName,
-                                     amount,
-                                     logData.getLastTurnSpent().getTurnNumber(),
-                                     logData.getLastDayChange().getDayNumber()));
-        }
+      logData.addPull(new Pull(itemName,
+          amount,
+          logData.getLastTurnSpent().getTurnNumber(),
+          logData.getLastDayChange().getDayNumber()));
     }
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return pullMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return pullMatcher.reset(line).matches();
+  }
 }

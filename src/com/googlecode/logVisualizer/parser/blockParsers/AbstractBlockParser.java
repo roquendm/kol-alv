@@ -37,72 +37,73 @@ import com.googlecode.logVisualizer.parser.BlockParser;
  * actual parsers.
  */
 public abstract class AbstractBlockParser implements BlockParser {
-    /**
-     * Parses a certain amount of lines (= a block). How many lines exactly
-     * depends on the actual implementation.
-     * <p>
-     * Note that parsing will only happen if the current line matches the
-     * specified start of the block. If it doesn't match, the reader will stay
-     * at it's current position.
-     * <p>
-     * The {@link BufferedReader} is not closed by this method. Also, this
-     * method will only read as many lines as necessary to parse out the
-     * information it needs (and recognise that the block is finished). However,
-     * it will not reset the reader to the position it started in.
-     * <p>
-     * This implementation reads the current line of the given BufferedReader
-     * and then checks whether it is equal to the start of a parsable block by
-     * calling the method {@link #isCompatibleBlock(String)}. If that method
-     * returns true, the method
-     * {@link #doParsing(BufferedReader, LogDataHolder)} is called to do the
-     * actual parsing.
-     * 
-     * @param nextLine
-     *            The next line that the reader will produce.
-     * @param reader
-     *            The reader of the log of which a block should be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     * @throws IOException
-     *             If there was a problem with reading data from the
-     *             BufferedReader.
-     */
-    public void parseBlock(
-                           final String nextLine, final BufferedReader reader,
-                           final LogDataHolder logData)
-                                                       throws IOException {
-        if (nextLine != null && isCompatibleBlock(nextLine))
-            doParsing(reader, logData);
-    }
+  /**
+   * Parses a certain amount of lines (= a block). How many lines exactly
+   * depends on the actual implementation.
+   * <p>
+   * Note that parsing will only happen if the current line matches the
+   * specified start of the block. If it doesn't match, the reader will stay
+   * at it's current position.
+   * <p>
+   * The {@link BufferedReader} is not closed by this method. Also, this
+   * method will only read as many lines as necessary to parse out the
+   * information it needs (and recognise that the block is finished). However,
+   * it will not reset the reader to the position it started in.
+   * <p>
+   * This implementation reads the current line of the given BufferedReader
+   * and then checks whether it is equal to the start of a parsable block by
+   * calling the method {@link #isCompatibleBlock(String)}. If that method
+   * returns true, the method
+   * {@link #doParsing(BufferedReader, LogDataHolder)} is called to do the
+   * actual parsing.
+   *
+   * @param nextLine
+   *            The next line that the reader will produce.
+   * @param reader
+   *            The reader of the log of which a block should be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   * @throws IOException
+   *             If there was a problem with reading data from the
+   *             BufferedReader.
+   */
+  @Override
+  public void parseBlock(
+      final String nextLine, final BufferedReader reader,
+      final LogDataHolder logData)
+          throws IOException {
+    if (nextLine != null && isCompatibleBlock(nextLine))
+      doParsing(reader, logData);
+  }
 
-    /**
-     * A check to see whether this is the first line of the parsable block.
-     * 
-     * @param line
-     *            The first line of the block to be parsed.
-     * @return True if the line indeed marks the start of a parsable block by
-     *         this class.
-     */
-    protected abstract boolean isCompatibleBlock(
-                                                 String line);
+  /**
+   * A check to see whether this is the first line of the parsable block.
+   *
+   * @param line
+   *            The first line of the block to be parsed.
+   * @return True if the line indeed marks the start of a parsable block by
+   *         this class.
+   */
+  protected abstract boolean isCompatibleBlock(
+      String line);
 
-    /**
-     * Parses the wanted information out of the given log reader and saves it in
-     * the given {@link LogDataHolder} instance.
-     * <p>
-     * The {@link BufferedReader} is not closed by this method. Also, this
-     * method will only read as many lines as necessary to parse out the
-     * information it needs (and recognise that the block is finished). However,
-     * it will not reset the reader to the position it started in.
-     * 
-     * @param reader
-     *            The reader of the log of which a block should be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     */
-    protected abstract void doParsing(
-                                      BufferedReader reader, LogDataHolder logData)
-                                                                                   throws IOException;
+  /**
+   * Parses the wanted information out of the given log reader and saves it in
+   * the given {@link LogDataHolder} instance.
+   * <p>
+   * The {@link BufferedReader} is not closed by this method. Also, this
+   * method will only read as many lines as necessary to parse out the
+   * information it needs (and recognise that the block is finished). However,
+   * it will not reset the reader to the position it started in.
+   *
+   * @param reader
+   *            The reader of the log of which a block should be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   */
+  protected abstract void doParsing(
+      BufferedReader reader, LogDataHolder logData)
+          throws IOException;
 }

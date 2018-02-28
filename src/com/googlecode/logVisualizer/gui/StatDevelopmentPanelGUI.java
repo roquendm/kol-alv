@@ -39,51 +39,58 @@ import com.googlecode.logVisualizer.chart.SubstatDevelopmentLineChart;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 final class StatDevelopmentPanelGUI extends JSplitPane {
-    private static final String EFFECTIVE_STATS = "effective stats";
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6464692478631464388L;
 
-    private static final String SUBSTATS = "substats";
+  private static final String EFFECTIVE_STATS = "effective stats";
 
-    /**
-     * @param logData
-     *            The {@link LogDataHolder} with all the data of the ascension
-     *            log.
-     */
-    StatDevelopmentPanelGUI(
-                            final LogDataHolder logData) {
-        super(VERTICAL_SPLIT);
-        final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 5));
-        final JPanel chartPanel = new JPanel(new CardLayout());
+  private static final String SUBSTATS = "substats";
 
-        final JRadioButton substatSelector = new JRadioButton("Total Substats", true);
-        final JRadioButton effectiveStatSelector = new JRadioButton("Effective Stats", false);
-        final ButtonGroup statSelectors = new ButtonGroup();
-        statSelectors.add(substatSelector);
-        statSelectors.add(effectiveStatSelector);
-        substatSelector.setToolTipText("Show total substats chart");
-        substatSelector.setToolTipText("Show effective stats chart");
-        optionsPanel.add(substatSelector);
-        optionsPanel.add(effectiveStatSelector);
+  /**
+   * @param logData
+   *            The {@link LogDataHolder} with all the data of the ascension
+   *            log.
+   */
+  StatDevelopmentPanelGUI(
+      final LogDataHolder logData) {
+    super(VERTICAL_SPLIT);
+    final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 5));
+    final JPanel chartPanel = new JPanel(new CardLayout());
 
-        chartPanel.add(new SubstatDevelopmentLineChart(logData), SUBSTATS);
-        chartPanel.add(new StatDevelopmentLineChart(logData), EFFECTIVE_STATS);
+    final JRadioButton substatSelector = new JRadioButton("Total Substats", true);
+    final JRadioButton effectiveStatSelector = new JRadioButton("Effective Stats", false);
+    final ButtonGroup statSelectors = new ButtonGroup();
+    statSelectors.add(substatSelector);
+    statSelectors.add(effectiveStatSelector);
+    substatSelector.setToolTipText("Show total substats chart");
+    substatSelector.setToolTipText("Show effective stats chart");
+    optionsPanel.add(substatSelector);
+    optionsPanel.add(effectiveStatSelector);
 
-        substatSelector.addChangeListener(new ChangeListener() {
-            public void stateChanged(
-                                     final ChangeEvent e) {
-                if (substatSelector.isFocusOwner())
-                    ((CardLayout) chartPanel.getLayout()).show(chartPanel, SUBSTATS);
-            }
-        });
-        effectiveStatSelector.addChangeListener(new ChangeListener() {
-            public void stateChanged(
-                                     final ChangeEvent e) {
-                if (effectiveStatSelector.isFocusOwner())
-                    ((CardLayout) chartPanel.getLayout()).show(chartPanel, EFFECTIVE_STATS);
-            }
-        });
+    chartPanel.add(new SubstatDevelopmentLineChart(logData), SUBSTATS);
+    chartPanel.add(new StatDevelopmentLineChart(logData), EFFECTIVE_STATS);
 
-        setDividerLocation(35);
-        setTopComponent(optionsPanel);
-        setBottomComponent(chartPanel);
-    }
+    substatSelector.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(
+          final ChangeEvent e) {
+        if (substatSelector.isFocusOwner())
+          ((CardLayout) chartPanel.getLayout()).show(chartPanel, SUBSTATS);
+      }
+    });
+    effectiveStatSelector.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(
+          final ChangeEvent e) {
+        if (effectiveStatSelector.isFocusOwner())
+          ((CardLayout) chartPanel.getLayout()).show(chartPanel, EFFECTIVE_STATS);
+      }
+    });
+
+    setDividerLocation(35);
+    setTopComponent(optionsPanel);
+    setBottomComponent(chartPanel);
+  }
 }

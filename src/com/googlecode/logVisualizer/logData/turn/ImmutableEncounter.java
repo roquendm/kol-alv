@@ -28,7 +28,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.googlecode.logVisualizer.logData.*;
+import com.googlecode.logVisualizer.logData.CombatItem;
+import com.googlecode.logVisualizer.logData.Item;
+import com.googlecode.logVisualizer.logData.MPGain;
+import com.googlecode.logVisualizer.logData.MeatGain;
+import com.googlecode.logVisualizer.logData.Skill;
+import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
 import com.googlecode.logVisualizer.logData.turn.turnAction.EquipmentChange;
 import com.googlecode.logVisualizer.logData.turn.turnAction.FamiliarChange;
@@ -51,417 +56,446 @@ import com.googlecode.logVisualizer.util.Maps;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class ImmutableEncounter implements Encounter, Comparable<TurnEntity> {
-    private final String areaName;
+  private final String areaName;
 
-    private final String encounterName;
+  private final String encounterName;
 
-    private final String notes;
+  private final String notes;
 
-    private final int turnNumber;
+  private final int turnNumber;
 
-    private final int dayNumber;
+  private final int dayNumber;
 
-    private final int freeRunaways;
+  private final int freeRunaways;
 
-    private final EquipmentChange usedEquipment;
+  private final EquipmentChange usedEquipment;
 
-    private final FamiliarChange usedFamiliar;
+  private final FamiliarChange usedFamiliar;
 
-    private final Statgain statgain;
+  private final Statgain statgain;
 
-    private final MPGain mpGain;
+  private final MPGain mpGain;
 
-    private final MeatGain meatgain;
+  private final MeatGain meatgain;
 
-    private final String banishInfo;
-    
-    private final boolean isBanished;
-    
-    private final boolean isDisintegrated;
+  private final String banishInfo;
 
-    private final TurnVersion turnVersion;
+  private final boolean isBanished;
 
-    private final Map<String, Item> itemdrops;
+  private final boolean isDisintegrated;
 
-    private final Map<String, Skill> skillCasts;
+  private final TurnVersion turnVersion;
 
-    private final Map<String, CombatItem> combatItemsUsed;
-    
-    private final CountableSet<Consumable> consumables;
+  private final Map<String, Item> itemdrops;
 
-    public ImmutableEncounter(
-                              final String areaName, final String encounterName,
-                              final int turnNumber, final int dayNumber,
-                              final EquipmentChange usedEquipment,
-                              final FamiliarChange usedFamiliar, final boolean isDisintegrated,
-                              final Statgain statgain, final MPGain mpGain,
-                              final MeatGain meatgain, final int freeRunaways,
-                              final TurnVersion turnVersion, final String notes,
-                              final Collection<Item> itemdrops, final Collection<Skill> skillCasts,
-                              final Collection<Consumable> consumables, final Collection<CombatItem> combatItemsUsed, 
-                              final boolean isBanished, final String banishedInfo) {
-        if (areaName == null)
-            throw new NullPointerException("Area name must not be null.");
-        if (encounterName == null)
-            throw new NullPointerException("Encounter name must not be null.");
-        if (usedEquipment == null)
-            throw new NullPointerException("The equipment must not be null.");
-        if (usedFamiliar == null)
-            throw new NullPointerException("The familiar must not be null.");
-        if (statgain == null)
-            throw new NullPointerException("The statgain must not be null.");
-        if (mpGain == null)
-            throw new NullPointerException("The MP gain must not be null.");
-        if (meatgain == null)
-            throw new NullPointerException("The meat gain must not be null.");
-        if (turnVersion == null)
-            throw new NullPointerException("The turn version must not be null.");
-        if (notes == null)
-            throw new NullPointerException("The notes must not be null.");
-        if (itemdrops == null)
-            throw new NullPointerException("The itemdrops must not be null.");
-        if (skillCasts == null)
-            throw new NullPointerException("The skill casts must not be null.");
-        if (combatItemsUsed == null)
-        	throw new NullPointerException("The combat items used must not be null.");
-        if (consumables == null)
-            throw new NullPointerException("The consumables must not be null.");
-        if (turnNumber < 0)
-            throw new IllegalArgumentException("Turn number below 0.");
-        if (dayNumber < 1)
-            throw new IllegalArgumentException("Day number below 1.");
-        if (freeRunaways < 0)
-            throw new IllegalArgumentException("The number of free runaways must not be below 0.");
-        
-        this.areaName = areaName;
-        this.encounterName = encounterName;
-        this.turnNumber = turnNumber;
-        this.dayNumber = dayNumber;
-        this.usedEquipment = usedEquipment;
-        this.usedFamiliar = usedFamiliar;
-        this.isDisintegrated = isDisintegrated;
-        this.isBanished = isBanished;
-        this.banishInfo = banishedInfo;
-        this.statgain = statgain;
-        this.mpGain = mpGain;
-        this.meatgain = meatgain;
-        this.freeRunaways = freeRunaways;
-        this.turnVersion = turnVersion;
-        this.notes = notes;
+  private final Map<String, Skill> skillCasts;
 
-        this.itemdrops = Maps.newHashMap((int) (itemdrops.size() * 1.4));
-        for (final Item i : itemdrops)
-            this.itemdrops.put(i.getName(), i.newInstance());
+  private final Map<String, CombatItem> combatItemsUsed;
 
-        this.skillCasts = Maps.newHashMap((int) (skillCasts.size() * 1.4));
-        for (final Skill s : skillCasts)
-            this.skillCasts.put(s.getName(), s.newInstance());
+  private final CountableSet<Consumable> consumables;
 
-        this.combatItemsUsed = Maps.newHashMap((int) (combatItemsUsed.size() * 1.4));
-        for (final CombatItem ci : combatItemsUsed)
-        	this.combatItemsUsed.put( ci.getName(), ci.newInstance() );
-        
-        this.consumables = new CountableSet<Consumable>();
-        for (final Consumable c : consumables)
-            this.consumables.addElement(c);
+  public ImmutableEncounter(
+      final String areaName, final String encounterName,
+      final int turnNumber, final int dayNumber,
+      final EquipmentChange usedEquipment,
+      final FamiliarChange usedFamiliar, final boolean isDisintegrated,
+      final Statgain statgain, final MPGain mpGain,
+      final MeatGain meatgain, final int freeRunaways,
+      final TurnVersion turnVersion, final String notes,
+      final Collection<Item> itemdrops, final Collection<Skill> skillCasts,
+      final Collection<Consumable> consumables, final Collection<CombatItem> combatItemsUsed,
+      final boolean isBanished, final String banishedInfo) {
+    if (areaName == null)
+      throw new NullPointerException("Area name must not be null.");
+    if (encounterName == null)
+      throw new NullPointerException("Encounter name must not be null.");
+    if (usedEquipment == null)
+      throw new NullPointerException("The equipment must not be null.");
+    if (usedFamiliar == null)
+      throw new NullPointerException("The familiar must not be null.");
+    if (statgain == null)
+      throw new NullPointerException("The statgain must not be null.");
+    if (mpGain == null)
+      throw new NullPointerException("The MP gain must not be null.");
+    if (meatgain == null)
+      throw new NullPointerException("The meat gain must not be null.");
+    if (turnVersion == null)
+      throw new NullPointerException("The turn version must not be null.");
+    if (notes == null)
+      throw new NullPointerException("The notes must not be null.");
+    if (itemdrops == null)
+      throw new NullPointerException("The itemdrops must not be null.");
+    if (skillCasts == null)
+      throw new NullPointerException("The skill casts must not be null.");
+    if (combatItemsUsed == null)
+      throw new NullPointerException("The combat items used must not be null.");
+    if (consumables == null)
+      throw new NullPointerException("The consumables must not be null.");
+    if (turnNumber < 0)
+      throw new IllegalArgumentException("Turn number below 0.");
+    if (dayNumber < 1)
+      throw new IllegalArgumentException("Day number below 1.");
+    if (freeRunaways < 0)
+      throw new IllegalArgumentException("The number of free runaways must not be below 0.");
+
+    this.areaName = areaName;
+    this.encounterName = encounterName;
+    this.turnNumber = turnNumber;
+    this.dayNumber = dayNumber;
+    this.usedEquipment = usedEquipment;
+    this.usedFamiliar = usedFamiliar;
+    this.isDisintegrated = isDisintegrated;
+    this.isBanished = isBanished;
+    this.banishInfo = banishedInfo;
+    this.statgain = statgain;
+    this.mpGain = mpGain;
+    this.meatgain = meatgain;
+    this.freeRunaways = freeRunaways;
+    this.turnVersion = turnVersion;
+    this.notes = notes;
+
+    this.itemdrops = Maps.newHashMap((int) (itemdrops.size() * 1.4));
+    for (final Item i : itemdrops)
+      this.itemdrops.put(i.getName(), i.newInstance());
+
+    this.skillCasts = Maps.newHashMap((int) (skillCasts.size() * 1.4));
+    for (final Skill s : skillCasts)
+      this.skillCasts.put(s.getName(), s.newInstance());
+
+    this.combatItemsUsed = Maps.newHashMap((int) (combatItemsUsed.size() * 1.4));
+    for (final CombatItem ci : combatItemsUsed)
+      this.combatItemsUsed.put( ci.getName(), ci.newInstance() );
+
+    this.consumables = new CountableSet<Consumable>();
+    for (final Consumable c : consumables)
+      this.consumables.addElement(c);
+  }
+
+  /**
+   * @return The turn number.
+   */
+  @Override
+  public int getTurnNumber() {
+    return turnNumber;
+  }
+
+  /**
+   * @return The number of the day on which this turn was spent on.
+   */
+  @Override
+  public int getDayNumber() {
+    return dayNumber;
+  }
+
+  /**
+   * @return The name of the area this turn was spent in.
+   */
+  @Override
+  public String getAreaName() {
+    return areaName;
+  }
+
+  /**
+   * @return The name of the encounter found on this turn.
+   */
+  @Override
+  public String getEncounterName() {
+    return encounterName;
+  }
+
+  /**
+   * @return The familiar used on this turn.
+   */
+  @Override
+  public FamiliarChange getUsedFamiliar() {
+    return usedFamiliar;
+  }
+
+  /**
+   * @return The equipment used on this turn.
+   */
+  @Override
+  public EquipmentChange getUsedEquipment() {
+    return usedEquipment;
+  }
+
+  /**
+   * @return {@code true} if this combat was disintegrated. Will always return
+   *         {@code false} if this turn is not a combat.
+   */
+  @Override
+  public boolean isDisintegrated() {
+    return turnVersion == TurnVersion.COMBAT ? isDisintegrated : false;
+  }
+
+  /**
+   * @return The stat gain from this turn. This doesn't entail stat gains from
+   *         consumables used during this turn.
+   */
+  @Override
+  public Statgain getStatGain() {
+    return statgain;
+  }
+
+  /**
+   * @return The stat gain from this turn including those from consumables.
+   */
+  @Override
+  public Statgain getTotalStatGain() {
+    Statgain result = statgain;
+    for (final Consumable c : consumables.getElements())
+      result = result.addStats(c.getStatGain());
+
+    return result;
+  }
+
+  /**
+   * @return The mp gains from this turn.
+   */
+  @Override
+  public MPGain getMPGain() {
+    return mpGain;
+  }
+
+  /**
+   * @return The meat data object.
+   */
+  @Override
+  public MeatGain getMeat() {
+    return meatgain;
+  }
+
+  /**
+   * @return The number of free runaways.
+   */
+  @Override
+  public int getFreeRunaways() {
+    return freeRunaways;
+  }
+
+  /**
+   * @return The notes tagged to this turn.
+   */
+  @Override
+  public String getNotes() {
+    return notes;
+  }
+
+  /**
+   * @return The turn version.
+   */
+  @Override
+  public TurnVersion getTurnVersion() {
+    return turnVersion;
+  }
+
+  /**
+   * @return The dropped items from this turn.
+   */
+  @Override
+  public Collection<Item> getDroppedItems() {
+    return getCollectionFromMap(itemdrops);
+  }
+
+  /**
+   * @return {@code true} if the given item has dropped on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Item#getComparator()} and nothing else.
+   */
+  @Override
+  public boolean isItemDropped(
+      final Item i) {
+    return isItemDropped(i.getName());
+  }
+
+  /**
+   * @return {@code true} if an item with the given name has been dropped on
+   *         this turn, otherwise {@code false}. This check is solely based on
+   *         {@link Item#getName()} and nothing else.
+   */
+  @Override
+  public boolean isItemDropped(
+      final String i) {
+    return itemdrops.containsKey(i);
+  }
+
+  @Override
+  public boolean isBanished() {
+    return this.isBanished;
+  }
+
+  @Override
+  public String getBanishedInfo() {
+    if (this.isBanished)
+      return banishInfo;
+    else
+      return null;
+  }
+
+  /**
+   * @return The combat items used in this turn.
+   */
+  @Override
+  public Collection<CombatItem> getCombatItemsUsed() {
+    return getCollectionFromMap( combatItemsUsed );
+  }
+
+  @Override
+  public boolean isCombatItemUsed(String name) {
+    return this.combatItemsUsed.containsKey( name );
+  }
+
+  @Override
+  public boolean isCombatItemUsed(CombatItem ci) {
+    return isCombatItemUsed(ci.getName());
+  }
+
+  /**
+   * @return The skills cast this turn.
+   */
+  @Override
+  public Collection<Skill> getSkillsCast() {
+    return getCollectionFromMap(skillCasts);
+  }
+
+  /**
+   * @return {@code true} if the given skill has been cast on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Skill#getComparator()} and nothing else.
+   */
+  @Override
+  public boolean isSkillCast(
+      final Skill s) {
+    return isSkillCast(s.getName());
+  }
+
+  /**
+   * @return {@code true} if a skill with the given name has been cast on this
+   *         turn, otherwise {@code false}. This check is solely based on
+   *         {@link Skill#getName()} and nothing else.
+   */
+  @Override
+  public boolean isSkillCast(
+      final String s) {
+    return skillCasts.containsKey(s);
+  }
+
+  /**
+   * @return The consumables used this turn.
+   */
+  @Override
+  public Collection<Consumable> getConsumablesUsed() {
+    return consumables.getElementsDeepCopy();
+  }
+
+  /**
+   * @return {@code true} if the given consumable has been used on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Consumable#getComparator()} and nothing else.
+   */
+  @Override
+  public boolean isConsumableUsed(
+      final Consumable c) {
+    return consumables.contains(c);
+  }
+
+  /**
+   * @return {@code true} if a consumable with the given name has been used on
+   *         this turn, otherwise {@code false}. This check is solely based on
+   *         {@link Consumable#getName()} and nothing else.
+   */
+  @Override
+  public boolean isConsumableUsed(
+      final String c) {
+    return consumables.containsByName(c);
+  }
+
+  private static <T extends Countable<T>> Collection<T> getCollectionFromMap(
+      final Map<String, T> map) {
+    final List<T> result = Lists.newArrayList(map.size());
+    for (final T t : map.values())
+      result.add(t.newInstance());
+
+    return result;
+  }
+
+  /**
+   * @return The difference between this encounters turn number and the turn
+   *         number of the given {@link TurnEntity}.
+   */
+  @Override
+  public int compareTo(
+      TurnEntity te) {
+    return turnNumber - te.getTurnNumber();
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(80);
+
+    str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+    str.append(turnNumber);
+    str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getAreaName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append("--");
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(encounterName);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getStatGain().toString());
+
+    return str.toString();
+  }
+
+  @Override
+  public boolean equals(
+      Object obj) {
+    if (obj == null)
+      return false;
+
+    if (this == obj)
+      return true;
+
+    if (obj instanceof ImmutableEncounter) {
+      final ImmutableEncounter that = (ImmutableEncounter) obj;
+
+      return turnNumber == that.getTurnNumber() && dayNumber == that.getDayNumber()
+          && freeRunaways == that.getFreeRunaways()
+          && isDisintegrated == that.isDisintegrated()
+          && turnVersion == that.getTurnVersion() && statgain.equals(that.getStatGain())
+          && mpGain.equals(that.getMPGain()) && meatgain.equals(that.getMeat())
+          && usedFamiliar.equals(that.getUsedFamiliar())
+          && usedEquipment.equals(that.getUsedEquipment())
+          && areaName.equals(that.getAreaName())
+          && encounterName.equals(that.getEncounterName())
+          && notes.equals(that.getNotes()) && itemdrops.equals(that.itemdrops)
+          && skillCasts.equals(that.skillCasts) && consumables.equals(that.consumables) && combatItemsUsed.equals( that.combatItemsUsed );
     }
 
-    /**
-     * @return The turn number.
-     */
-    public int getTurnNumber() {
-        return turnNumber;
-    }
+    return false;
+  }
 
-    /**
-     * @return The number of the day on which this turn was spent on.
-     */
-    public int getDayNumber() {
-        return dayNumber;
-    }
-
-    /**
-     * @return The name of the area this turn was spent in.
-     */
-    public String getAreaName() {
-        return areaName;
-    }
-
-    /**
-     * @return The name of the encounter found on this turn.
-     */
-    public String getEncounterName() {
-        return encounterName;
-    }
-
-    /**
-     * @return The familiar used on this turn.
-     */
-    public FamiliarChange getUsedFamiliar() {
-        return usedFamiliar;
-    }
-
-    /**
-     * @return The equipment used on this turn.
-     */
-    public EquipmentChange getUsedEquipment() {
-        return usedEquipment;
-    }
-    
-    /**
-     * @return {@code true} if this combat was disintegrated. Will always return
-     *         {@code false} if this turn is not a combat.
-     */
-    public boolean isDisintegrated() {
-        return turnVersion == TurnVersion.COMBAT ? isDisintegrated : false;
-    }
-
-    /**
-     * @return The stat gain from this turn. This doesn't entail stat gains from
-     *         consumables used during this turn.
-     */
-    public Statgain getStatGain() {
-        return statgain;
-    }
-
-    /**
-     * @return The stat gain from this turn including those from consumables.
-     */
-    public Statgain getTotalStatGain() {
-        Statgain result = statgain;
-        for (final Consumable c : consumables.getElements())
-            result = result.addStats(c.getStatGain());
-
-        return result;
-    }
-
-    /**
-     * @return The mp gains from this turn.
-     */
-    public MPGain getMPGain() {
-        return mpGain;
-    }
-
-    /**
-     * @return The meat data object.
-     */
-    public MeatGain getMeat() {
-        return meatgain;
-    }
-
-    /**
-     * @return The number of free runaways.
-     */
-    public int getFreeRunaways() {
-        return freeRunaways;
-    }
-
-    /**
-     * @return The notes tagged to this turn.
-     */
-    public String getNotes() {
-        return notes;
-    }
-
-    /**
-     * @return The turn version.
-     */
-    public TurnVersion getTurnVersion() {
-        return turnVersion;
-    }
-
-    /**
-     * @return The dropped items from this turn.
-     */
-    public Collection<Item> getDroppedItems() {
-        return getCollectionFromMap(itemdrops);
-    }
-
-    /**
-     * @return {@code true} if the given item has dropped on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Item#getComparator()} and nothing else.
-     */
-    public boolean isItemDropped(
-                                 final Item i) {
-        return isItemDropped(i.getName());
-    }
-
-    /**
-     * @return {@code true} if an item with the given name has been dropped on
-     *         this turn, otherwise {@code false}. This check is solely based on
-     *         {@link Item#getName()} and nothing else.
-     */
-    public boolean isItemDropped(
-                                 final String i) {
-        return itemdrops.containsKey(i);
-    }
-
-    public boolean isBanished() {
-    	return this.isBanished;
-    }
-    
-    public String getBanishedInfo() {
-    	if (this.isBanished)
-    		return banishInfo;
-    	else
-    		return null;
-    }
-    
-    /**
-     * @return The combat items used in this turn.
-     */
-    public Collection<CombatItem> getCombatItemsUsed() {
-    	return getCollectionFromMap( combatItemsUsed );
-    }
-    
-    public boolean isCombatItemUsed(String name) {
-    	return this.combatItemsUsed.containsKey( name );
-    }
-    
-    public boolean isCombatItemUsed(CombatItem ci) {
-    	return isCombatItemUsed(ci.getName());
-    }
-    
-    /**
-     * @return The skills cast this turn.
-     */
-    public Collection<Skill> getSkillsCast() {
-        return getCollectionFromMap(skillCasts);
-    }
-
-    /**
-     * @return {@code true} if the given skill has been cast on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Skill#getComparator()} and nothing else.
-     */
-    public boolean isSkillCast(
-                               final Skill s) {
-        return isSkillCast(s.getName());
-    }
-
-    /**
-     * @return {@code true} if a skill with the given name has been cast on this
-     *         turn, otherwise {@code false}. This check is solely based on
-     *         {@link Skill#getName()} and nothing else.
-     */
-    public boolean isSkillCast(
-                               final String s) {
-        return skillCasts.containsKey(s);
-    }
-
-    /**
-     * @return The consumables used this turn.
-     */
-    public Collection<Consumable> getConsumablesUsed() {
-        return consumables.getElementsDeepCopy();
-    }
-
-    /**
-     * @return {@code true} if the given consumable has been used on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Consumable#getComparator()} and nothing else.
-     */
-    public boolean isConsumableUsed(
-                                    final Consumable c) {
-        return consumables.contains(c);
-    }
-
-    /**
-     * @return {@code true} if a consumable with the given name has been used on
-     *         this turn, otherwise {@code false}. This check is solely based on
-     *         {@link Consumable#getName()} and nothing else.
-     */
-    public boolean isConsumableUsed(
-                                    final String c) {
-        return consumables.containsByName(c);
-    }
-
-    private static <T extends Countable<T>> Collection<T> getCollectionFromMap(
-                                                                               final Map<String, T> map) {
-        final List<T> result = Lists.newArrayList(map.size());
-        for (final T t : map.values())
-            result.add(t.newInstance());
-
-        return result;
-    }
-
-    /**
-     * @return The difference between this encounters turn number and the turn
-     *         number of the given {@link TurnEntity}.
-     */
-    public int compareTo(
-                         TurnEntity te) {
-        return turnNumber - te.getTurnNumber();
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(80);
-
-        str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-        str.append(turnNumber);
-        str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getAreaName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append("--");
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(encounterName);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getStatGain().toString());
-
-        return str.toString();
-    }
-
-    @Override
-    public boolean equals(
-                          Object obj) {
-        if (obj == null)
-            return false;
-
-        if (this == obj)
-            return true;
-
-        if (obj instanceof ImmutableEncounter) {
-            final ImmutableEncounter that = (ImmutableEncounter) obj;
-
-            return turnNumber == that.getTurnNumber() && dayNumber == that.getDayNumber()
-                   && freeRunaways == that.getFreeRunaways()
-                   && isDisintegrated == that.isDisintegrated()
-                   && turnVersion == that.getTurnVersion() && statgain.equals(that.getStatGain())
-                   && mpGain.equals(that.getMPGain()) && meatgain.equals(that.getMeat())
-                   && usedFamiliar.equals(that.getUsedFamiliar())
-                   && usedEquipment.equals(that.getUsedEquipment())
-                   && areaName.equals(that.getAreaName())
-                   && encounterName.equals(that.getEncounterName())
-                   && notes.equals(that.getNotes()) && itemdrops.equals(that.itemdrops)
-                   && skillCasts.equals(that.skillCasts) && consumables.equals(that.consumables) && combatItemsUsed.equals( that.combatItemsUsed );
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 23;
-        result = 31 * result + areaName.hashCode();
-        result = 31 * result + consumables.hashCode();
-        result = 31 * result + dayNumber;
-        result = 31 * result + encounterName.hashCode();
-        result = 31 * result + freeRunaways;
-        result = 31 * result + (isDisintegrated ? 1231 : 1237);
-        result = 31 * result + itemdrops.hashCode();
-        result = 31 * result + meatgain.hashCode();
-        result = 31 * result + mpGain.hashCode();
-        result = 31 * result + notes.hashCode();
-        result = 31 * result + skillCasts.hashCode();
-        result = 31 * result + statgain.hashCode();
-        result = 31 * result + turnNumber;
-        result = 31 * result + turnVersion.hashCode();
-        result = 31 * result + usedEquipment.hashCode();
-        result = 31 * result + usedFamiliar.hashCode();
-        result = 31 * result + combatItemsUsed.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = 23;
+    result = 31 * result + areaName.hashCode();
+    result = 31 * result + consumables.hashCode();
+    result = 31 * result + dayNumber;
+    result = 31 * result + encounterName.hashCode();
+    result = 31 * result + freeRunaways;
+    result = 31 * result + (isDisintegrated ? 1231 : 1237);
+    result = 31 * result + itemdrops.hashCode();
+    result = 31 * result + meatgain.hashCode();
+    result = 31 * result + mpGain.hashCode();
+    result = 31 * result + notes.hashCode();
+    result = 31 * result + skillCasts.hashCode();
+    result = 31 * result + statgain.hashCode();
+    result = 31 * result + turnNumber;
+    result = 31 * result + turnVersion.hashCode();
+    result = 31 * result + usedEquipment.hashCode();
+    result = 31 * result + usedFamiliar.hashCode();
+    result = 31 * result + combatItemsUsed.hashCode();
+    return result;
+  }
 }

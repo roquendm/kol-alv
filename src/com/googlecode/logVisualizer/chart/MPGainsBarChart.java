@@ -30,32 +30,37 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public final class MPGainsBarChart extends HorizontalBarChartBuilder {
-    public MPGainsBarChart(
-                           final LogDataHolder logData) {
-        super(logData, "MP gains", "Category", "MP gain", false);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = 523839757049071039L;
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        final String seriesName = "MP gains";
+  public MPGainsBarChart(
+      final LogDataHolder logData) {
+    super(logData, "MP gains", "Category", "MP gain", false);
+  }
 
-        dataset.addValue(getLogData().getLogSummary().getTotalMPGains().encounterMPGain,
-                         seriesName,
-                         "Inside Encounters");
-        dataset.addValue(getLogData().getLogSummary().getTotalMPGains().starfishMPGain,
-                         seriesName,
-                         "Starfish Familiars");
-        dataset.addValue(getLogData().getLogSummary().getTotalMPGains().restingMPGain,
-                         seriesName,
-                         "Resting");
-        dataset.addValue(getLogData().getLogSummary().getTotalMPGains().outOfEncounterMPGain,
-                         seriesName,
-                         "Outside Encounters");
-        dataset.addValue(getLogData().getLogSummary().getTotalMPGains().consumableMPGain,
-                         seriesName,
-                         "Consumables");
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final String seriesName = "MP gains";
 
-        return dataset;
-    }
+    dataset.addValue(getLogData().getLogSummary().getTotalMPGains().encounterMPGain,
+        seriesName,
+        "Inside Encounters");
+    dataset.addValue(getLogData().getLogSummary().getTotalMPGains().starfishMPGain,
+        seriesName,
+        "Starfish Familiars");
+    dataset.addValue(getLogData().getLogSummary().getTotalMPGains().restingMPGain,
+        seriesName,
+        "Resting");
+    dataset.addValue(getLogData().getLogSummary().getTotalMPGains().outOfEncounterMPGain,
+        seriesName,
+        "Outside Encounters");
+    dataset.addValue(getLogData().getLogSummary().getTotalMPGains().consumableMPGain,
+        seriesName,
+        "Consumables");
+
+    return dataset;
+  }
 }

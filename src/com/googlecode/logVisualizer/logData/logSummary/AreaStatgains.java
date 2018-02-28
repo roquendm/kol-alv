@@ -24,7 +24,11 @@
 
 package com.googlecode.logVisualizer.logData.logSummary;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
@@ -38,97 +42,97 @@ import com.googlecode.logVisualizer.util.Sets;
  * This class gives the tools to save and compare area statgains.
  */
 public final class AreaStatgains {
-    private static final String TAB = "\t";
+  private static final String TAB = "\t";
 
-    private final Pair<String, Statgain> areaStatgainPair;
+  private final Pair<String, Statgain> areaStatgainPair;
 
-    /**
-     * @param areaName
-     *            The area name to set.
-     * @param areaStatgain
-     *            The area statgain to set.
-     * @throws NullPointerException
-     *             if areaName is {@code null}; if areaStatgain is {@code null}
-     */
-    private AreaStatgains(
-                          final String areaName, final Statgain areaStatgain) {
-        areaStatgainPair = Pair.of(areaName, areaStatgain);
+  /**
+   * @param areaName
+   *            The area name to set.
+   * @param areaStatgain
+   *            The area statgain to set.
+   * @throws NullPointerException
+   *             if areaName is {@code null}; if areaStatgain is {@code null}
+   */
+  private AreaStatgains(
+      final String areaName, final Statgain areaStatgain) {
+    areaStatgainPair = Pair.of(areaName, areaStatgain);
+  }
+
+  /**
+   * @return The area name.
+   */
+  public String getAreaName() {
+    return areaStatgainPair.getVar1();
+  }
+
+  /**
+   * @return The area statgain.
+   */
+  public Statgain getStatgain() {
+    return areaStatgainPair.getVar2();
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(50);
+
+    str.append(areaStatgainPair.getVar1());
+    str.append(TAB);
+    str.append(areaStatgainPair.getVar2().mus);
+    str.append(TAB);
+    str.append(areaStatgainPair.getVar2().myst);
+    str.append(TAB);
+    str.append(areaStatgainPair.getVar2().mox);
+
+    return str.toString();
+  }
+
+  /**
+   * This method creates and returns a sorted area statgain list from the
+   * given turn rundown. Note that this list does also contain stat gains from
+   * consumables as one of the list elements.
+   *
+   * @param turns
+   *            The turn rundown.
+   * @param comparator
+   *            The comparator used to sort the returned list.
+   * @return A sorted list of area statgains from the given turn rundown.
+   */
+  public static List<AreaStatgains> getSortedAreaStatgains(
+      final Collection<TurnInterval> turns,
+      final Comparator<AreaStatgains> comparator) {
+    final int initialHashCapacity = (int) (turns.size() * 0.75) + 1;
+    final Set<String> areas = Sets.newHashSet(initialHashCapacity);
+    final Map<String, Statgain> areaStatgains = Maps.newHashMap(initialHashCapacity);
+    Statgain consumablesStatgain = Statgain.NO_STATS;
+
+    // Count the statgains.
+    for (final TurnInterval ti : turns) {
+      final Statgain previousStats;
+      if (areas.contains(ti.getAreaName()))
+        previousStats = areaStatgains.get(ti.getAreaName());
+      else {
+        previousStats = Statgain.NO_STATS;
+        areas.add(ti.getAreaName());
+      }
+
+      areaStatgains.put(ti.getAreaName(), previousStats.addStats(ti.getStatGain()));
+
+      // Add consumable statgains.
+      for (final Consumable c : ti.getConsumablesUsed())
+        consumablesStatgain = consumablesStatgain.addStats(c.getStatGain());
     }
 
-    /**
-     * @return The area name.
-     */
-    public String getAreaName() {
-        return areaStatgainPair.getVar1();
-    }
+    // Create area statgain list.
+    final List<AreaStatgains> areaStatgainsList = Lists.newArrayList(areas.size() + 1);
+    for (final String s : areas)
+      areaStatgainsList.add(new AreaStatgains(s, areaStatgains.get(s)));
 
-    /**
-     * @return The area statgain.
-     */
-    public Statgain getStatgain() {
-        return areaStatgainPair.getVar2();
-    }
+    // Add consumable statgains as its own area.
+    areaStatgainsList.add(new AreaStatgains("From consumables", consumablesStatgain));
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(50);
-
-        str.append(areaStatgainPair.getVar1());
-        str.append(TAB);
-        str.append(areaStatgainPair.getVar2().mus);
-        str.append(TAB);
-        str.append(areaStatgainPair.getVar2().myst);
-        str.append(TAB);
-        str.append(areaStatgainPair.getVar2().mox);
-
-        return str.toString();
-    }
-
-    /**
-     * This method creates and returns a sorted area statgain list from the
-     * given turn rundown. Note that this list does also contain stat gains from
-     * consumables as one of the list elements.
-     * 
-     * @param turns
-     *            The turn rundown.
-     * @param comparator
-     *            The comparator used to sort the returned list.
-     * @return A sorted list of area statgains from the given turn rundown.
-     */
-    public static List<AreaStatgains> getSortedAreaStatgains(
-                                                             final Collection<TurnInterval> turns,
-                                                             final Comparator<AreaStatgains> comparator) {
-        final int initialHashCapacity = (int) (turns.size() * 0.75) + 1;
-        final Set<String> areas = Sets.newHashSet(initialHashCapacity);
-        final Map<String, Statgain> areaStatgains = Maps.newHashMap(initialHashCapacity);
-        Statgain consumablesStatgain = Statgain.NO_STATS;
-
-        // Count the statgains.
-        for (final TurnInterval ti : turns) {
-            final Statgain previousStats;
-            if (areas.contains(ti.getAreaName()))
-                previousStats = areaStatgains.get(ti.getAreaName());
-            else {
-                previousStats = Statgain.NO_STATS;
-                areas.add(ti.getAreaName());
-            }
-
-            areaStatgains.put(ti.getAreaName(), previousStats.addStats(ti.getStatGain()));
-
-            // Add consumable statgains.
-            for (final Consumable c : ti.getConsumablesUsed())
-                consumablesStatgain = consumablesStatgain.addStats(c.getStatGain());
-        }
-
-        // Create area statgain list.
-        final List<AreaStatgains> areaStatgainsList = Lists.newArrayList(areas.size() + 1);
-        for (final String s : areas)
-            areaStatgainsList.add(new AreaStatgains(s, areaStatgains.get(s)));
-
-        // Add consumable statgains as its own area.
-        areaStatgainsList.add(new AreaStatgains("From consumables", consumablesStatgain));
-
-        // Sort the area statgains and return them.
-        return Lists.sort(areaStatgainsList, comparator);
-    }
+    // Sort the area statgains and return them.
+    return Lists.sort(areaStatgainsList, comparator);
+  }
 }

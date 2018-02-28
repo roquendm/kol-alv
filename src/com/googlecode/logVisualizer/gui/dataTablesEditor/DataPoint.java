@@ -26,8 +26,8 @@ package com.googlecode.logVisualizer.gui.dataTablesEditor;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.googlecode.logVisualizer.util.Maps;
 import com.googlecode.logVisualizer.util.Pair;
@@ -46,124 +46,125 @@ import com.googlecode.logVisualizer.util.Pair;
  * object reference is passed in any parameter.
  */
 final class DataPoint implements Comparable<DataPoint> {
-    private final Map<String, Object> nameValuePairs;
+  private final Map<String, Object> nameValuePairs;
 
-    /**
-     * Creates a data point consisting of only the mandatory name value-pair.
-     */
-    @SuppressWarnings("unchecked")
-    DataPoint(
-              final String name) {
-        if (name == null)
-            throw new NullPointerException("The name must not be null.");
+  /**
+   * Creates a data point consisting of only the mandatory name value-pair.
+   */
+  @SuppressWarnings("unchecked")
+  DataPoint(
+      final String name) {
+    if (name == null)
+      throw new NullPointerException("The name must not be null.");
 
-        nameValuePairs = Maps.newHashMap(Pair.of("name", (Object) name));
-    }
+    nameValuePairs = Maps.newHashMap(Pair.of("name", (Object) name));
+  }
 
-    /**
-     * Creates a data point consisting of the mandatory name and a single other
-     * value-pair.
-     */
-    @SuppressWarnings("unchecked")
-    DataPoint(
-              final String name, final Pair<String, ? extends Object> singleValuePair) {
-        if (name == null)
-            throw new NullPointerException("The name must not be null.");
-        if (singleValuePair == null)
-            throw new NullPointerException("The name value pair must not be null.");
+  /**
+   * Creates a data point consisting of the mandatory name and a single other
+   * value-pair.
+   */
+  @SuppressWarnings("unchecked")
+  DataPoint(
+      final String name, final Pair<String, ? extends Object> singleValuePair) {
+    if (name == null)
+      throw new NullPointerException("The name must not be null.");
+    if (singleValuePair == null)
+      throw new NullPointerException("The name value pair must not be null.");
 
-        nameValuePairs = Maps.newHashMap(Pair.of("name", name), singleValuePair);
-    }
+    nameValuePairs = Maps.newHashMap(Pair.of("name", name), singleValuePair);
+  }
 
-    /**
-     * Creates a data point consisting of the mandatory name and the given other
-     * value-pairs.
-     * <p>
-     * Please note that the given map is directly used internally and as such
-     * needs to allow write operations.
-     */
-    @SuppressWarnings("unchecked")
-    DataPoint(
-              final String name, final Map<String, ? extends Object> nameValuePairs) {
-        if (name == null)
-            throw new NullPointerException("The name must not be null.");
-        if (nameValuePairs == null)
-            throw new NullPointerException("The name value pairs map must not be null.");
+  /**
+   * Creates a data point consisting of the mandatory name and the given other
+   * value-pairs.
+   * <p>
+   * Please note that the given map is directly used internally and as such
+   * needs to allow write operations.
+   */
+  @SuppressWarnings("unchecked")
+  DataPoint(
+      final String name, final Map<String, ? extends Object> nameValuePairs) {
+    if (name == null)
+      throw new NullPointerException("The name must not be null.");
+    if (nameValuePairs == null)
+      throw new NullPointerException("The name value pairs map must not be null.");
 
-        this.nameValuePairs = (Map<String, Object>) nameValuePairs;
+    this.nameValuePairs = (Map<String, Object>) nameValuePairs;
 
-        this.nameValuePairs.put("name", name);
-    }
+    this.nameValuePairs.put("name", name);
+  }
 
-    /**
-     * Creates a copy of the given data point.
-     */
-    DataPoint(
-              final DataPoint toClone) {
-        if (toClone == null)
-            throw new NullPointerException("The data point to clone must not be null.");
+  /**
+   * Creates a copy of the given data point.
+   */
+  DataPoint(
+      final DataPoint toClone) {
+    if (toClone == null)
+      throw new NullPointerException("The data point to clone must not be null.");
 
-        nameValuePairs = Maps.newHashMap(toClone.getNameValuePairs());
-    }
+    nameValuePairs = Maps.newHashMap(toClone.getNameValuePairs());
+  }
 
-    /**
-     * Convenience method, equal to {@code nameValuePairs.get("name")}.
-     * 
-     * @return The name of this data point.
-     */
-    String getName() {
-        return (String) nameValuePairs.get("name");
-    }
+  /**
+   * Convenience method, equal to {@code nameValuePairs.get("name")}.
+   *
+   * @return The name of this data point.
+   */
+  String getName() {
+    return (String) nameValuePairs.get("name");
+  }
 
-    /**
-     * @param name
-     *            The name of the value which should be returned.
-     * @return The value with the given name. Returns {@code null} in case the
-     *         value name doesn't exist.
-     */
-    Object getValueOf(
-                      final String name) {
-        return nameValuePairs.get(name);
-    }
+  /**
+   * @param name
+   *            The name of the value which should be returned.
+   * @return The value with the given name. Returns {@code null} in case the
+   *         value name doesn't exist.
+   */
+  Object getValueOf(
+      final String name) {
+    return nameValuePairs.get(name);
+  }
 
-    /**
-     * Sets the value of the value-pair with the given name.
-     * 
-     * @param name
-     *            The name of the value which should be set.
-     * @param value
-     *            The new value of the value-pair.
-     * @throws IllegalArgumentException
-     *             if there doesn't exist a value with the given name
-     */
-    void setValueOf(
-                    final String name, final Object value) {
-        if (!nameValuePairs.containsKey(name))
-            throw new IllegalArgumentException("The given value name doesn't exist.");
+  /**
+   * Sets the value of the value-pair with the given name.
+   *
+   * @param name
+   *            The name of the value which should be set.
+   * @param value
+   *            The new value of the value-pair.
+   * @throws IllegalArgumentException
+   *             if there doesn't exist a value with the given name
+   */
+  void setValueOf(
+      final String name, final Object value) {
+    if (!nameValuePairs.containsKey(name))
+      throw new IllegalArgumentException("The given value name doesn't exist.");
 
-        nameValuePairs.put(name, value);
-    }
+    nameValuePairs.put(name, value);
+  }
 
-    /**
-     * @return A read-only set of all value-pairs.
-     */
-    Set<Entry<String, Object>> getNameValuePairs() {
-        return Collections.unmodifiableSet(nameValuePairs.entrySet());
-    }
+  /**
+   * @return A read-only set of all value-pairs.
+   */
+  Set<Entry<String, Object>> getNameValuePairs() {
+    return Collections.unmodifiableSet(nameValuePairs.entrySet());
+  }
 
-    /**
-     * Compares the given data point with this data point based on the names of
-     * the data points, ignoring case.
-     * 
-     * @see Comparable#compareTo(Object)
-     */
-    public int compareTo(
-                         final DataPoint o) {
-        return getName().compareToIgnoreCase(o.getName());
-    }
+  /**
+   * Compares the given data point with this data point based on the names of
+   * the data points, ignoring case.
+   *
+   * @see Comparable#compareTo(Object)
+   */
+  @Override
+  public int compareTo(
+      final DataPoint o) {
+    return getName().compareToIgnoreCase(o.getName());
+  }
 
-    @Override
-    public String toString() {
-        return getName();
-    }
+  @Override
+  public String toString() {
+    return getName();
+  }
 }

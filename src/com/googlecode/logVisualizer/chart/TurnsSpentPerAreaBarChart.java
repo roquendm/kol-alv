@@ -33,32 +33,37 @@ import com.googlecode.logVisualizer.util.DataNumberPair;
 
 public final class TurnsSpentPerAreaBarChart extends HorizontalBarChartBuilder {
 
-    public TurnsSpentPerAreaBarChart(
-                                     final LogDataHolder logData) {
-        super(logData, "Turns spent per area", "Area", "Turns spent", false);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6785585057816029581L;
+
+  public TurnsSpentPerAreaBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Turns spent per area", "Area", "Turns spent", false);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final String seriesName = "Turns spent per area";
+
+    // Add areas to the dataset. They are sorted from most visited to least
+    // visited.
+    for (final DataNumberPair<String> dn : getLogData().getLogSummary().getTurnsPerArea()) {
+      dataset.addValue(dn.getNumber(), seriesName, dn.getData());
+
+      // The chart isn't readable anymore with too many entries
+      if (dataset.getColumnCount() > 45)
+        break;
     }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        final String seriesName = "Turns spent per area";
+    return dataset;
+  }
 
-        // Add areas to the dataset. They are sorted from most visited to least
-        // visited.
-        for (final DataNumberPair<String> dn : getLogData().getLogSummary().getTurnsPerArea()) {
-            dataset.addValue(dn.getNumber(), seriesName, dn.getData());
-
-            // The chart isn't readable anymore with too many entries
-            if (dataset.getColumnCount() > 45)
-                break;
-        }
-
-        return dataset;
-    }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new AreaListChartMouseEventListener(getLogData()));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new AreaListChartMouseEventListener(getLogData()));
+  }
 }

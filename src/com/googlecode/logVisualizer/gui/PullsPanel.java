@@ -34,40 +34,45 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.LookAheadIterator;
 
 final class PullsPanel extends JTabbedPane {
-    private static final String NEW_LINE = "\n";
+  /**
+   *
+   */
+  private static final long serialVersionUID = 522820713091367471L;
+  private static final String NEW_LINE = "\n";
 
-    /**
-     * @param logData
-     *            The {@link LogDataHolder} with all the data of the ascension
-     *            log.
-     */
-    PullsPanel(
-               final LogDataHolder logData) {
-        super(TOP, SCROLL_TAB_LAYOUT);
+  /**
+   * @param logData
+   *            The {@link LogDataHolder} with all the data of the ascension
+   *            log.
+   */
+  PullsPanel(
+      final LogDataHolder logData) {
+    super(TOP, SCROLL_TAB_LAYOUT);
 
-        final LookAheadIterator<Pull> index = new LookAheadIterator<Pull>(logData.getPulls()
-                                                                                 .iterator());
-        while (index.hasNext()) {
-            final int currentDay = index.peek().getDayNumber();
-            final JTextArea lister = new JTextArea();
+    final LookAheadIterator<Pull> index = new LookAheadIterator<Pull>(logData.getPulls()
+        .iterator());
+    while (index.hasNext()) {
+      final int currentDay = index.peek().getDayNumber();
+      final JTextArea lister = new JTextArea();
 
-            printPull(lister, index.next());
-            while (index.hasNext() && currentDay == index.peek().getDayNumber())
-                printPull(lister, index.next());
+      printPull(lister, index.next());
+      while (index.hasNext() && currentDay == index.peek().getDayNumber())
+        printPull(lister, index.next());
 
-            add("Day " + currentDay, new JScrollPane(lister));
-        }
+      add("Day " + currentDay, new JScrollPane(lister));
     }
+  }
 
-    private void printPull(
-                           final JTextArea lister, final Pull currentItem) {
-        lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-        lister.append(String.valueOf(currentItem.getTurnNumber()));
-        lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-        lister.append(UsefulPatterns.WHITE_SPACE);
-        lister.append(String.valueOf(currentItem.getAmount()));
-        lister.append(UsefulPatterns.WHITE_SPACE);
-        lister.append(currentItem.getItemName());
-        lister.append(NEW_LINE);
-    }
+  @SuppressWarnings("static-method")
+  private void printPull(
+      final JTextArea lister, final Pull currentItem) {
+    lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+    lister.append(String.valueOf(currentItem.getTurnNumber()));
+    lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    lister.append(UsefulPatterns.WHITE_SPACE);
+    lister.append(String.valueOf(currentItem.getAmount()));
+    lister.append(UsefulPatterns.WHITE_SPACE);
+    lister.append(currentItem.getItemName());
+    lister.append(NEW_LINE);
+  }
 }

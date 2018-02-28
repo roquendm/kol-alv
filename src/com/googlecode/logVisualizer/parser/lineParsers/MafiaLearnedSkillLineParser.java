@@ -24,15 +24,7 @@
 
 package com.googlecode.logVisualizer.parser.lineParsers;
 
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.googlecode.logVisualizer.logData.CombatItem;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
-import com.googlecode.logVisualizer.logData.turn.Turn;
-import com.googlecode.logVisualizer.logData.turn.SingleTurn;
-import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 
 /**
@@ -43,24 +35,25 @@ import com.googlecode.logVisualizer.util.DataNumberPair;
  * {@code You learned a new skill: _skillName_}
  */
 public final class MafiaLearnedSkillLineParser extends AbstractLineParser {
-	private static final String LEARNED_SKILL_STRING = "You learned a new skill: ";
+  private static final String LEARNED_SKILL_STRING = "You learned a new skill: ";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(final String line, final LogDataHolder logData) {
-    	String skillName = line.substring( LEARNED_SKILL_STRING.length());
-    	int currentTurn = logData.getLastTurnSpent().getTurnNumber();
-    	DataNumberPair<String> learnedSkillData = DataNumberPair.of( skillName, currentTurn );
-    	logData.addLearnedSkill( learnedSkillData );
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("boxing")
+  @Override
+  protected void doParsing(final String line, final LogDataHolder logData) {
+    String skillName = line.substring( LEARNED_SKILL_STRING.length());
+    int currentTurn = logData.getLastTurnSpent().getTurnNumber();
+    DataNumberPair<String> learnedSkillData = DataNumberPair.of( skillName, currentTurn );
+    logData.addLearnedSkill( learnedSkillData );
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(final String line) {
-        return line.startsWith( LEARNED_SKILL_STRING );
-    }    
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(final String line) {
+    return line.startsWith( LEARNED_SKILL_STRING );
+  }
 }

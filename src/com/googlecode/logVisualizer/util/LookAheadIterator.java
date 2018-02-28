@@ -39,69 +39,72 @@ import java.util.NoSuchElementException;
  * <p>
  * Please note that this implementation does not work well with collections that
  * contain {@code null} as an element. Such collections are thus not supported.
- * 
+ *
  * @see Iterator
  */
 public final class LookAheadIterator<E> implements Iterator<E> {
-    private final Iterator<E> iterator;
+  private final Iterator<E> iterator;
 
-    private E peek;
+  private E peek;
 
-    /**
-     * Constructs the iterator with the given iterator as the basis.
-     * 
-     * @param iterator
-     *            The iterator whose elements are the basis of this iterator.
-     * @throws NullPointerException
-     *             if the iterator is {@code null}
-     */
-    public LookAheadIterator(
-                             final Iterator<E> iterator) {
-        if (iterator == null)
-            throw new NullPointerException("Iterator must not be null.");
+  /**
+   * Constructs the iterator with the given iterator as the basis.
+   *
+   * @param iterator
+   *            The iterator whose elements are the basis of this iterator.
+   * @throws NullPointerException
+   *             if the iterator is {@code null}
+   */
+  public LookAheadIterator(
+      final Iterator<E> iterator) {
+    if (iterator == null)
+      throw new NullPointerException("Iterator must not be null.");
 
-        this.iterator = iterator;
-        peek = iterator.hasNext() ? iterator.next() : null;
-    }
+    this.iterator = iterator;
+    peek = iterator.hasNext() ? iterator.next() : null;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasNext() {
-        return peek != null;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean hasNext() {
+    return peek != null;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    public E next() {
-        if (peek == null)
-            throw new NoSuchElementException("There is no next element.");
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public E next() {
+    if (peek == null)
+      throw new NoSuchElementException("There is no next element.");
 
-        final E current = peek;
-        peek = iterator.hasNext() ? iterator.next() : null;
+    final E current = peek;
+    peek = iterator.hasNext() ? iterator.next() : null;
 
-        return current;
-    }
+    return current;
+  }
 
-    /**
-     * Returns the next element in the collection without moving the index
-     * ahead.
-     * 
-     * @return The next element in the collection. Will return {@code null} if
-     *         there is no more element left.
-     */
-    public E peek() {
-        return peek;
-    }
+  /**
+   * Returns the next element in the collection without moving the index
+   * ahead.
+   *
+   * @return The next element in the collection. Will return {@code null} if
+   *         there is no more element left.
+   */
+  public E peek() {
+    return peek;
+  }
 
-    /**
-     * This method is not supported by this iterator.
-     * 
-     * @throws UnsupportedOperationException
-     *             if this method is called
-     */
-    public void remove() {
-        throw new UnsupportedOperationException("This iterator doesn't support the remove opperation.");
-    }
+  /**
+   * This method is not supported by this iterator.
+   *
+   * @throws UnsupportedOperationException
+   *             if this method is called
+   */
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("This iterator doesn't support the remove opperation.");
+  }
 }

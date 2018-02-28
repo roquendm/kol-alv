@@ -33,32 +33,37 @@ import com.googlecode.logVisualizer.logData.Skill;
 
 public final class SkillCastsBarChart extends HorizontalBarChartBuilder {
 
-    public SkillCastsBarChart(
-                              final LogDataHolder logData) {
-        super(logData, "Skill casts", "Skill", "Number of casts", false);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6065744430941716379L;
+
+  public SkillCastsBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Skill casts", "Skill", "Number of casts", false);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final String seriesName = "Skills cast";
+
+    // Add skills to the dataset. The list is sorted from most amount of
+    // casts to least amount of casts.
+    for (final Skill s : getLogData().getAllSkillsCast()) {
+      dataset.addValue(s.getAmount(), seriesName, s.getName());
+
+      // The chart isn't readable anymore with too many entries
+      if (dataset.getColumnCount() > 45)
+        break;
     }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        final String seriesName = "Skills cast";
+    return dataset;
+  }
 
-        // Add skills to the dataset. The list is sorted from most amount of
-        // casts to least amount of casts.
-        for (final Skill s : getLogData().getAllSkillsCast()) {
-            dataset.addValue(s.getAmount(), seriesName, s.getName());
-
-            // The chart isn't readable anymore with too many entries
-            if (dataset.getColumnCount() > 45)
-                break;
-        }
-
-        return dataset;
-    }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new SkillCastOnTurnsChartMouseEventListener(getLogData()));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new SkillCastOnTurnsChartMouseEventListener(getLogData()));
+  }
 }

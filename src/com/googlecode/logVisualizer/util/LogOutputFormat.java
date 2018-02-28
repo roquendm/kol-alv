@@ -28,5 +28,5 @@ package com.googlecode.logVisualizer.util;
  * Enumeration to specify the wanted textual log output.
  */
 public enum LogOutputFormat {
-    TEXT_LOG, HTML_LOG, BBCODE_LOG, XML_LOG;
+  TEXT_LOG, HTML_LOG, BBCODE_LOG, XML_LOG;
 }

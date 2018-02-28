@@ -29,39 +29,39 @@ import java.util.List;
 import com.googlecode.logVisualizer.util.Lists;
 
 public final class TurnAreaCategory {
-    private final String categoryName;
+  private final String categoryName;
 
-    private final List<String> turnAreaNames = Lists.newArrayList();
+  private final List<String> turnAreaNames = Lists.newArrayList();
 
-    public TurnAreaCategory(
-                            final String categoryName) {
-        this.categoryName = categoryName;
-    }
+  public TurnAreaCategory(
+      final String categoryName) {
+    this.categoryName = categoryName;
+  }
 
-    public TurnAreaCategory(
-                            final String categoryName, final String areaName) {
-        this(categoryName);
-        turnAreaNames.add(areaName);
-    }
+  public TurnAreaCategory(
+      final String categoryName, final String areaName) {
+    this(categoryName);
+    turnAreaNames.add(areaName);
+  }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
+  public String getCategoryName() {
+    return categoryName;
+  }
 
-    public void addTurnAreaName(
-                                final String name) {
-        turnAreaNames.add(name);
-    }
+  public void addTurnAreaName(
+      final String name) {
+    turnAreaNames.add(name);
+  }
 
-    public List<String> getTurnAreaNames() {
-        return turnAreaNames;
-    }
+  public List<String> getTurnAreaNames() {
+    return turnAreaNames;
+  }
 
-    /**
-     * @return The category name of this TurnAreaCategory.
-     */
-    @Override
-    public String toString() {
-        return categoryName;
-    }
+  /**
+   * @return The category name of this TurnAreaCategory.
+   */
+  @Override
+  public String toString() {
+    return categoryName;
+  }
 }

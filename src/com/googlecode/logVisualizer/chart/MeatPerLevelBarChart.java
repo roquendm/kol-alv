@@ -43,72 +43,83 @@ import com.googlecode.logVisualizer.logData.turn.SingleTurn;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 
 public final class MeatPerLevelBarChart extends HorizontalStackedBarChartBuilder {
-    public MeatPerLevelBarChart(
-                                final LogDataHolder logData) {
-        super(logData, "Meat gained/spent per level", "Level", "Meat", true);
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6869574831419856026L;
+
+  public MeatPerLevelBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Meat gained/spent per level", "Level", "Meat", true);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+    for (final DataNumberPair<MeatGain> dnp : getLogData().getLogSummary()
+        .getMeatSummary()
+        .getAllLevelsData()) {
+      final String levelStr = "Level " + dnp.getNumber();
+
+      dataset.addValue(dnp.getData().encounterMeatGain,
+          "Meat gained inside encounters",
+          levelStr);
+      dataset.addValue(dnp.getData().otherMeatGain,
+          "Meat gained outside encounters",
+          levelStr);
+      dataset.addValue(dnp.getData().meatSpent, "Meat spent", levelStr);
+    }
+
+    return dataset;
+  }
+
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    if (getLogData().isDetailedLog())
+      cp.addChartMouseListener(new MeatPerLevelChartMouseEventListener());
+  }
+
+  private final class MeatPerLevelChartMouseEventListener implements ChartMouseListener {
+    public MeatPerLevelChartMouseEventListener() {
+      // TODO Auto-generated constructor stub
     }
 
     @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-        for (final DataNumberPair<MeatGain> dnp : getLogData().getLogSummary()
-                                                              .getMeatSummary()
-                                                              .getAllLevelsData()) {
-            final String levelStr = "Level " + dnp.getNumber();
-
-            dataset.addValue(dnp.getData().encounterMeatGain,
-                             "Meat gained inside encounters",
-                             levelStr);
-            dataset.addValue(dnp.getData().otherMeatGain,
-                             "Meat gained outside encounters",
-                             levelStr);
-            dataset.addValue(dnp.getData().meatSpent, "Meat spent", levelStr);
-        }
-
-        return dataset;
-    }
+    public void chartMouseMoved(
+        final ChartMouseEvent arg0) {}
 
     @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        if (getLogData().isDetailedLog())
-            cp.addChartMouseListener(new MeatPerLevelChartMouseEventListener());
-    }
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof CategoryItemEntity) {
+        final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+        final String levelString = (String) entity.getColumnKey();
+        // The beginning ("Level ") is always the same.
+        final int level = Integer.parseInt(levelString.substring(6));
 
-    private final class MeatPerLevelChartMouseEventListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent arg0) {}
-
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof CategoryItemEntity) {
-                final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-                final String levelString = (String) entity.getColumnKey();
-                // The beginning ("Level ") is always the same.
-                final int level = Integer.parseInt(levelString.substring(6));
-
-                final StringBuilder str = new StringBuilder(100);
-                str.append("Meat gained/spent on every turn of the level (encounter meat; other meat gain; meat spent):\n");
-                for (final SingleTurn st : getLogData().getTurnsSpent()) {
-                    final int currentLevel = getLogData().getCurrentLevel(st.getTurnNumber())
-                                                         .getLevelNumber();
-                    if (currentLevel > level)
-                        break;
-                    else if (currentLevel == level) {
-                        final MeatGain meat = st.getMeat();
-                        str.append(st.getTurnNumber() + ":    " + meat.encounterMeatGain + ";  "
-                                   + meat.otherMeatGain + ";  " + meat.meatSpent + "\n");
-                    }
-                }
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(500, 450));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "Meat gained/spent during level " + level,
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
+        final StringBuilder str = new StringBuilder(100);
+        str.append("Meat gained/spent on every turn of the level (encounter meat; other meat gain; meat spent):\n");
+        for (final SingleTurn st : getLogData().getTurnsSpent()) {
+          final int currentLevel = getLogData().getCurrentLevel(st.getTurnNumber())
+              .getLevelNumber();
+          if (currentLevel > level)
+            break;
+          else if (currentLevel == level) {
+            final MeatGain meat = st.getMeat();
+            str.append(st.getTurnNumber() + ":    " + meat.encounterMeatGain + ";  "
+                + meat.otherMeatGain + ";  " + meat.meatSpent + "\n");
+          }
         }
+
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(500, 450));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "Meat gained/spent during level " + level,
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
+  }
 }

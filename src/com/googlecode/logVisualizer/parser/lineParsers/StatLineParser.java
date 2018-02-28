@@ -42,69 +42,69 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code You lose _substatAmount_ _substatName_}
  */
 public final class StatLineParser extends AbstractLineParser {
-    private static final String LOSE_STRING = "You lose";
+  private static final String LOSE_STRING = "You lose";
 
-    // String length of "You gain " or "You lose " is 9.
-    private static final int GAIN_LOSE_START_STRING_LENGTH = 9;
+  // String length of "You gain " or "You lose " is 9.
+  private static final int GAIN_LOSE_START_STRING_LENGTH = 9;
 
-    private final Matcher gainLoseMatcher = UsefulPatterns.GAIN_LOSE.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher gainLoseMatcher = UsefulPatterns.GAIN_LOSE.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
 
-        int substrLength = GAIN_LOSE_START_STRING_LENGTH;
+    int substrLength = GAIN_LOSE_START_STRING_LENGTH;
 
-        if (line.startsWith(UsefulPatterns.AFTER_BATTLE_STRING)) {
-            substrLength += UsefulPatterns.AFTER_BATTLE_STRING.length();
-        }
-
-        final String informationPart = line.substring(substrLength);
-        final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
-
-        final String substatName = informationPart.substring(whiteSpaceIndex + 1,
-                                                             informationPart.length());
-        final String amountString = informationPart.substring(0, whiteSpaceIndex);
-
-        // Substat gains higher than the integer limit should not happen and
-        // will be ignored.
-        int amount;
-        try {
-            amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
-                                                           UsefulPatterns.EMPTY_STRING));
-        } catch (final NumberFormatException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        if (line.startsWith(LOSE_STRING))
-            amount *= -1;
-
-        if (UsefulPatterns.MUSCLE_SUBSTAT_NAMES.contains(substatName))
-            logData.getLastTurnSpent().addStatGain(new Statgain(amount, 0, 0));
-        else if (UsefulPatterns.MYST_SUBSTAT_NAMES.contains(substatName))
-            logData.getLastTurnSpent().addStatGain(new Statgain(0, amount, 0));
-        else
-            logData.getLastTurnSpent().addStatGain(new Statgain(0, 0, amount));
+    if (line.startsWith(UsefulPatterns.AFTER_BATTLE_STRING)) {
+      substrLength += UsefulPatterns.AFTER_BATTLE_STRING.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        if (gainLoseMatcher.reset(line).matches()) {
-            final String gainName = line.substring(line.lastIndexOf(UsefulPatterns.WHITE_SPACE) + 1);
+    final String informationPart = line.substring(substrLength);
+    final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
 
-            return UsefulPatterns.MUSCLE_SUBSTAT_NAMES.contains(gainName)
-                   || UsefulPatterns.MYST_SUBSTAT_NAMES.contains(gainName)
-                   || UsefulPatterns.MOXIE_SUBSTAT_NAMES.contains(gainName);
-        }
+    final String substatName = informationPart.substring(whiteSpaceIndex + 1,
+        informationPart.length());
+    final String amountString = informationPart.substring(0, whiteSpaceIndex);
 
-        return false;
+    // Substat gains higher than the integer limit should not happen and
+    // will be ignored.
+    int amount;
+    try {
+      amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
+          UsefulPatterns.EMPTY_STRING));
+    } catch (final NumberFormatException e) {
+      e.printStackTrace();
+      return;
     }
+
+    if (line.startsWith(LOSE_STRING))
+      amount *= -1;
+
+    if (UsefulPatterns.MUSCLE_SUBSTAT_NAMES.contains(substatName))
+      logData.getLastTurnSpent().addStatGain(new Statgain(amount, 0, 0));
+    else if (UsefulPatterns.MYST_SUBSTAT_NAMES.contains(substatName))
+      logData.getLastTurnSpent().addStatGain(new Statgain(0, amount, 0));
+    else
+      logData.getLastTurnSpent().addStatGain(new Statgain(0, 0, amount));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    if (gainLoseMatcher.reset(line).matches()) {
+      final String gainName = line.substring(line.lastIndexOf(UsefulPatterns.WHITE_SPACE) + 1);
+
+      return UsefulPatterns.MUSCLE_SUBSTAT_NAMES.contains(gainName)
+          || UsefulPatterns.MYST_SUBSTAT_NAMES.contains(gainName)
+          || UsefulPatterns.MOXIE_SUBSTAT_NAMES.contains(gainName);
+    }
+
+    return false;
+  }
 }

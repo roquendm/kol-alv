@@ -35,196 +35,196 @@ import com.googlecode.logVisualizer.util.dataTables.ExtraStats;
  * the stats gained from specific items.
  */
 final class StatgiverItem {
-    private static final String TAB = "\t";
+  private static final String TAB = "\t";
 
-    private final String itemName;
+  private final String itemName;
 
-    private final String itemNameLower;
+  private final String itemNameLower;
 
-    private final double perTurnStatgain;
+  private final double perTurnStatgain;
 
-    private double lvl1Stats;
+  private double lvl1Stats;
 
-    private double lvl2Stats;
+  private double lvl2Stats;
 
-    private double lvl3Stats;
+  private double lvl3Stats;
 
-    private double lvl4Stats;
+  private double lvl4Stats;
 
-    private double lvl5Stats;
+  private double lvl5Stats;
 
-    private double lvl6Stats;
+  private double lvl6Stats;
 
-    private double lvl7Stats;
+  private double lvl7Stats;
 
-    private double lvl8Stats;
+  private double lvl8Stats;
 
-    private double lvl9Stats;
+  private double lvl9Stats;
 
-    private double lvl10Stats;
+  private double lvl10Stats;
 
-    private double lvl11Stats;
+  private double lvl11Stats;
 
-    private double lvl12Stats;
+  private double lvl12Stats;
 
-    StatgiverItem(
-                  final String itemName, final ExtraStats perTurnStatgain, final StatClass mainStat) {
-        this.itemName = itemName;
-        itemNameLower = itemName.toLowerCase(Locale.ENGLISH);
+  StatgiverItem(
+      final String itemName, final ExtraStats perTurnStatgain, final StatClass mainStat) {
+    this.itemName = itemName;
+    itemNameLower = itemName.toLowerCase(Locale.ENGLISH);
 
-        double stats = perTurnStatgain.generalGain;
-        switch (mainStat) {
-            case MUSCLE:
-                stats += perTurnStatgain.musGain;
-                break;
-            case MYSTICALITY:
-                stats += perTurnStatgain.mystGain;
-                break;
-            case MOXIE:
-                stats += perTurnStatgain.moxGain;
-                break;
-        }
-        this.perTurnStatgain = stats;
+    double stats = perTurnStatgain.generalGain;
+    switch (mainStat) {
+      case MUSCLE:
+        stats += perTurnStatgain.musGain;
+        break;
+      case MYSTICALITY:
+        stats += perTurnStatgain.mystGain;
+        break;
+      case MOXIE:
+        stats += perTurnStatgain.moxGain;
+        break;
     }
+    this.perTurnStatgain = stats;
+  }
 
-    String getItemName() {
-        // The ALV internally saves item names only in lower case.
-        return itemNameLower;
-    }
+  String getItemName() {
+    // The ALV internally saves item names only in lower case.
+    return itemNameLower;
+  }
 
-    void incrementLvlStatgain(
-                              final int levelNumber, final int numberOfIncrements) {
-        for (int i = 0; i < numberOfIncrements; i++)
-            switch (levelNumber) {
-                case 1:
-                    lvl1Stats += perTurnStatgain;
-                    break;
-                case 2:
-                    lvl2Stats += perTurnStatgain;
-                    break;
-                case 3:
-                    lvl3Stats += perTurnStatgain;
-                    break;
-                case 4:
-                    lvl4Stats += perTurnStatgain;
-                    break;
-                case 5:
-                    lvl5Stats += perTurnStatgain;
-                    break;
-                case 6:
-                    lvl6Stats += perTurnStatgain;
-                    break;
-                case 7:
-                    lvl7Stats += perTurnStatgain;
-                    break;
-                case 8:
-                    lvl8Stats += perTurnStatgain;
-                    break;
-                case 9:
-                    lvl9Stats += perTurnStatgain;
-                    break;
-                case 10:
-                    lvl10Stats += perTurnStatgain;
-                    break;
-                case 11:
-                    lvl11Stats += perTurnStatgain;
-                    break;
-                case 12:
-                    lvl12Stats += perTurnStatgain;
-                    break;
-                default:
-                    break;
-            }
-    }
+  void incrementLvlStatgain(
+      final int levelNumber, final int numberOfIncrements) {
+    for (int i = 0; i < numberOfIncrements; i++)
+      switch (levelNumber) {
+        case 1:
+          lvl1Stats += perTurnStatgain;
+          break;
+        case 2:
+          lvl2Stats += perTurnStatgain;
+          break;
+        case 3:
+          lvl3Stats += perTurnStatgain;
+          break;
+        case 4:
+          lvl4Stats += perTurnStatgain;
+          break;
+        case 5:
+          lvl5Stats += perTurnStatgain;
+          break;
+        case 6:
+          lvl6Stats += perTurnStatgain;
+          break;
+        case 7:
+          lvl7Stats += perTurnStatgain;
+          break;
+        case 8:
+          lvl8Stats += perTurnStatgain;
+          break;
+        case 9:
+          lvl9Stats += perTurnStatgain;
+          break;
+        case 10:
+          lvl10Stats += perTurnStatgain;
+          break;
+        case 11:
+          lvl11Stats += perTurnStatgain;
+          break;
+        case 12:
+          lvl12Stats += perTurnStatgain;
+          break;
+        default:
+          break;
+      }
+  }
 
-    int getLvl1Stats() {
-        return (int) lvl1Stats;
-    }
+  int getLvl1Stats() {
+    return (int) lvl1Stats;
+  }
 
-    int getLvl2Stats() {
-        return (int) lvl2Stats;
-    }
+  int getLvl2Stats() {
+    return (int) lvl2Stats;
+  }
 
-    int getLvl3Stats() {
-        return (int) lvl3Stats;
-    }
+  int getLvl3Stats() {
+    return (int) lvl3Stats;
+  }
 
-    int getLvl4Stats() {
-        return (int) lvl4Stats;
-    }
+  int getLvl4Stats() {
+    return (int) lvl4Stats;
+  }
 
-    int getLvl5Stats() {
-        return (int) lvl5Stats;
-    }
+  int getLvl5Stats() {
+    return (int) lvl5Stats;
+  }
 
-    int getLvl6Stats() {
-        return (int) lvl6Stats;
-    }
+  int getLvl6Stats() {
+    return (int) lvl6Stats;
+  }
 
-    int getLvl7Stats() {
-        return (int) lvl7Stats;
-    }
+  int getLvl7Stats() {
+    return (int) lvl7Stats;
+  }
 
-    int getLvl8Stats() {
-        return (int) lvl8Stats;
-    }
+  int getLvl8Stats() {
+    return (int) lvl8Stats;
+  }
 
-    int getLvl9Stats() {
-        return (int) lvl9Stats;
-    }
+  int getLvl9Stats() {
+    return (int) lvl9Stats;
+  }
 
-    int getLvl10Stats() {
-        return (int) lvl10Stats;
-    }
+  int getLvl10Stats() {
+    return (int) lvl10Stats;
+  }
 
-    int getLvl11Stats() {
-        return (int) lvl11Stats;
-    }
+  int getLvl11Stats() {
+    return (int) lvl11Stats;
+  }
 
-    int getLvl12Stats() {
-        return (int) lvl12Stats;
-    }
+  int getLvl12Stats() {
+    return (int) lvl12Stats;
+  }
 
-    int getTotalStats() {
-        return (int) (lvl1Stats + lvl2Stats + lvl3Stats + lvl4Stats + lvl5Stats + lvl6Stats
-                      + lvl7Stats + lvl8Stats + lvl9Stats + lvl10Stats + lvl11Stats + lvl12Stats);
-    }
+  int getTotalStats() {
+    return (int) (lvl1Stats + lvl2Stats + lvl3Stats + lvl4Stats + lvl5Stats + lvl6Stats
+        + lvl7Stats + lvl8Stats + lvl9Stats + lvl10Stats + lvl11Stats + lvl12Stats);
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(200);
-        str.append(itemName);
-        str.append(UsefulPatterns.COLON);
-        for (int i = itemName.length(); i < 55; i++)
-            str.append(UsefulPatterns.WHITE_SPACE);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(200);
+    str.append(itemName);
+    str.append(UsefulPatterns.COLON);
+    for (int i = itemName.length(); i < 55; i++)
+      str.append(UsefulPatterns.WHITE_SPACE);
 
-        str.append(TAB);
-        str.append(getLvl1Stats());
-        str.append(TAB);
-        str.append(getLvl2Stats());
-        str.append(TAB);
-        str.append(getLvl3Stats());
-        str.append(TAB);
-        str.append(getLvl4Stats());
-        str.append(TAB);
-        str.append(getLvl5Stats());
-        str.append(TAB);
-        str.append(getLvl6Stats());
-        str.append(TAB);
-        str.append(getLvl7Stats());
-        str.append(TAB);
-        str.append(getLvl8Stats());
-        str.append(TAB);
-        str.append(getLvl9Stats());
-        str.append(TAB);
-        str.append(getLvl10Stats());
-        str.append(TAB);
-        str.append(getLvl11Stats());
-        str.append(TAB);
-        str.append(getLvl12Stats());
-        str.append(TAB);
-        str.append(getTotalStats());
+    str.append(TAB);
+    str.append(getLvl1Stats());
+    str.append(TAB);
+    str.append(getLvl2Stats());
+    str.append(TAB);
+    str.append(getLvl3Stats());
+    str.append(TAB);
+    str.append(getLvl4Stats());
+    str.append(TAB);
+    str.append(getLvl5Stats());
+    str.append(TAB);
+    str.append(getLvl6Stats());
+    str.append(TAB);
+    str.append(getLvl7Stats());
+    str.append(TAB);
+    str.append(getLvl8Stats());
+    str.append(TAB);
+    str.append(getLvl9Stats());
+    str.append(TAB);
+    str.append(getLvl10Stats());
+    str.append(TAB);
+    str.append(getLvl11Stats());
+    str.append(TAB);
+    str.append(getLvl12Stats());
+    str.append(TAB);
+    str.append(getTotalStats());
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 }

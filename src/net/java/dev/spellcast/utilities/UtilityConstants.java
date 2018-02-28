@@ -44,37 +44,37 @@ import java.io.File;
  * design of the system and to facilitate documentation.
  */
 public final class UtilityConstants {
-    public static final ClassLoader SYSTEM_CLASSLOADER = ClassLoader.getSystemClassLoader();
+  public static final ClassLoader SYSTEM_CLASSLOADER = ClassLoader.getSystemClassLoader();
 
-    public static final ClassLoader MAINCLASS_CLASSLOADER = net.java.dev.spellcast.utilities.UtilityConstants.class.getClassLoader();
+  public static final ClassLoader MAINCLASS_CLASSLOADER = net.java.dev.spellcast.utilities.UtilityConstants.class.getClassLoader();
 
-    public static final File BASE_LOCATION = new File(System.getProperty("user.dir")).getAbsoluteFile();
+  public static final File BASE_LOCATION = new File(System.getProperty("user.dir")).getAbsoluteFile();
 
-    public static final File ROOT_LOCATION = new File(System.getProperty("user.home"),
-                                                      ".ascensionLogVisualizer").getAbsoluteFile();
+  public static final File ROOT_LOCATION = new File(System.getProperty("user.home"),
+      ".ascensionLogVisualizer").getAbsoluteFile();
 
-    public static final String ROOT_DIRECTORY = ROOT_LOCATION.getAbsolutePath();
+  public static final String ROOT_DIRECTORY = ROOT_LOCATION.getAbsolutePath();
 
-    public static final String TEMP_DIRECTORY = "temp/";
+  public static final String TEMP_DIRECTORY = "temp/";
 
-    public static final String CACHE_DIRECTORY = "cache/";
+  public static final String CACHE_DIRECTORY = "cache/";
 
-    public static final String DATA_DIRECTORY = "logVisualizerData/";
+  public static final String DATA_DIRECTORY = "logVisualizerData/";
 
-    public static final String LICENSE_DIRECTORY = "logVisualizerData/license/";
+  public static final String LICENSE_DIRECTORY = "logVisualizerData/license/";
 
-    public static final String KOL_DATA_DIRECTORY = "logVisualizerData/koldata/";
+  public static final String KOL_DATA_DIRECTORY = "logVisualizerData/koldata/";
 
-    public static final File TEMP_LOCATION = new File(ROOT_LOCATION, TEMP_DIRECTORY);
+  public static final File TEMP_LOCATION = new File(ROOT_LOCATION, TEMP_DIRECTORY);
 
-    public static final File CACHE_LOCATION = new File(ROOT_LOCATION, CACHE_DIRECTORY);
+  public static final File CACHE_LOCATION = new File(ROOT_LOCATION, CACHE_DIRECTORY);
 
-    public static final File DATA_LOCATION = new File(ROOT_LOCATION, DATA_DIRECTORY);
+  public static final File DATA_LOCATION = new File(ROOT_LOCATION, DATA_DIRECTORY);
 
-    public static final File LICENSE_LOCATION = new File(ROOT_LOCATION, LICENSE_DIRECTORY);
+  public static final File LICENSE_LOCATION = new File(ROOT_LOCATION, LICENSE_DIRECTORY);
 
-    public static final File KOL_DATA_LOCATION = new File(ROOT_LOCATION, KOL_DATA_DIRECTORY);
+  public static final File KOL_DATA_LOCATION = new File(ROOT_LOCATION, KOL_DATA_DIRECTORY);
 
-    // This class is not to be instanced.
-    private UtilityConstants() {}
+  // This class is not to be instanced.
+  private UtilityConstants() {}
 }

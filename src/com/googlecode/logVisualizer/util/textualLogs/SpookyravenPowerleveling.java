@@ -33,86 +33,86 @@ import com.googlecode.logVisualizer.logData.turn.TurnVersion;
  * A helper class for Spookyraven powerleveling statistics.
  */
 final class SpookyravenPowerleveling {
-    private int ballroomTurns;
+  private int ballroomTurns;
 
-    private int ballStatNoncom;
+  private int ballStatNoncom;
 
-    private int zombieWaltzers;
+  private int zombieWaltzers;
 
-    private int danceCards;
+  private int danceCards;
 
-    private int galleryTurns;
+  private int galleryTurns;
 
-    private int louvre;
+  private int louvre;
 
-    private int bathroomTurns;
+  private int bathroomTurns;
 
-    private int bathNoncom;
+  private int bathNoncom;
 
-    SpookyravenPowerleveling(
-                             final Iterable<TurnInterval> turns) {
-        if (turns == null)
-            throw new NullPointerException("The turns collection must not be null.");
+  SpookyravenPowerleveling(
+      final Iterable<TurnInterval> turns) {
+    if (turns == null)
+      throw new NullPointerException("The turns collection must not be null.");
 
-        for (final TurnInterval ti : turns) {
-            if (ti.getAreaName().equals("Haunted Ballroom")) {
-                ballroomTurns += ti.getTotalTurns();
-                for (final Item i : ti.getDroppedItems())
-                    if (i.getName().equals("dance card"))
-                        danceCards += i.getAmount();
-                for (final SingleTurn st : ti.getTurns())
-                    if (st.getTurnVersion() == TurnVersion.NONCOMBAT
-                        && st.getEncounterName().equals("Curtains"))
-                        ballStatNoncom++;
-                    else if (st.getTurnVersion() == TurnVersion.COMBAT
-                             && st.getEncounterName().equals("zombie waltzers"))
-                        zombieWaltzers++;
+    for (final TurnInterval ti : turns) {
+      if (ti.getAreaName().equals("Haunted Ballroom")) {
+        ballroomTurns += ti.getTotalTurns();
+        for (final Item i : ti.getDroppedItems())
+          if (i.getName().equals("dance card"))
+            danceCards += i.getAmount();
+        for (final SingleTurn st : ti.getTurns())
+          if (st.getTurnVersion() == TurnVersion.NONCOMBAT
+          && st.getEncounterName().equals("Curtains"))
+            ballStatNoncom++;
+          else if (st.getTurnVersion() == TurnVersion.COMBAT
+              && st.getEncounterName().equals("zombie waltzers"))
+            zombieWaltzers++;
 
-            } else if (ti.getAreaName().equals("Haunted Gallery")) {
-                galleryTurns += ti.getTotalTurns();
-                for (final SingleTurn st : ti.getTurns())
-                    if (st.getTurnVersion() == TurnVersion.NONCOMBAT
-                        && st.getEncounterName().startsWith("Louvre It or Leave It"))
-                        louvre++;
+      } else if (ti.getAreaName().equals("Haunted Gallery")) {
+        galleryTurns += ti.getTotalTurns();
+        for (final SingleTurn st : ti.getTurns())
+          if (st.getTurnVersion() == TurnVersion.NONCOMBAT
+          && st.getEncounterName().startsWith("Louvre It or Leave It"))
+            louvre++;
 
-            } else if (ti.getAreaName().equals("Haunted Bathroom")) {
-                bathroomTurns += ti.getTotalTurns();
-                for (final SingleTurn st : ti.getTurns())
-                    if (st.getTurnVersion() == TurnVersion.NONCOMBAT)
-                        bathNoncom++;
-            }
-        }
+      } else if (ti.getAreaName().equals("Haunted Bathroom")) {
+        bathroomTurns += ti.getTotalTurns();
+        for (final SingleTurn st : ti.getTurns())
+          if (st.getTurnVersion() == TurnVersion.NONCOMBAT)
+            bathNoncom++;
+      }
     }
+  }
 
-    int getBallroomTurns() {
-        return ballroomTurns;
-    }
+  int getBallroomTurns() {
+    return ballroomTurns;
+  }
 
-    int getBallroomStatNoncombats() {
-        return ballStatNoncom;
-    }
+  int getBallroomStatNoncombats() {
+    return ballStatNoncom;
+  }
 
-    int getZombieWaltzers() {
-        return zombieWaltzers;
-    }
+  int getZombieWaltzers() {
+    return zombieWaltzers;
+  }
 
-    int getDanceCards() {
-        return danceCards;
-    }
+  int getDanceCards() {
+    return danceCards;
+  }
 
-    int getGalleryTurns() {
-        return galleryTurns;
-    }
+  int getGalleryTurns() {
+    return galleryTurns;
+  }
 
-    int getLouvres() {
-        return louvre;
-    }
+  int getLouvres() {
+    return louvre;
+  }
 
-    int getBathroomTurns() {
-        return bathroomTurns;
-    }
+  int getBathroomTurns() {
+    return bathroomTurns;
+  }
 
-    int getBathroomNoncombats() {
-        return bathNoncom;
-    }
+  int getBathroomNoncombats() {
+    return bathNoncom;
+  }
 }

@@ -29,6 +29,6 @@ import java.util.List;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 public interface LogBlockParser {
-    void parseBlock(
-                    final List<String> block, final LogDataHolder logData);
+  void parseBlock(
+      final List<String> block, final LogDataHolder logData);
 }

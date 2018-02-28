@@ -47,77 +47,82 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 
 //TODO Class not used. Should it be deleted?
 public abstract class HorizontalIntervallBarChartBuilder extends AbstractChart {
-    private final String xLable;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8009008898503850018L;
 
-    private final String yLable;
+  private final String xLable;
 
-    protected HorizontalIntervallBarChartBuilder(
-                                                 final LogDataHolder logData, final String title,
-                                                 final String xLable, final String yLable,
-                                                 final boolean isIncludeLegend) {
-        super(title, logData, isIncludeLegend);
-        this.xLable = xLable;
-        this.yLable = yLable;
-        addChart();
-    }
+  private final String yLable;
 
-    protected abstract CategoryDataset createDataset();
+  protected HorizontalIntervallBarChartBuilder(
+      final LogDataHolder logData, final String title,
+      final String xLable, final String yLable,
+      final boolean isIncludeLegend) {
+    super(title, logData, isIncludeLegend);
+    this.xLable = xLable;
+    this.yLable = yLable;
+    addChart();
+  }
 
-    private JFreeChart createChart(
-                                   final CategoryDataset dataset) {
-        final JFreeChart chart = ChartFactory.createBarChart(getTitle(),
-                                                             xLable,
-                                                             yLable,
-                                                             dataset,
-                                                             PlotOrientation.HORIZONTAL,
-                                                             isIncludeLegend(),
-                                                             true,
-                                                             false);
-        final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        final CategoryAxis categoryAxis = plot.getDomainAxis();
-        final LayeredBarRenderer renderer = new LayeredBarRenderer();
+  protected abstract CategoryDataset createDataset();
 
-        plot.setBackgroundPaint(Color.white);
-        plot.setDomainGridlinesVisible(false);
-        plot.setRangeGridlinePaint(Color.black);
-        setBarShadowVisible(chart, false);
+  private JFreeChart createChart(
+      final CategoryDataset dataset) {
+    final JFreeChart chart = ChartFactory.createBarChart(getTitle(),
+        xLable,
+        yLable,
+        dataset,
+        PlotOrientation.HORIZONTAL,
+        isIncludeLegend(),
+        true,
+        false);
+    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    final CategoryAxis categoryAxis = plot.getDomainAxis();
+    final LayeredBarRenderer renderer = new LayeredBarRenderer();
 
-        plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        plot.getRangeAxis().setLowerBound(-35);
-        plot.getRangeAxis().setUpperBound(35);
+    plot.setBackgroundPaint(Color.white);
+    plot.setDomainGridlinesVisible(false);
+    plot.setRangeGridlinePaint(Color.black);
+    setBarShadowVisible(chart, false);
 
-        renderer.setDrawBarOutline(false);
-        renderer.setSeriesPaint(0, Color.blue);
-        renderer.setSeriesPaint(1, Color.green);
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-        renderer.setSeriesPositiveItemLabelPosition(0,
-                                                    new ItemLabelPosition(ItemLabelAnchor.OUTSIDE3,
-                                                                          TextAnchor.CENTER));
-        renderer.setSeriesPositiveItemLabelPosition(1,
-                                                    new ItemLabelPosition(ItemLabelAnchor.OUTSIDE2,
-                                                                          TextAnchor.CENTER));
-        renderer.setSeriesNegativeItemLabelPosition(0,
-                                                    new ItemLabelPosition(ItemLabelAnchor.OUTSIDE9,
-                                                                          TextAnchor.CENTER));
-        renderer.setSeriesNegativeItemLabelPosition(1,
-                                                    new ItemLabelPosition(ItemLabelAnchor.OUTSIDE10,
-                                                                          TextAnchor.CENTER));
-        renderer.setItemLabelAnchorOffset(9.0);
-        renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("{1}, {2}",
-                                                                              NumberFormat.getInstance()));
-        plot.setRenderer(renderer);
-        plot.setRowRenderingOrder(SortOrder.DESCENDING);
+    plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    plot.getRangeAxis().setLowerBound(-35);
+    plot.getRangeAxis().setUpperBound(35);
 
-        categoryAxis.setCategoryMargin(0.15);
-        categoryAxis.setUpperMargin(0.0175);
-        categoryAxis.setLowerMargin(0.0175);
+    renderer.setDrawBarOutline(false);
+    renderer.setSeriesPaint(0, Color.blue);
+    renderer.setSeriesPaint(1, Color.green);
+    renderer.setBaseItemLabelsVisible(true);
+    renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+    renderer.setSeriesPositiveItemLabelPosition(0,
+        new ItemLabelPosition(ItemLabelAnchor.OUTSIDE3,
+            TextAnchor.CENTER));
+    renderer.setSeriesPositiveItemLabelPosition(1,
+        new ItemLabelPosition(ItemLabelAnchor.OUTSIDE2,
+            TextAnchor.CENTER));
+    renderer.setSeriesNegativeItemLabelPosition(0,
+        new ItemLabelPosition(ItemLabelAnchor.OUTSIDE9,
+            TextAnchor.CENTER));
+    renderer.setSeriesNegativeItemLabelPosition(1,
+        new ItemLabelPosition(ItemLabelAnchor.OUTSIDE10,
+            TextAnchor.CENTER));
+    renderer.setItemLabelAnchorOffset(9.0);
+    renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("{1}, {2}",
+        NumberFormat.getInstance()));
+    plot.setRenderer(renderer);
+    plot.setRowRenderingOrder(SortOrder.DESCENDING);
 
-        return chart;
-    }
+    categoryAxis.setCategoryMargin(0.15);
+    categoryAxis.setUpperMargin(0.0175);
+    categoryAxis.setLowerMargin(0.0175);
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+    return chart;
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

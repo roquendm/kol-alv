@@ -42,61 +42,68 @@ import com.googlecode.logVisualizer.logData.turn.SingleTurn;
 import com.googlecode.logVisualizer.logData.turn.TurnVersion;
 
 public final class TotalTurnsSpentPie extends PieChartBuilder {
-    public TotalTurnsSpentPie(
-                              final LogDataHolder logData) {
-        super("Total turns spent", logData, false);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -5458255253676547376L;
+
+  public TotalTurnsSpentPie(
+      final LogDataHolder logData) {
+    super("Total turns spent", logData, false);
+  }
+
+  @Override
+  protected PieDataset createDataset() {
+    final DefaultPieDataset dataset = new DefaultPieDataset();
+
+    dataset.setValue("Combats", getLogData().getLogSummary().getTotalTurnsCombat());
+    dataset.setValue("Noncombats", getLogData().getLogSummary().getTotalTurnsNoncombat());
+    dataset.setValue("Other", getLogData().getLogSummary().getTotalTurnsOther());
+
+    return dataset;
+  }
+
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    if (getLogData().isDetailedLog())
+      cp.addChartMouseListener(new TotalTurnsSpentChartMouseEventListener());
+  }
+
+  final class TotalTurnsSpentChartMouseEventListener implements ChartMouseListener {
+    @Override
+    public void chartMouseMoved(
+        final ChartMouseEvent e) {}
 
     @Override
-    protected PieDataset createDataset() {
-        final DefaultPieDataset dataset = new DefaultPieDataset();
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof PieSectionEntity) {
+        final PieSectionEntity entity = (PieSectionEntity) e.getEntity();
+        final String turnVersionName = (String) entity.getSectionKey();
+        TurnVersion version = TurnVersion.NOT_DEFINED;
+        if (turnVersionName.equals("Combats"))
+          version = TurnVersion.COMBAT;
+        else if (turnVersionName.equals("Noncombats"))
+          version = TurnVersion.NONCOMBAT;
+        else if (turnVersionName.equals("Other"))
+          version = TurnVersion.OTHER;
 
-        dataset.setValue("Combats", getLogData().getLogSummary().getTotalTurnsCombat());
-        dataset.setValue("Noncombats", getLogData().getLogSummary().getTotalTurnsNoncombat());
-        dataset.setValue("Other", getLogData().getLogSummary().getTotalTurnsOther());
+        if (version == TurnVersion.NOT_DEFINED)
+          return;
 
-        return dataset;
+        final StringBuilder str = new StringBuilder(1500);
+        for (final SingleTurn st : getLogData().getTurnsSpent())
+          if (st.getTurnVersion() == version)
+            str.append(st + "\n");
+
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(500, 400));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "Occurences of " + version + " turns",
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        if (getLogData().isDetailedLog())
-            cp.addChartMouseListener(new TotalTurnsSpentChartMouseEventListener());
-    }
-
-    private final class TotalTurnsSpentChartMouseEventListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent e) {}
-
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof PieSectionEntity) {
-                final PieSectionEntity entity = (PieSectionEntity) e.getEntity();
-                final String turnVersionName = (String) entity.getSectionKey();
-                TurnVersion version = TurnVersion.NOT_DEFINED;
-                if (turnVersionName.equals("Combats"))
-                    version = TurnVersion.COMBAT;
-                else if (turnVersionName.equals("Noncombats"))
-                    version = TurnVersion.NONCOMBAT;
-                else if (turnVersionName.equals("Other"))
-                    version = TurnVersion.OTHER;
-
-                if (version == TurnVersion.NOT_DEFINED)
-                    return;
-
-                final StringBuilder str = new StringBuilder(1500);
-                for (final SingleTurn st : getLogData().getTurnsSpent())
-                    if (st.getTurnVersion() == version)
-                        str.append(st + "\n");
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(500, 400));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "Occurences of " + version + " turns",
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
+  }
 }

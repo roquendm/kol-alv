@@ -26,7 +26,12 @@ package com.googlecode.logVisualizer.logData.turn;
 
 import java.util.Collection;
 
-import com.googlecode.logVisualizer.logData.*;
+import com.googlecode.logVisualizer.logData.CombatItem;
+import com.googlecode.logVisualizer.logData.Item;
+import com.googlecode.logVisualizer.logData.MPGain;
+import com.googlecode.logVisualizer.logData.MeatGain;
+import com.googlecode.logVisualizer.logData.Skill;
+import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
 
 /**
@@ -36,131 +41,131 @@ import com.googlecode.logVisualizer.logData.consumables.Consumable;
  * interesting about turns, but not methods to change said data.
  */
 public interface TurnEntity {
-    /**
-     * @return The turn number.
-     */
-    public int getTurnNumber();
+  /**
+   * @return The turn number.
+   */
+  public int getTurnNumber();
 
-    /**
-     * @return The name of the area this turn was spent in.
-     */
-    public String getAreaName();
+  /**
+   * @return The name of the area this turn was spent in.
+   */
+  public String getAreaName();
 
-    /**
-     * @return The stat gain from this turn. This doesn't entail stat gains from
-     *         consumables used during this turn.
-     */
-    public Statgain getStatGain();
+  /**
+   * @return The stat gain from this turn. This doesn't entail stat gains from
+   *         consumables used during this turn.
+   */
+  public Statgain getStatGain();
 
-    /**
-     * @return The stat gain from this turn including those from consumables.
-     */
-    public Statgain getTotalStatGain();
+  /**
+   * @return The stat gain from this turn including those from consumables.
+   */
+  public Statgain getTotalStatGain();
 
-    /**
-     * @return The mp gains from this turn.
-     */
-    public MPGain getMPGain();
+  /**
+   * @return The mp gains from this turn.
+   */
+  public MPGain getMPGain();
 
-    /**
-     * @return The meat data object.
-     */
-    public MeatGain getMeat();
+  /**
+   * @return The meat data object.
+   */
+  public MeatGain getMeat();
 
-    /**
-     * @return The dropped items from this turn.
-     */
-    public Collection<Item> getDroppedItems();
+  /**
+   * @return The dropped items from this turn.
+   */
+  public Collection<Item> getDroppedItems();
 
-    /**
-     * @return {@code true} if the given item has dropped on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Item#getComparator()} and nothing else.
-     */
-    public boolean isItemDropped(
-                                 final Item i);
+  /**
+   * @return {@code true} if the given item has dropped on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Item#getComparator()} and nothing else.
+   */
+  public boolean isItemDropped(
+      final Item i);
 
-    /**
-     * @return {@code true} if an item with the given name has been dropped on
-     *         this turn, otherwise {@code false}. This check is solely based on
-     *         {@link Item#getName()} and nothing else.
-     */
-    public boolean isItemDropped(
-                                 final String i);
+  /**
+   * @return {@code true} if an item with the given name has been dropped on
+   *         this turn, otherwise {@code false}. This check is solely based on
+   *         {@link Item#getName()} and nothing else.
+   */
+  public boolean isItemDropped(
+      final String i);
 
-    /**
-     * @return The skills cast this turn.
-     */
-    public Collection<Skill> getSkillsCast();
-    
-    /**
-     * @return {@code true} if the given skill has been cast on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Skill#getComparator()} and nothing else.
-     */
-    public boolean isSkillCast(
-                               final Skill s);
+  /**
+   * @return The skills cast this turn.
+   */
+  public Collection<Skill> getSkillsCast();
 
-    /**
-     * @return {@code true} if a skill with the given name has been cast on this
-     *         turn, otherwise {@code false}. This check is solely based on
-     *         {@link Skill#getName()} and nothing else.
-     */
-    public boolean isSkillCast(
-                               final String s);
-    
-    /**
-     * @return {@code true} if the given combat item has been used on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link CombatItem#getComparator()} and nothing else.
-     */
-    public boolean isCombatItemUsed(final CombatItem i);
+  /**
+   * @return {@code true} if the given skill has been cast on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Skill#getComparator()} and nothing else.
+   */
+  public boolean isSkillCast(
+      final Skill s);
 
-    /**
-     * @return {@code true} if a combat item with the given name has been used on this
-     *         turn, otherwise {@code false}. This check is solely based on
-     *         {@link Skill#getName()} and nothing else.
-     */
-    public boolean isCombatItemUsed(final String s);
+  /**
+   * @return {@code true} if a skill with the given name has been cast on this
+   *         turn, otherwise {@code false}. This check is solely based on
+   *         {@link Skill#getName()} and nothing else.
+   */
+  public boolean isSkillCast(
+      final String s);
 
-    /**
-     * @return The combat items used this turn.
-     */
-    public Collection<CombatItem> getCombatItemsUsed();
-    
-    /**
-     * @return The consumables used this turn.
-     */
-    public Collection<Consumable> getConsumablesUsed();
+  /**
+   * @return {@code true} if the given combat item has been used on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link CombatItem#getComparator()} and nothing else.
+   */
+  public boolean isCombatItemUsed(final CombatItem i);
 
-    /**
-     * @return {@code true} if the given consumable has been used on this turn,
-     *         otherwise {@code false}. This check is solely based on
-     *         {@link Consumable#getComparator()} and nothing else.
-     */
-    public boolean isConsumableUsed(
-                                    final Consumable c);
+  /**
+   * @return {@code true} if a combat item with the given name has been used on this
+   *         turn, otherwise {@code false}. This check is solely based on
+   *         {@link Skill#getName()} and nothing else.
+   */
+  public boolean isCombatItemUsed(final String s);
 
-    /**
-     * @return {@code true} if a consumable with the given name has been used on
-     *         this turn, otherwise {@code false}. This check is solely based on
-     *         {@link Consumable#getName()} and nothing else.
-     */
-    public boolean isConsumableUsed(
-                                    final String c);
+  /**
+   * @return The combat items used this turn.
+   */
+  public Collection<CombatItem> getCombatItemsUsed();
 
-    /**
-     * @return The number of free runaways.
-     */
-    public int getFreeRunaways();
+  /**
+   * @return The consumables used this turn.
+   */
+  public Collection<Consumable> getConsumablesUsed();
 
-    /**
-     * @return The notes tagged to this turn.
-     */
-    public String getNotes();
+  /**
+   * @return {@code true} if the given consumable has been used on this turn,
+   *         otherwise {@code false}. This check is solely based on
+   *         {@link Consumable#getComparator()} and nothing else.
+   */
+  public boolean isConsumableUsed(
+      final Consumable c);
 
-    /**
-     * @return The turn version.
-     */
-    public TurnVersion getTurnVersion();
+  /**
+   * @return {@code true} if a consumable with the given name has been used on
+   *         this turn, otherwise {@code false}. This check is solely based on
+   *         {@link Consumable#getName()} and nothing else.
+   */
+  public boolean isConsumableUsed(
+      final String c);
+
+  /**
+   * @return The number of free runaways.
+   */
+  public int getFreeRunaways();
+
+  /**
+   * @return The notes tagged to this turn.
+   */
+  public String getNotes();
+
+  /**
+   * @return The turn version.
+   */
+  public TurnVersion getTurnVersion();
 }

@@ -43,72 +43,83 @@ import com.googlecode.logVisualizer.logData.turn.SingleTurn;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 
 public final class MPGainsPerLevelBarChart extends HorizontalStackedBarChartBuilder {
-    public MPGainsPerLevelBarChart(
-                                   final LogDataHolder logData) {
-        super(logData, "MP gains per level", "Level", "Meat", true);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 4499941863675478478L;
+
+  public MPGainsPerLevelBarChart(
+      final LogDataHolder logData) {
+    super(logData, "MP gains per level", "Level", "Meat", true);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+    for (final DataNumberPair<MPGain> dnp : getLogData().getLogSummary()
+        .getMPGainSummary()
+        .getAllLevelsData()) {
+      final String levelStr = "Level " + dnp.getNumber();
+
+      dataset.addValue(dnp.getData().encounterMPGain, "Inside encounters", levelStr);
+      dataset.addValue(dnp.getData().starfishMPGain, "Starfish familiars", levelStr);
+      dataset.addValue(dnp.getData().restingMPGain, "Resting", levelStr);
+      dataset.addValue(dnp.getData().outOfEncounterMPGain, "Outside encounters", levelStr);
+      dataset.addValue(dnp.getData().consumableMPGain, "Consumables", levelStr);
+    }
+
+    return dataset;
+  }
+
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    if (getLogData().isDetailedLog())
+      cp.addChartMouseListener(new MPGainsPerLevelChartMouseEventListener());
+  }
+
+  private final class MPGainsPerLevelChartMouseEventListener implements ChartMouseListener {
+    public MPGainsPerLevelChartMouseEventListener() {
+      // TODO Auto-generated constructor stub
     }
 
     @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-        for (final DataNumberPair<MPGain> dnp : getLogData().getLogSummary()
-                                                            .getMPGainSummary()
-                                                            .getAllLevelsData()) {
-            final String levelStr = "Level " + dnp.getNumber();
-
-            dataset.addValue(dnp.getData().encounterMPGain, "Inside encounters", levelStr);
-            dataset.addValue(dnp.getData().starfishMPGain, "Starfish familiars", levelStr);
-            dataset.addValue(dnp.getData().restingMPGain, "Resting", levelStr);
-            dataset.addValue(dnp.getData().outOfEncounterMPGain, "Outside encounters", levelStr);
-            dataset.addValue(dnp.getData().consumableMPGain, "Consumables", levelStr);
-        }
-
-        return dataset;
-    }
+    public void chartMouseMoved(
+        final ChartMouseEvent arg0) {}
 
     @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        if (getLogData().isDetailedLog())
-            cp.addChartMouseListener(new MPGainsPerLevelChartMouseEventListener());
-    }
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof CategoryItemEntity) {
+        final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+        final String levelString = (String) entity.getColumnKey();
+        // The beginning ("Level ") is always the same.
+        final int level = Integer.parseInt(levelString.substring(6));
 
-    private final class MPGainsPerLevelChartMouseEventListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent arg0) {}
-
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof CategoryItemEntity) {
-                final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-                final String levelString = (String) entity.getColumnKey();
-                // The beginning ("Level ") is always the same.
-                final int level = Integer.parseInt(levelString.substring(6));
-
-                final StringBuilder str = new StringBuilder(100);
-                str.append("Meat gained/spent on every turn of the level (encounter MP; starfish MP; resting MP; out-of-encounter MP; consumables MP):\n");
-                for (final SingleTurn st : getLogData().getTurnsSpent()) {
-                    final int currentLevel = getLogData().getCurrentLevel(st.getTurnNumber())
-                                                         .getLevelNumber();
-                    if (currentLevel > level)
-                        break;
-                    else if (currentLevel == level) {
-                        final MPGain mpGains = st.getMPGain();
-                        str.append(st.getTurnNumber() + ":    " + mpGains.encounterMPGain + ";  "
-                                   + mpGains.starfishMPGain + ";  " + mpGains.restingMPGain + ";  "
-                                   + mpGains.outOfEncounterMPGain + ";  "
-                                   + mpGains.consumableMPGain + "\n");
-                    }
-                }
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(500, 450));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "MP gains during level " + level,
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
+        final StringBuilder str = new StringBuilder(100);
+        str.append("Meat gained/spent on every turn of the level (encounter MP; starfish MP; resting MP; out-of-encounter MP; consumables MP):\n");
+        for (final SingleTurn st : getLogData().getTurnsSpent()) {
+          final int currentLevel = getLogData().getCurrentLevel(st.getTurnNumber())
+              .getLevelNumber();
+          if (currentLevel > level)
+            break;
+          else if (currentLevel == level) {
+            final MPGain mpGains = st.getMPGain();
+            str.append(st.getTurnNumber() + ":    " + mpGains.encounterMPGain + ";  "
+                + mpGains.starfishMPGain + ";  " + mpGains.restingMPGain + ";  "
+                + mpGains.outOfEncounterMPGain + ";  "
+                + mpGains.consumableMPGain + "\n");
+          }
         }
+
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(500, 450));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "MP gains during level " + level,
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
+  }
 }

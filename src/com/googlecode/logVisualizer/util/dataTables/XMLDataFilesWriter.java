@@ -24,14 +24,16 @@
 
 package com.googlecode.logVisualizer.util.dataTables;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.bea.xml.stream.XMLOutputFactoryBase;
 import com.googlecode.logVisualizer.util.xmlLogs.XMLAccessException;
 
 /**
@@ -42,94 +44,95 @@ import com.googlecode.logVisualizer.util.xmlLogs.XMLAccessException;
  * All methods in this class throw a {@link NullPointerException} if a null
  * object reference is passed in any parameter.
  */
+@SuppressWarnings("unused")
 final class XMLDataFilesWriter<T> {
 
-    /**
-     * @param saveDest
-     *            The place the data file should be saved to.
-     * @param dataWriter
-     *            The data writer responsible for the content of the data file.
-     * @throws IllegalArgumentException
-     *             if the given saveDest references is a directory
-     */
-    public static <T> void writeXMLDataFile(
-                                            final File saveDest, final DataWriter<T> dataWriter)
-                                                                                                throws XMLAccessException,
-                                                                                                IOException {
-        if (saveDest == null)
-            throw new NullPointerException("The save destination must not be null.");
-        if (dataWriter == null)
-            throw new NullPointerException("The data writer must not be null.");
+  /**
+   * @param saveDest
+   *            The place the data file should be saved to.
+   * @param dataWriter
+   *            The data writer responsible for the content of the data file.
+   * @throws IllegalArgumentException
+   *             if the given saveDest references is a directory
+   */
+  public static <T> void writeXMLDataFile(
+      final File saveDest, final DataWriter<T> dataWriter)
+          throws XMLAccessException,
+          IOException {
+    if (saveDest == null)
+      throw new NullPointerException("The save destination must not be null.");
+    if (dataWriter == null)
+      throw new NullPointerException("The data writer must not be null.");
 
-        if (saveDest.isDirectory())
-            throw new IllegalArgumentException("Incorrect saving destination, must not be a directory.");
+    if (saveDest.isDirectory())
+      throw new IllegalArgumentException("Incorrect saving destination, must not be a directory.");
 
-        OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveDest),
-                                                        Charset.forName("UTF-8"));
+    OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveDest),
+        Charset.forName("UTF-8"));
 
-        try {
-            final XMLOutputFactory factory = XMLOutputFactoryBase.newInstance();
-            final XMLStreamWriter writer = factory.createXMLStreamWriter(out);
+    try {
+      final XMLOutputFactory factory = XMLOutputFactory.newInstance();
+      final XMLStreamWriter writer = factory.createXMLStreamWriter(out);
 
-            writer.writeStartDocument("UTF-8", "1.0");
-            writer.writeStartElement(dataWriter.getRootNodeName());
-            for (final T item : dataWriter.getDataItems()) {
-                writer.writeStartElement(dataWriter.getDataNodeName());
-                dataWriter.writeArguments(writer, item);
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-            writer.writeEndDocument();
+      writer.writeStartDocument("UTF-8", "1.0");
+      writer.writeStartElement(dataWriter.getRootNodeName());
+      for (final T item : dataWriter.getDataItems()) {
+        writer.writeStartElement(dataWriter.getDataNodeName());
+        dataWriter.writeArguments(writer, item);
+        writer.writeEndElement();
+      }
+      writer.writeEndElement();
+      writer.writeEndDocument();
 
-            writer.close();
-        } catch (final XMLStreamException e) {
-            e.printStackTrace();
-            throw new XMLAccessException("Could not write to XML file.");
-        }
-
-        out.close();
+      writer.close();
+    } catch (final XMLStreamException e) {
+      e.printStackTrace();
+      throw new XMLAccessException("Could not write to XML file.");
     }
 
-    static abstract class DataWriter<T> {
-        private final Iterable<T> dataItems;
+    out.close();
+  }
 
-        private final String rootNodeName;
+  static abstract class DataWriter<T> {
+    private final Iterable<T> dataItems;
 
-        private final String dataNodeName;
+    private final String rootNodeName;
 
-        DataWriter(
-                   final Iterable<T> dataItems, final String rootNodeName, final String dataNodeName) {
-            if (dataItems == null)
-                throw new NullPointerException("The data items iterable must not be null.");
-            if (rootNodeName == null)
-                throw new NullPointerException("The root node name must not be null.");
-            if (dataNodeName == null)
-                throw new NullPointerException("The data node name must not be null.");
+    private final String dataNodeName;
 
-            if (rootNodeName.length() <= 0)
-                throw new IllegalArgumentException("The given root node name doesn't contain any characters.");
-            if (dataNodeName.length() <= 0)
-                throw new IllegalArgumentException("The given data node name doesn't contain any characters.");
+    DataWriter(
+        final Iterable<T> dataItems, final String rootNodeName, final String dataNodeName) {
+      if (dataItems == null)
+        throw new NullPointerException("The data items iterable must not be null.");
+      if (rootNodeName == null)
+        throw new NullPointerException("The root node name must not be null.");
+      if (dataNodeName == null)
+        throw new NullPointerException("The data node name must not be null.");
 
-            this.dataItems = dataItems;
-            this.rootNodeName = rootNodeName;
-            this.dataNodeName = dataNodeName;
-        }
+      if (rootNodeName.length() <= 0)
+        throw new IllegalArgumentException("The given root node name doesn't contain any characters.");
+      if (dataNodeName.length() <= 0)
+        throw new IllegalArgumentException("The given data node name doesn't contain any characters.");
 
-        final Iterable<T> getDataItems() {
-            return dataItems;
-        }
-
-        final String getRootNodeName() {
-            return rootNodeName;
-        }
-
-        final String getDataNodeName() {
-            return dataNodeName;
-        }
-
-        abstract void writeArguments(
-                                     final XMLStreamWriter writer, final T item)
-                                                                                throws XMLStreamException;
+      this.dataItems = dataItems;
+      this.rootNodeName = rootNodeName;
+      this.dataNodeName = dataNodeName;
     }
+
+    final Iterable<T> getDataItems() {
+      return dataItems;
+    }
+
+    final String getRootNodeName() {
+      return rootNodeName;
+    }
+
+    final String getDataNodeName() {
+      return dataNodeName;
+    }
+
+    abstract void writeArguments(
+        final XMLStreamWriter writer, final T item)
+            throws XMLStreamException;
+  }
 }

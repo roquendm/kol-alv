@@ -38,93 +38,97 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 
 final class MiscPanel extends JTabbedPane {
-    private static final String NEW_LINE = "\n";
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3618978649327096924L;
+  private static final String NEW_LINE = "\n";
 
-    /**
-     * @param logData
-     *            The {@link LogDataHolder} with all the data of the ascension
-     *            log.
-     */
-    MiscPanel(
-              final LogDataHolder logData) {
-        super();
-        setTabLayoutPolicy(SCROLL_TAB_LAYOUT);
+  /**
+   * @param logData
+   *            The {@link LogDataHolder} with all the data of the ascension
+   *            log.
+   */
+  MiscPanel(
+      final LogDataHolder logData) {
+    super();
+    setTabLayoutPolicy(SCROLL_TAB_LAYOUT);
 
-        addTab("Semirares", createSummaryPanel(logData.getLogSummary().getSemirares()));
-        addTab("Bad Moon", createSummaryPanel(logData.getLogSummary().getBadmoonAdventures()));
-        addTab("Hunted Combats", createSummaryPanel(logData.getHuntedCombats()));
-        addTab("Yellow Destruction", createSummaryPanel(logData.getLogSummary()
-                                                               .getDisintegratedCombats()));
-        addTab("Copied Combats", createCopiedMonstersSummaryPanel(logData));
-        addTab("Wandering Encounters", createSummaryPanel(logData.getLogSummary()
-                                                                 .getWanderingAdventures()));
-        addTab("Lost Combats", createSummaryPanel(logData.getLostCombats()));
-        addTab("Hipster Combats", createSummaryPanel(logData.getLogSummary().getHipsterCombats()));
+    addTab("Semirares", createSummaryPanel(logData.getLogSummary().getSemirares()));
+    addTab("Bad Moon", createSummaryPanel(logData.getLogSummary().getBadmoonAdventures()));
+    addTab("Hunted Combats", createSummaryPanel(logData.getHuntedCombats()));
+    addTab("Yellow Destruction", createSummaryPanel(logData.getLogSummary()
+        .getDisintegratedCombats()));
+    addTab("Copied Combats", createCopiedMonstersSummaryPanel(logData));
+    addTab("Wandering Encounters", createSummaryPanel(logData.getLogSummary()
+        .getWanderingAdventures()));
+    addTab("Lost Combats", createSummaryPanel(logData.getLostCombats()));
+    addTab("Hipster Combats", createSummaryPanel(logData.getLogSummary().getHipsterCombats()));
+  }
+
+  private static JPanel createSummaryPanel(
+      final Iterable<DataNumberPair<String>> summaryData) {
+    final JPanel panel = new JPanel(new BorderLayout());
+    final JTextArea lister = new JTextArea();
+
+    for (final DataNumberPair<String> dn : summaryData) {
+      lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+      lister.append(dn.getNumber().toString());
+      lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+      lister.append(UsefulPatterns.WHITE_SPACE);
+      lister.append(dn.getData());
+      lister.append(NEW_LINE);
     }
 
-    private static JPanel createSummaryPanel(
-                                             final Iterable<DataNumberPair<String>> summaryData) {
-        final JPanel panel = new JPanel(new BorderLayout());
-        final JTextArea lister = new JTextArea();
+    panel.add(new JScrollPane(lister), BorderLayout.CENTER);
 
-        for (final DataNumberPair<String> dn : summaryData) {
-            lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-            lister.append(dn.getNumber().toString());
-            lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-            lister.append(UsefulPatterns.WHITE_SPACE);
-            lister.append(dn.getData());
-            lister.append(NEW_LINE);
-        }
+    return panel;
+  }
 
-        panel.add(new JScrollPane(lister), BorderLayout.CENTER);
+  private static JPanel createCopiedMonstersSummaryPanel(
+      final LogDataHolder logData) {
+    final JPanel panel = new JPanel(new BorderLayout());
+    final JTextArea lister = new JTextArea();
 
-        return panel;
+    for (final TurnInterval ti : logData.getCopiedTurns()) {
+      // If the single turns collection is empty (for example because
+      // base data was from a pre-parsed log), give the area name so
+      // the user has at least some kind of feedback, otherwise use the
+      // existing encounter names.
+      if (ti.getTurns().isEmpty()) {
+        for (int i = ti.getStartTurn() + 1; i <= ti.getEndTurn(); i++)
+          addCopiedMonsterLine(lister, i, ti.getAreaName());
+      } else
+        for (final SingleTurn st : ti.getTurns())
+          addCopiedMonsterLine(lister, st.getTurnNumber(), st.getEncounterName());
     }
-
-    private static JPanel createCopiedMonstersSummaryPanel(
-                                                           final LogDataHolder logData) {
-        final JPanel panel = new JPanel(new BorderLayout());
-        final JTextArea lister = new JTextArea();
-
-        for (final TurnInterval ti : logData.getCopiedTurns()) {
-            // If the single turns collection is empty (for example because
-            // base data was from a pre-parsed log), give the area name so
-            // the user has at least some kind of feedback, otherwise use the
-            // existing encounter names.
-            if (ti.getTurns().isEmpty()) {
-                for (int i = ti.getStartTurn() + 1; i <= ti.getEndTurn(); i++)
-                    addCopiedMonsterLine(lister, i, ti.getAreaName());
-            } else
-                for (final SingleTurn st : ti.getTurns())
-                    addCopiedMonsterLine(lister, st.getTurnNumber(), st.getEncounterName());
-        }
-        if (!logData.getLogSummary().getRomanticArrowUsages().isEmpty()) {
-            lister.append(NEW_LINE);
-            lister.append(NEW_LINE);
-            lister.append("Romantic Arrow usage:" + NEW_LINE);
-            for (final DataNumberPair<String> dn : logData.getLogSummary().getRomanticArrowUsages()) {
-                lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-                lister.append(dn.getNumber().toString());
-                lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-                lister.append(UsefulPatterns.WHITE_SPACE);
-                lister.append(dn.getData());
-                lister.append(NEW_LINE);
-            }
-        }
-
-        panel.add(new JScrollPane(lister), BorderLayout.CENTER);
-
-        return panel;
-    }
-
-    private static final void addCopiedMonsterLine(
-                                                   final JTextArea lister, final int turnNumber,
-                                                   final String description) {
+    if (!logData.getLogSummary().getRomanticArrowUsages().isEmpty()) {
+      lister.append(NEW_LINE);
+      lister.append(NEW_LINE);
+      lister.append("Romantic Arrow usage:" + NEW_LINE);
+      for (final DataNumberPair<String> dn : logData.getLogSummary().getRomanticArrowUsages()) {
         lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-        lister.append(String.valueOf(turnNumber));
+        lister.append(dn.getNumber().toString());
         lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
         lister.append(UsefulPatterns.WHITE_SPACE);
-        lister.append(description);
+        lister.append(dn.getData());
         lister.append(NEW_LINE);
+      }
     }
+
+    panel.add(new JScrollPane(lister), BorderLayout.CENTER);
+
+    return panel;
+  }
+
+  private static final void addCopiedMonsterLine(
+      final JTextArea lister, final int turnNumber,
+      final String description) {
+    lister.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+    lister.append(String.valueOf(turnNumber));
+    lister.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    lister.append(UsefulPatterns.WHITE_SPACE);
+    lister.append(description);
+    lister.append(NEW_LINE);
+  }
 }

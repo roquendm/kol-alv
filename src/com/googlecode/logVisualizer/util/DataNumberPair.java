@@ -32,86 +32,87 @@ package com.googlecode.logVisualizer.util;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class DataNumberPair<T> implements Comparable<DataNumberPair<?>> {
-    private final Pair<T, Integer> dataNumberPair;
+  private final Pair<T, Integer> dataNumberPair;
 
-    /**
-     * Creates a data number pairing of a generic object and a number.
-     * 
-     * @param data
-     *            The data to set.
-     * @param number
-     *            The number to set.
-     * @throws NullPointerException
-     *             if data is {@code null}; if number is {@code null}
-     */
-    public static <T> DataNumberPair<T> of(
-                                           final T data, final Integer number) {
-        return new DataNumberPair<T>(data, number);
-    }
+  /**
+   * Creates a data number pairing of a generic object and a number.
+   *
+   * @param data
+   *            The data to set.
+   * @param number
+   *            The number to set.
+   * @throws NullPointerException
+   *             if data is {@code null}; if number is {@code null}
+   */
+  public static <T> DataNumberPair<T> of(
+      final T data, final Integer number) {
+    return new DataNumberPair<T>(data, number);
+  }
 
-    /**
-     * @param data
-     *            The data to set.
-     * @param number
-     *            The number to set.
-     * @throws NullPointerException
-     *             if data is {@code null}; if number is {@code null}
-     */
-    private DataNumberPair(
-                           final T data, final Integer number) {
-        dataNumberPair = Pair.of(data, number);
-    }
+  /**
+   * @param data
+   *            The data to set.
+   * @param number
+   *            The number to set.
+   * @throws NullPointerException
+   *             if data is {@code null}; if number is {@code null}
+   */
+  private DataNumberPair(
+      final T data, final Integer number) {
+    dataNumberPair = Pair.of(data, number);
+  }
 
-    /**
-     * @return The data.
-     */
-    public T getData() {
-        return dataNumberPair.getVar1();
-    }
+  /**
+   * @return The data.
+   */
+  public T getData() {
+    return dataNumberPair.getVar1();
+  }
 
-    /**
-     * @return The number.
-     */
-    public Integer getNumber() {
-        return dataNumberPair.getVar2();
-    }
+  /**
+   * @return The number.
+   */
+  public Integer getNumber() {
+    return dataNumberPair.getVar2();
+  }
 
-    /**
-     * @return The difference between the number of this DataNumber instance and
-     *         the number of the given DataNumber object.
-     * @see Comparable
-     */
-    public int compareTo(
-                         final DataNumberPair<?> dataNumber) {
-        return dataNumberPair.getVar2().compareTo(dataNumber.getNumber());
-    }
+  /**
+   * @return The difference between the number of this DataNumber instance and
+   *         the number of the given DataNumber object.
+   * @see Comparable
+   */
+  @Override
+  public int compareTo(
+      final DataNumberPair<?> dataNumber) {
+    return dataNumberPair.getVar2().compareTo(dataNumber.getNumber());
+  }
 
-    @Override
-    public String toString() {
-        return dataNumberPair.getVar1().toString() + ": " + dataNumberPair.getVar2();
-    }
+  @Override
+  public String toString() {
+    return dataNumberPair.getVar1().toString() + ": " + dataNumberPair.getVar2();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (o == this)
-            return true;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o == this)
+      return true;
 
-        if (o == null)
-            return false;
+    if (o == null)
+      return false;
 
-        if (o instanceof DataNumberPair<?>)
-            return getData().equals(((DataNumberPair<?>) o).getData())
-                   && getNumber().equals(((DataNumberPair<?>) o).getNumber());
+    if (o instanceof DataNumberPair<?>)
+      return getData().equals(((DataNumberPair<?>) o).getData())
+          && getNumber().equals(((DataNumberPair<?>) o).getNumber());
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 1147;
-        result = 31 * result + dataNumberPair.hashCode();
+  @Override
+  public int hashCode() {
+    int result = 1147;
+    result = 31 * result + dataNumberPair.hashCode();
 
-        return result;
-    }
+    return result;
+  }
 }

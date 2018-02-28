@@ -7,7 +7,7 @@ import java.util.EventListener;
  * For what needs is interface with Listener?
  * <p>
  * If you have something like this:
- * 
+ *
  * <pre>
  * public boolean closeTab(
  *                         int tabIndexToClose) {
@@ -16,7 +16,7 @@ import java.util.EventListener;
  *                                             &quot;Question&quot;,
  *                                             YES_NO_OPTION,
  *                                             QUESTION_MESSAGE);
- * 
+ *
  *     return ret == JOptionPane.YES_OPTION;
  * }
  * </pre>
@@ -30,6 +30,6 @@ import java.util.EventListener;
  * Java Forums - JTabbedPane with close icons, Post #22 </a>
  */
 public interface CloseableTabbedPaneListener extends EventListener {
-    public boolean closeTab(
-                            int tabIndexToClose);
+  public boolean closeTab(
+      int tabIndexToClose);
 }

@@ -43,39 +43,39 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code You lose _amount_ Meat}
  */
 public final class MeatSpentLineParser extends AbstractLineParser {
-    private static final String MEAT_SPENT_START_STRING = "You spent ";
+  private static final String MEAT_SPENT_START_STRING = "You spent ";
 
-    private static final Pattern MEAT_SPENT = Pattern.compile("^You (?:spent|lose) \\d*,?\\d+ Meat");
+  private static final Pattern MEAT_SPENT = Pattern.compile("^You (?:spent|lose) \\d*,?\\d+ Meat");
 
-    private final Matcher meatSpentMatcher = MEAT_SPENT.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher meatSpentMatcher = MEAT_SPENT.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final String informationPart;
-        // Either the string starts with "You spent " or with "You lose ".
-        if (line.startsWith(MEAT_SPENT_START_STRING))
-            informationPart = line.substring(10);
-        else
-            informationPart = line.substring(9);
-        final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final String informationPart;
+    // Either the string starts with "You spent " or with "You lose ".
+    if (line.startsWith(MEAT_SPENT_START_STRING))
+      informationPart = line.substring(10);
+    else
+      informationPart = line.substring(9);
+    final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
 
-        final String amountString = informationPart.substring(0, whiteSpaceIndex);
-        final int amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
-                                                                 UsefulPatterns.EMPTY_STRING));
+    final String amountString = informationPart.substring(0, whiteSpaceIndex);
+    final int amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
+        UsefulPatterns.EMPTY_STRING));
 
-        logData.getLastTurnSpent().addMeat(new MeatGain(0, 0, amount));
-    }
+    logData.getLastTurnSpent().addMeat(new MeatGain(0, 0, amount));
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return meatSpentMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return meatSpentMatcher.reset(line).matches();
+  }
 }

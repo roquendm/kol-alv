@@ -28,74 +28,75 @@ package com.googlecode.logVisualizer.util.dataTables;
  * This class is a simple container class for extra stats from equipment.
  */
 public final class ExtraStats implements Comparable<ExtraStats> {
-    /**
-     * As the names says, an ExtraStats object with zero for every field.
-     */
-    public static final ExtraStats NO_STATS = new ExtraStats(0, 0, 0, 0);
+  /**
+   * As the names says, an ExtraStats object with zero for every field.
+   */
+  public static final ExtraStats NO_STATS = new ExtraStats(0, 0, 0, 0);
 
-    public final double generalGain;
+  public final double generalGain;
 
-    public final int musGain;
+  public final int musGain;
 
-    public final int mystGain;
+  public final int mystGain;
 
-    public final int moxGain;
+  public final int moxGain;
 
-    public ExtraStats(
-                      final double generalGain, final int musGain, final int mystGain,
-                      final int moxGain) {
-        this.generalGain = generalGain;
-        this.musGain = musGain;
-        this.mystGain = mystGain;
-        this.moxGain = moxGain;
-    }
+  public ExtraStats(
+      final double generalGain, final int musGain, final int mystGain,
+      final int moxGain) {
+    this.generalGain = generalGain;
+    this.musGain = musGain;
+    this.mystGain = mystGain;
+    this.moxGain = moxGain;
+  }
 
-    public ExtraStats(
-                      final double generalGain) {
-        this(generalGain, 0, 0, 0);
-    }
+  public ExtraStats(
+      final double generalGain) {
+    this(generalGain, 0, 0, 0);
+  }
 
-    public int compareTo(
-                         final ExtraStats that) {
-        if (generalGain == that.generalGain) {
-            if (musGain == that.musGain) {
-                if (mystGain == that.mystGain)
-                    return moxGain - that.moxGain;
-                else
-                    return mystGain - that.mystGain;
-            } else
-                return musGain - that.musGain;
-        } else if (generalGain < that.generalGain)
-            return -1;
+  @Override
+  public int compareTo(
+      final ExtraStats that) {
+    if (generalGain == that.generalGain) {
+      if (musGain == that.musGain) {
+        if (mystGain == that.mystGain)
+          return moxGain - that.moxGain;
         else
-            return 1;
-    }
+          return mystGain - that.mystGain;
+      } else
+        return musGain - that.musGain;
+    } else if (generalGain < that.generalGain)
+      return -1;
+    else
+      return 1;
+  }
 
-    @Override
-    public boolean equals(
-                          final Object obj) {
-        if (this == obj)
-            return true;
+  @Override
+  public boolean equals(
+      final Object obj) {
+    if (this == obj)
+      return true;
 
-        if (obj == null)
-            return false;
+    if (obj == null)
+      return false;
 
-        if (!(obj instanceof ExtraStats))
-            return false;
+    if (!(obj instanceof ExtraStats))
+      return false;
 
-        ExtraStats other = (ExtraStats) obj;
-        return generalGain == other.generalGain && musGain == other.musGain
-               && mystGain == other.mystGain && moxGain == other.moxGain;
-    }
+    ExtraStats other = (ExtraStats) obj;
+    return generalGain == other.generalGain && musGain == other.musGain
+        && mystGain == other.mystGain && moxGain == other.moxGain;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 483;
-        result = 31 * result + (int) generalGain;
-        result = 31 * result + musGain;
-        result = 31 * result + mystGain;
-        result = 31 * result + moxGain;
+  @Override
+  public int hashCode() {
+    int result = 483;
+    result = 31 * result + (int) generalGain;
+    result = 31 * result + musGain;
+    result = 31 * result + mystGain;
+    result = 31 * result + moxGain;
 
-        return result;
-    }
+    return result;
+  }
 }

@@ -40,36 +40,37 @@ import com.googlecode.logVisualizer.logData.LogDataHolder.GameMode;
  */
 public final class AscensionDataBlockParser implements LogBlockParser {
 
-    public void parseBlock(
-                           final List<String> block, final LogDataHolder logData) {
-        if (logData.getCharacterClass() == CharacterClass.NOT_DEFINED)
-            classCheck: {
-                for (final String line : block)
-                    for (final CharacterClass clazz : CharacterClass.values())
-                        if (line.endsWith(clazz.toString())) {
-                            logData.setCharacterClass(clazz);
-                            break classCheck;
-                        }
-            }
-
-        if (logData.getGameMode() == GameMode.NOT_DEFINED)
-            modeCheck: {
-                for (final String line : block)
-                    for (final GameMode mode : GameMode.values())
-                        if (line.startsWith(mode.toString())) {
-                            logData.setGameMode(mode);
-                            break modeCheck;
-                        }
-            }
-
-        if (logData.getAscensionPath() == AscensionPath.NOT_DEFINED)
-            pathCheck: {
-                for (final String line : block)
-                    for (final AscensionPath path : AscensionPath.values())
-                        if (line.contains(path.toString())) {
-                            logData.setAscensionPath(path);
-                            break pathCheck;
-                        }
-            }
+  @Override
+  public void parseBlock(
+      final List<String> block, final LogDataHolder logData) {
+    if (logData.getCharacterClass() == CharacterClass.NOT_DEFINED)
+      classCheck: {
+      for (final String line : block)
+        for (final CharacterClass clazz : CharacterClass.values())
+          if (line.endsWith(clazz.toString())) {
+            logData.setCharacterClass(clazz);
+            break classCheck;
+          }
     }
+
+    if (logData.getGameMode() == GameMode.NOT_DEFINED)
+      modeCheck: {
+      for (final String line : block)
+        for (final GameMode mode : GameMode.values())
+          if (line.startsWith(mode.toString())) {
+            logData.setGameMode(mode);
+            break modeCheck;
+          }
+    }
+
+    if (logData.getAscensionPath() == AscensionPath.NOT_DEFINED)
+      pathCheck: {
+      for (final String line : block)
+        for (final AscensionPath path : AscensionPath.values())
+          if (line.contains(path.toString())) {
+            logData.setAscensionPath(path);
+            break pathCheck;
+          }
+    }
+  }
 }

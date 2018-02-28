@@ -50,81 +50,82 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code You acquire _item name_ (_number of items_)}
  */
 public final class ItemAcquisitionLineParser extends AbstractLineParser {
-    private static final Pattern MULTIPLE_ITEMS_OLD = Pattern.compile("You acquire \\d+ [\\s\\w\\p{Punct}]+");
+  private static final Pattern MULTIPLE_ITEMS_OLD = Pattern.compile("You acquire \\d+ [\\s\\w\\p{Punct}]+");
 
-    private static final Pattern MULTIPLE_ITEMS_NEW = Pattern.compile("You acquire [\\s\\w\\p{Punct}]+ \\(\\d+\\)");
+  private static final Pattern MULTIPLE_ITEMS_NEW = Pattern.compile("You acquire [\\s\\w\\p{Punct}]+ \\(\\d+\\)");
 
-    private static final Pattern MULTIPLE_ITEMS_OLD_CAPTURE_PATTERN = Pattern.compile("You acquire (\\d*,?\\d+) (.+)");
+  private static final Pattern MULTIPLE_ITEMS_OLD_CAPTURE_PATTERN = Pattern.compile("You acquire (\\d*,?\\d+) (.+)");
 
-    private static final Pattern MULTIPLE_ITEMS_NEW_CAPTURE_PATTERN = Pattern.compile("You acquire (.+) \\((\\d*,?\\d+)\\)");
+  private static final Pattern MULTIPLE_ITEMS_NEW_CAPTURE_PATTERN = Pattern.compile("You acquire (.+) \\((\\d*,?\\d+)\\)");
 
-    private static final String SINGLE_ITEM_STRING = "You acquire an item: ";
+  private static final String SINGLE_ITEM_STRING = "You acquire an item: ";
 
-    private static final String ACQUIRE_STRING = "You acquire";
+  private static final String ACQUIRE_STRING = "You acquire";
 
-    private static final String ACQUIRE_EFFECT = "You acquire an effect:";
+  private static final String ACQUIRE_EFFECT = "You acquire an effect:";
 
-    private final Matcher multipleItemsOldMatcher = MULTIPLE_ITEMS_OLD.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher multipleItemsOldMatcher = MULTIPLE_ITEMS_OLD.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private final Matcher multipleItemsNewMatcher = MULTIPLE_ITEMS_NEW.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher multipleItemsNewMatcher = MULTIPLE_ITEMS_NEW.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final String itemName;
-        int amount = 1;
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("resource")
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final String itemName;
+    int amount = 1;
 
-        // Check whether it's only a single item acquisition or not and act
-        // based on it.
-        if (line.startsWith(SINGLE_ITEM_STRING))
-            itemName = line.substring(SINGLE_ITEM_STRING.length());
-        else if (multipleItemsOldMatcher.reset(line).matches()) {
-            final Scanner scanner = new Scanner(line);
-            scanner.findInLine(MULTIPLE_ITEMS_OLD_CAPTURE_PATTERN);
-            final MatchResult result = scanner.match();
+    // Check whether it's only a single item acquisition or not and act
+    // based on it.
+    if (line.startsWith(SINGLE_ITEM_STRING))
+      itemName = line.substring(SINGLE_ITEM_STRING.length());
+    else if (multipleItemsOldMatcher.reset(line).matches()) {
+      final Scanner scanner = new Scanner(line);
+      scanner.findInLine(MULTIPLE_ITEMS_OLD_CAPTURE_PATTERN);
+      final MatchResult result = scanner.match();
 
-            if (result.group(1).contains(UsefulPatterns.COMMA))
-                amount = Integer.parseInt(result.group(1).replace(UsefulPatterns.COMMA,
-                                                                  UsefulPatterns.EMPTY_STRING));
-            else
-                amount = Integer.parseInt(result.group(1));
-            itemName = result.group(2);
+      if (result.group(1).contains(UsefulPatterns.COMMA))
+        amount = Integer.parseInt(result.group(1).replace(UsefulPatterns.COMMA,
+            UsefulPatterns.EMPTY_STRING));
+      else
+        amount = Integer.parseInt(result.group(1));
+      itemName = result.group(2);
 
-            scanner.close();
-        } else {
-            final Scanner scanner = new Scanner(line);
-            scanner.findInLine(MULTIPLE_ITEMS_NEW_CAPTURE_PATTERN);
-            final MatchResult result = scanner.match();
+      scanner.close();
+    } else {
+      final Scanner scanner = new Scanner(line);
+      scanner.findInLine(MULTIPLE_ITEMS_NEW_CAPTURE_PATTERN);
+      final MatchResult result = scanner.match();
 
-            itemName = result.group(1);
-            if (result.group(2).contains(UsefulPatterns.COMMA))
-                amount = Integer.parseInt(result.group(2).replace(UsefulPatterns.COMMA,
-                                                                  UsefulPatterns.EMPTY_STRING));
-            else
-                amount = Integer.parseInt(result.group(2));
+      itemName = result.group(1);
+      if (result.group(2).contains(UsefulPatterns.COMMA))
+        amount = Integer.parseInt(result.group(2).replace(UsefulPatterns.COMMA,
+            UsefulPatterns.EMPTY_STRING));
+      else
+        amount = Integer.parseInt(result.group(2));
 
-            scanner.close();
-        }
-
-        final Turn currentTurn = logData.getLastTurnSpent();
-        currentTurn.addDroppedItem(new Item(itemName, amount, currentTurn.getTurnNumber()));
+      scanner.close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
+    final Turn currentTurn = logData.getLastTurnSpent();
+    currentTurn.addDroppedItem(new Item(itemName, amount, currentTurn.getTurnNumber()));
+  }
 
-        // Filter out you acquire an effect from items
-        return !line.startsWith(ACQUIRE_EFFECT) &&
-                line.startsWith(ACQUIRE_STRING)
-               && (line.startsWith(SINGLE_ITEM_STRING)
-                   || multipleItemsOldMatcher.reset(line).matches() || multipleItemsNewMatcher.reset(line)
-                                                                                              .matches());
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+
+    // Filter out you acquire an effect from items
+    return !line.startsWith(ACQUIRE_EFFECT) &&
+        line.startsWith(ACQUIRE_STRING)
+        && (line.startsWith(SINGLE_ITEM_STRING)
+            || multipleItemsOldMatcher.reset(line).matches() || multipleItemsNewMatcher.reset(line)
+            .matches());
+  }
 }

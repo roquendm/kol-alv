@@ -31,30 +31,36 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.Statgain;
 
 public final class StatGiverBarChart extends HorizontalStackedBarChartBuilder {
-    public StatGiverBarChart(
-                             final LogDataHolder logData) {
-        super(logData, "Stat gains from ...", "Stat giver", "Stats gained", true);
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -4433265545909665051L;
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+  public StatGiverBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Stat gains from ...", "Stat giver", "Stats gained", true);
+  }
 
-        addValue(dataset, getLogData().getLogSummary().getCombatsStatgains(), "Combats");
-        addValue(dataset, getLogData().getLogSummary().getNoncombatsStatgains(), "Noncombats");
-        addValue(dataset, getLogData().getLogSummary().getOthersStatgains(), "Others");
-        addValue(dataset, getLogData().getLogSummary().getFoodConsumablesStatgains(), "Food");
-        addValue(dataset, getLogData().getLogSummary().getBoozeConsumablesStatgains(), "Booze");
-        addValue(dataset, getLogData().getLogSummary().getUsedConsumablesStatgains(), "Using");
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        return dataset;
-    }
+    addValue(dataset, getLogData().getLogSummary().getCombatsStatgains(), "Combats");
+    addValue(dataset, getLogData().getLogSummary().getNoncombatsStatgains(), "Noncombats");
+    addValue(dataset, getLogData().getLogSummary().getOthersStatgains(), "Others");
+    addValue(dataset, getLogData().getLogSummary().getFoodConsumablesStatgains(), "Food");
+    addValue(dataset, getLogData().getLogSummary().getBoozeConsumablesStatgains(), "Booze");
+    addValue(dataset, getLogData().getLogSummary().getUsedConsumablesStatgains(), "Using");
 
-    private void addValue(
-                          final DefaultCategoryDataset dataset, final Statgain stats,
-                          final String name) {
-        dataset.addValue(stats.mus, "Muscle", name);
-        dataset.addValue(stats.myst, "Mysticality", name);
-        dataset.addValue(stats.mox, "Moxie", name);
-    }
+    return dataset;
+  }
+
+  @SuppressWarnings("static-method")
+  private void addValue(
+      final DefaultCategoryDataset dataset, final Statgain stats,
+      final String name) {
+    dataset.addValue(stats.mus, "Muscle", name);
+    dataset.addValue(stats.myst, "Mysticality", name);
+    dataset.addValue(stats.mox, "Moxie", name);
+  }
 }

@@ -28,12 +28,17 @@ package com.googlecode.logVisualizer.util.xmlLogs;
  * An exception thrown in case a file could not be created/read/written to.
  */
 public final class FileAccessException extends Exception {
-    public FileAccessException() {
-        super();
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3870963219888558710L;
 
-    public FileAccessException(
-                               final String s) {
-        super(s);
-    }
+  public FileAccessException() {
+    super();
+  }
+
+  public FileAccessException(
+      final String s) {
+    super(s);
+  }
 }

@@ -31,135 +31,135 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * consumables and so on.
  */
 public final class Statgain {
-    public static final Statgain NO_STATS = new Statgain(0, 0, 0);
+  public static final Statgain NO_STATS = new Statgain(0, 0, 0);
 
-    public final int mus;
+  public final int mus;
 
-    public final int myst;
+  public final int myst;
 
-    public final int mox;
+  public final int mox;
 
-    /**
-     * @param mus
-     *            The muscle stat gain to set.
-     * @param myst
-     *            The mysticality stat gain to set.
-     * @param mox
-     *            The moxie stat gain to set.
-     */
-    public Statgain(
-                    final int mus, final int myst, final int mox) {
-        this.mus = mus;
-        this.myst = myst;
-        this.mox = mox;
-    }
+  /**
+   * @param mus
+   *            The muscle stat gain to set.
+   * @param myst
+   *            The mysticality stat gain to set.
+   * @param mox
+   *            The moxie stat gain to set.
+   */
+  public Statgain(
+      final int mus, final int myst, final int mox) {
+    this.mus = mus;
+    this.myst = myst;
+    this.mox = mox;
+  }
 
-    /**
-     * @param mus
-     *            The muscle stats to set.
-     * @return The new Statgain.
-     */
-    public Statgain setMuscle(
-                              final int mus) {
-        return new Statgain(mus, myst, mox);
-    }
+  /**
+   * @param mus
+   *            The muscle stats to set.
+   * @return The new Statgain.
+   */
+  public Statgain setMuscle(
+      final int mus) {
+    return new Statgain(mus, myst, mox);
+  }
 
-    /**
-     * @param myst
-     *            The myst stats to set.
-     * @return The new Statgain.
-     */
-    public Statgain setMyst(
-                            final int myst) {
-        return new Statgain(mus, myst, mox);
-    }
+  /**
+   * @param myst
+   *            The myst stats to set.
+   * @return The new Statgain.
+   */
+  public Statgain setMyst(
+      final int myst) {
+    return new Statgain(mus, myst, mox);
+  }
 
-    /**
-     * @param mox
-     *            The moxie stats to set.
-     * @return The new Statgain.
-     */
-    public Statgain setMoxie(
-                             final int mox) {
-        return new Statgain(mus, myst, mox);
-    }
+  /**
+   * @param mox
+   *            The moxie stats to set.
+   * @return The new Statgain.
+   */
+  public Statgain setMoxie(
+      final int mox) {
+    return new Statgain(mus, myst, mox);
+  }
 
-    /**
-     * @return True if all stats are zero, otherwise false.
-     */
-    public boolean isAllStatsZero() {
-        return mus == 0 && myst == 0 && mox == 0;
-    }
+  /**
+   * @return True if all stats are zero, otherwise false.
+   */
+  public boolean isAllStatsZero() {
+    return mus == 0 && myst == 0 && mox == 0;
+  }
 
-    /**
-     * @return The total stat gain.
-     */
-    public int getTotalStatgain() {
-        return mus + myst + mox;
-    }
+  /**
+   * @return The total stat gain.
+   */
+  public int getTotalStatgain() {
+    return mus + myst + mox;
+  }
 
-    /**
-     * @param stats
-     *            Adds all stat gains of that Statgain object to this instance.
-     * @return The new Statgain.
-     * @throws NullPointerException
-     *             if stats is {@code null}
-     */
-    public Statgain addStats(
-                             final Statgain stats) {
-        return addStats(stats.mus, stats.myst, stats.mox);
-    }
+  /**
+   * @param stats
+   *            Adds all stat gains of that Statgain object to this instance.
+   * @return The new Statgain.
+   * @throws NullPointerException
+   *             if stats is {@code null}
+   */
+  public Statgain addStats(
+      final Statgain stats) {
+    return addStats(stats.mus, stats.myst, stats.mox);
+  }
 
-    /**
-     * @param mus
-     *            The muscle stat gain to add.
-     * @param myst
-     *            The mysticality stat gain to add.
-     * @param mox
-     *            The moxie stat gain to add.
-     * @return The new Statgain.
-     */
-    public Statgain addStats(
-                             final int mus, final int myst, final int mox) {
-        return new Statgain(this.mus + mus, this.myst + myst, this.mox + mox);
-    }
+  /**
+   * @param mus
+   *            The muscle stat gain to add.
+   * @param myst
+   *            The mysticality stat gain to add.
+   * @param mox
+   *            The moxie stat gain to add.
+   * @return The new Statgain.
+   */
+  public Statgain addStats(
+      final int mus, final int myst, final int mox) {
+    return new Statgain(this.mus + mus, this.myst + myst, this.mox + mox);
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(20);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(20);
 
-        str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-        str.append(mus);
-        str.append(UsefulPatterns.COMMA);
-        str.append(myst);
-        str.append(UsefulPatterns.COMMA);
-        str.append(mox);
-        str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+    str.append(mus);
+    str.append(UsefulPatterns.COMMA);
+    str.append(myst);
+    str.append(UsefulPatterns.COMMA);
+    str.append(mox);
+    str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (this == o)
-            return true;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (this == o)
+      return true;
 
-        if (o != null)
-            if (o instanceof Statgain)
-                return ((Statgain) o).mus == mus && ((Statgain) o).myst == myst
-                       && ((Statgain) o).mox == mox;
+    if (o != null)
+      if (o instanceof Statgain)
+        return ((Statgain) o).mus == mus && ((Statgain) o).myst == myst
+        && ((Statgain) o).mox == mox;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 25;
-        result = 31 * result + mus;
-        result = 31 * result + myst;
-        result = 31 * result + mox;
+  @Override
+  public int hashCode() {
+    int result = 25;
+    result = 31 * result + mus;
+    result = 31 * result + myst;
+    result = 31 * result + mox;
 
-        return result;
-    }
+    return result;
+  }
 }

@@ -36,23 +36,23 @@ import com.googlecode.logVisualizer.logData.turn.TurnVersion;
  * {@code Round 0: ...}
  */
 public final class CombatRecognizerLineParser extends AbstractLineParser {
-    private static final String FIRST_COMBAT_ROUND_LINE_BEGINNING_STRING = "Round 0: ";
+  private static final String FIRST_COMBAT_ROUND_LINE_BEGINNING_STRING = "Round 0: ";
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        ((SingleTurn) logData.getLastTurnSpent()).setTurnVersion(TurnVersion.COMBAT);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    ((SingleTurn) logData.getLastTurnSpent()).setTurnVersion(TurnVersion.COMBAT);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return line.startsWith(FIRST_COMBAT_ROUND_LINE_BEGINNING_STRING);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return line.startsWith(FIRST_COMBAT_ROUND_LINE_BEGINNING_STRING);
+  }
 }

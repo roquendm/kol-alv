@@ -33,31 +33,31 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
  * An interface for a parser that can parse multiple lines (= a block).
  */
 public interface BlockParser {
-    /**
-     * Parses a certain amount of lines (= a block). How many lines exactly
-     * depends on the actual implementation.
-     * <p>
-     * Note that parsing will only happen if the current line matches the
-     * specified start of the block. If it doesn't match, the reader will stay
-     * at it's current position.
-     * <p>
-     * The {@link BufferedReader} is not closed by this method. Also, this
-     * method will only read as many lines as necessary to parse out the
-     * information it needs (and recognise that the block is finished). However,
-     * it will not reset the reader to the position it started in.
-     * 
-     * @param nextLine
-     *            The next line that the reader will produce.
-     * @param reader
-     *            The reader of the log of which a block should be parsed.
-     * @param logData
-     *            The log data instance in which the parsing results should be
-     *            saved in.
-     * @throws IOException
-     *             Will be throw, if there was a problem with reading data from
-     *             the BufferedReader.
-     */
-    public void parseBlock(
-                           String nextLine, BufferedReader reader, LogDataHolder logData)
-                                                                                         throws IOException;
+  /**
+   * Parses a certain amount of lines (= a block). How many lines exactly
+   * depends on the actual implementation.
+   * <p>
+   * Note that parsing will only happen if the current line matches the
+   * specified start of the block. If it doesn't match, the reader will stay
+   * at it's current position.
+   * <p>
+   * The {@link BufferedReader} is not closed by this method. Also, this
+   * method will only read as many lines as necessary to parse out the
+   * information it needs (and recognise that the block is finished). However,
+   * it will not reset the reader to the position it started in.
+   *
+   * @param nextLine
+   *            The next line that the reader will produce.
+   * @param reader
+   *            The reader of the log of which a block should be parsed.
+   * @param logData
+   *            The log data instance in which the parsing results should be
+   *            saved in.
+   * @throws IOException
+   *             Will be throw, if there was a problem with reading data from
+   *             the BufferedReader.
+   */
+  public void parseBlock(
+      String nextLine, BufferedReader reader, LogDataHolder logData)
+          throws IOException;
 }

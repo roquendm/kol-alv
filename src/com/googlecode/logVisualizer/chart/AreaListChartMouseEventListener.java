@@ -38,33 +38,35 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 
 final class AreaListChartMouseEventListener implements ChartMouseListener {
-    private final LogDataHolder logData;
+  private final LogDataHolder logData;
 
-    AreaListChartMouseEventListener(
-                                    final LogDataHolder logData) {
-        this.logData = logData;
+  AreaListChartMouseEventListener(
+      final LogDataHolder logData) {
+    this.logData = logData;
+  }
+
+  @Override
+  public void chartMouseMoved(
+      final ChartMouseEvent arg0) {}
+
+  @Override
+  public void chartMouseClicked(
+      final ChartMouseEvent e) {
+    if (e.getEntity() instanceof CategoryItemEntity) {
+      final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+      final String areaName = (String) entity.getColumnKey();
+
+      final StringBuilder str = new StringBuilder(100);
+      for (final TurnInterval ti : logData.getTurnIntervalsSpent())
+        if (ti.getAreaName().equals(areaName))
+          str.append(ti + "\n");
+
+      final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+      text.setPreferredSize(new Dimension(450, 200));
+      JOptionPane.showMessageDialog(null,
+          text,
+          "Occurences of turns spent at " + areaName,
+          JOptionPane.INFORMATION_MESSAGE);
     }
-
-    public void chartMouseMoved(
-                                final ChartMouseEvent arg0) {}
-
-    public void chartMouseClicked(
-                                  final ChartMouseEvent e) {
-        if (e.getEntity() instanceof CategoryItemEntity) {
-            final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-            final String areaName = (String) entity.getColumnKey();
-
-            final StringBuilder str = new StringBuilder(100);
-            for (final TurnInterval ti : logData.getTurnIntervalsSpent())
-                if (ti.getAreaName().equals(areaName))
-                    str.append(ti + "\n");
-
-            final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-            text.setPreferredSize(new Dimension(450, 200));
-            JOptionPane.showMessageDialog(null,
-                                          text,
-                                          "Occurences of turns spent at " + areaName,
-                                          JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+  }
 }

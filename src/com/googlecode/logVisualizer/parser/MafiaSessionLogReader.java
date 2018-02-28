@@ -42,383 +42,390 @@ import com.googlecode.logVisualizer.util.Sets;
  * and easier to handle chunks.
  */
 public final class MafiaSessionLogReader {
-    public static final Set<String> BROKEN_AREAS_ENCOUNTER_SET = Sets.immutableSetOf("Encounter: Big Wisniewski",
-            "Encounter: The Big Wisniewski",
-            "Encounter: The Man",
-            "Encounter: Lord Spookyraven",
-            "Encounter: Ed the Undying",
-            "Encounter: The Infiltrationist",
-            "Encounter: giant sandworm",
-            "Encounter: Wu Tang the Betrayer");
+  public static final int MARK_LIMIT = 5000; // WTF: This is stupid
 
-    private static final String ENCOUNTER_START_STRING = "Encounter: ";
+  public static final Set<String> BROKEN_AREAS_ENCOUNTER_SET = Sets.immutableSetOf("Encounter: Big Wisniewski",
+      "Encounter: The Big Wisniewski",
+      "Encounter: The Man",
+      "Encounter: Lord Spookyraven",
+      "Encounter: Ed the Undying",
+      "Encounter: The Infiltrationist",
+      "Encounter: giant sandworm",
+      "Encounter: Wu Tang the Betrayer");
 
-    private static final String FAMILIAR_POUND_GAIN_END_STRING = "gains a pound!";
+  private static final String ENCOUNTER_START_STRING = "Encounter: ";
 
-    private static final String USE_STRING = "use";
+  private static final String FAMILIAR_POUND_GAIN_END_STRING = "gains a pound!";
 
-    private static final String EAT_STRING = "eat";
+  private static final String USE_STRING = "use";
 
-    private static final String DRINK_STRING = "drink";
-    
-    private static final String SPLEEN_STRING = "chew";
+  private static final String EAT_STRING = "eat";
 
-    private static final String BUY_STRING = "Buy";
+  private static final String DRINK_STRING = "drink";
 
-    private static final String SNAPSHOT_START_END = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+  private static final String SPLEEN_STRING = "chew";
 
-    private static final String PLAYER_SNAPSHOT_STRING = "Player Snapshot";
+  private static final String BUY_STRING = "Buy";
 
-    private static final String ASCENSION_DATA_START_STRING = "Ascension #";
+  private static final String SNAPSHOT_START_END = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
 
-    private static final String LEVEL_12_QUEST_BOSSFIGHT_BEGINNING_STRING = "bigisland.php?";
+  private static final String PLAYER_SNAPSHOT_STRING = "Player Snapshot";
 
-    private final BufferedReader log;
+  private static final String ASCENSION_DATA_START_STRING = "Ascension #";
 
-    private boolean hasNext = true;
+  private static final String LEVEL_12_QUEST_BOSSFIGHT_BEGINNING_STRING = "bigisland.php?";
 
-    // The standard constructor should not be accessible.
-    @SuppressWarnings("unused")
-    private MafiaSessionLogReader() {
-        log = null;
-    }
+  private final BufferedReader log;
 
-    /**
-     * @param log
-     *            The condensed mafia session log that is supposed to be parsed.
-     * @throws IOException
-     *             if there were issues with accessing the log
-     */
-    MafiaSessionLogReader(
-            final File log)
-                    throws IOException {
-        if (!log.exists())
-            throw new IllegalArgumentException("Log file must exist.");
-        if (log.isDirectory())
-            throw new IllegalArgumentException("Log file has to be a file, not a directory.");
+  private boolean hasNext = true;
 
-        this.log = new BufferedReader(new FileReader(log));
-    }
+  // The standard constructor should not be accessible.
+  @SuppressWarnings("unused")
+  private MafiaSessionLogReader() {
+    log = null;
+  }
 
-    /**
-     * This method reads and returns the next block of text in the session log.
-     * <p>
-     * Currently, there are four possible versions of text blocks that can
-     * recognised:
-     * <li>Encounter blocks</li>
-     * <li>Consumable blocks</li>
-     * <li>Player snapshot blocks</li>
-     * <li>Other blocks (for everything else that wouldn't fit in the above
-     * categories)</li>
-     *
-     * @return The parsed out text block from the session log.
-     * @throws IOException
-     *             if there were issues with reading the log; in certain
-     *             circumstances, if the was a line with more than 500
-     *             characters
-     * @throws IllegalStateException
-     *             if there is no more block to parse in the session log
-     */
-    LogBlock next()
-            throws IOException {
-        final LogBlock block;
+  /**
+   * @param log
+   *            The condensed mafia session log that is supposed to be parsed.
+   * @throws IOException
+   *             if there were issues with accessing the log
+   */
+  MafiaSessionLogReader(
+      final File log)
+          throws IOException {
+    if (!log.exists())
+      throw new IllegalArgumentException("Log file must exist.");
+    if (log.isDirectory())
+      throw new IllegalArgumentException("Log file has to be a file, not a directory.");
 
-        log.mark(500);
-        String line = log.readLine();
-        String line2 = log.readLine();
-        log.reset();
+    this.log = new BufferedReader(new FileReader(log));
+  }
 
-        if (line == null)
-            throw new IllegalStateException("There are no more blocks to be read.");
-        if (line2 == null)
-            line2 = UsefulPatterns.EMPTY_STRING;
+  /**
+   * This method reads and returns the next block of text in the session log.
+   * <p>
+   * Currently, there are four possible versions of text blocks that can
+   * recognised:
+   * <li>Encounter blocks</li>
+   * <li>Consumable blocks</li>
+   * <li>Player snapshot blocks</li>
+   * <li>Other blocks (for everything else that wouldn't fit in the above
+   * categories)</li>
+   *
+   * @return The parsed out text block from the session log.
+   * @throws IOException
+   *             if there were issues with reading the log; in certain
+   *             circumstances, if the was a line with more than 500
+   *             characters
+   * @throws IllegalStateException
+   *             if there is no more block to parse in the session log
+   */
+  LogBlock next()
+      throws IOException {
+    final LogBlock block;
 
-        if (isEncounterBlockStart(line, line2))
-            block = new LogBlockImpl(parseEncounterBlock(), LogBlockType.ENCOUNTER_BLOCK);
-        else if (isConsumableBlockStart(line))
-            block = new LogBlockImpl(parseNormalBlock(), LogBlockType.CONSUMABLE_BLOCK);
-        else if (line.equals(SNAPSHOT_START_END) && line2.contains(PLAYER_SNAPSHOT_STRING))
-            block = new LogBlockImpl(parsePlayerSnapshotBlock(), LogBlockType.PLAYER_SNAPSHOT_BLOCK);
-        else if (line.startsWith(ASCENSION_DATA_START_STRING))
-            block = new LogBlockImpl(parseNormalBlock(), LogBlockType.ASCENSION_DATA_BLOCK);
-        else if (HybridDataBlockParser.isHybridBlock(line))
-        	block = new LogBlockImpl(parseNormalBlock(), LogBlockType.HYBRID_DATA_BLOCK);
-        else
-            block = new LogBlockImpl(parseNormalBlock(), LogBlockType.OTHER_BLOCK);
+    log.mark(MafiaSessionLogReader.MARK_LIMIT);
+    String line = log.readLine();
+    String line2 = log.readLine();
+    log.reset();
 
-        // Skip empty/too long lines and decide at the end whether the log is
-        // finished.
-        do
-            log.mark(500);
-        while ((line = log.readLine()) != null
-                && (line.length() <= 0 || line.length() >= 450 || isLineOnBlackList(line)));
-        if (line == null)
-            hasNext = false;
-        else
+    if (line == null)
+      throw new IllegalStateException("There are no more blocks to be read.");
+    if (line2 == null)
+      line2 = UsefulPatterns.EMPTY_STRING;
+
+    if (isEncounterBlockStart(line, line2))
+      block = new LogBlockImpl(parseEncounterBlock(), LogBlockType.ENCOUNTER_BLOCK);
+    else if (isConsumableBlockStart(line))
+      block = new LogBlockImpl(parseNormalBlock(), LogBlockType.CONSUMABLE_BLOCK);
+    else if (line.equals(SNAPSHOT_START_END) && line2.contains(PLAYER_SNAPSHOT_STRING))
+      block = new LogBlockImpl(parsePlayerSnapshotBlock(), LogBlockType.PLAYER_SNAPSHOT_BLOCK);
+    else if (line.startsWith(ASCENSION_DATA_START_STRING))
+      block = new LogBlockImpl(parseNormalBlock(), LogBlockType.ASCENSION_DATA_BLOCK);
+    else if (HybridDataBlockParser.isHybridBlock(line))
+      block = new LogBlockImpl(parseNormalBlock(), LogBlockType.HYBRID_DATA_BLOCK);
+    else
+      block = new LogBlockImpl(parseNormalBlock(), LogBlockType.OTHER_BLOCK);
+
+    // Skip empty/too long lines and decide at the end whether the log is
+    // finished.
+    do
+      log.mark(MafiaSessionLogReader.MARK_LIMIT);
+    while ((line = log.readLine()) != null
+        && (line.length() <= 0 || line.length() >= 450 || isLineOnBlackList(line)));
+    if (line == null)
+      hasNext = false;
+    else
+      log.reset();
+
+    return block;
+  }
+
+  @SuppressWarnings("static-method")
+  private boolean isLineOnBlackList(
+      final String line) {
+    return line.startsWith("mall.php") || line.startsWith("manageprices.php")
+        || line.startsWith("familiarnames.php");
+  }
+
+  @SuppressWarnings("static-method")
+  private boolean isEncounterBlockStart(
+      String line, String line2) {
+    // Add support for Rain Man detection
+
+    boolean isAdventure = (line.startsWith(UsefulPatterns.SQUARE_BRACKET_OPEN) &&
+        UsefulPatterns.TURNS_USED.matcher(line).matches()) ||
+        (line2.startsWith(ENCOUNTER_START_STRING) &&
+            BROKEN_AREAS_ENCOUNTER_SET.contains(line2));
+
+    boolean isRainman = line.contains("cast 1 Rain Man");
+
+    return isAdventure || isRainman;
+
+  }
+
+  @SuppressWarnings("static-method")
+  private boolean isConsumableBlockStart(
+      String line) {
+    boolean isConsumable = (line.startsWith(USE_STRING) || line.startsWith(EAT_STRING)
+        || line.startsWith(DRINK_STRING) || line.startsWith(BUY_STRING)
+        || line.startsWith( SPLEEN_STRING ))
+        && UsefulPatterns.CONSUMABLE_USED.matcher(line).matches();
+
+    return isConsumable;
+
+  }
+
+  private List<String> parseEncounterBlock()
+      throws IOException {
+    final List<String> result = Lists.newArrayList();
+    String line;
+
+    while ((line = log.readLine()) != null) {
+      /**
+       * Mafia saves a familiar pound gain this way in older versions:
+       *
+       * <pre>
+       * Round _NUMBER_: _FAMNAME_ gains a pound!
+       *
+       * familiar _FAMTYPE_ (_POUNDS_ lbs)
+       *
+       * </pre>
+       *
+       * This is problematic because empty lines will end the while loop
+       * even though the combat rundown isn't over. Thus we attempt to
+       * skip the above mentioned lines.
+       */
+      if (line.endsWith(FAMILIAR_POUND_GAIN_END_STRING)) {
+        // Remember current position.
+        log.mark(MafiaSessionLogReader.MARK_LIMIT);
+
+        // Check next line, if it is empty, the problematic logging is
+        // occurring, otherwise reset back to the original position.
+        final String tmpLine = log.readLine();
+        if (tmpLine.length() <= 0) {
+          log.readLine();
+          log.readLine();
+          line = log.readLine();
+
+          if (line == null)
+            break;
+        } else
+          log.reset();
+      }
+
+      // If there is an empty line, it means the encounter is over. There
+      // are cases were this is not true for combats however, because
+      // sometimes mafia puts empty lines in which aren't actually
+      // supposed to be there. Such "false" empty lines should be
+      // attempted to be recognised and skipped.
+      if (line.trim().length() <= 0) {
+        //Special case for ed fights
+        //If previous line was:
+        //choice.php?pwd&whichchoice=1023&option=1
+        //then that means we are in the 'Underworld'
+        //we need to include all lines up to
+        //choice.php?pwd&whichchoice=1024&option=1
+        //in the current encounter
+        //if we see
+        //choice.php?pwd&whichchoice=1024&option=2
+        //Then this means we had to go back to our tomb
+        if (result.get( result.size() - 1 ).contains( "choice.php?" ) && result.get( result.size() -1  ).contains( "whichchoice=1023&option=1" )) {
+          final List<String> underworldBlock = Lists.newArrayList();
+          boolean edIsDead = true;
+          log.mark( MafiaSessionLogReader.MARK_LIMIT ); //Just incase something goes wrong
+
+          String lookAhead;
+          while (edIsDead && (lookAhead = log.readLine()) != null ) {
+            if (lookAhead.startsWith( UsefulPatterns.SQUARE_BRACKET_OPEN )) {
+              //Means a new turn happened and something went wrong with log
+              //just reset all the way back.
+              break;
+            } else if (lookAhead.contains( "choice.php" ) && lookAhead.contains( "whichchoice=1024&option=2" )) {
+              //Means we headed Home
+              line = lookAhead;
+              edIsDead = false;//Don't reset
+              break;
+            } else if (lookAhead.contains( "choice.php" ) && lookAhead.contains( "whichchoice=1024&option=1" )) {
+              edIsDead = false;//Don't reset
+              line = lookAhead;//This will naturally be added
+              break;
+            } else if (lookAhead.length() <= 0) {
+              continue;//blank lines are expected
+            } else {
+              underworldBlock.add( lookAhead );
+            }
+          }
+
+          if (edIsDead) {
+            //Means error occurred
             log.reset();
+            break;
+          }
 
-        return block;
-    }
+          if (underworldBlock.size() > 0) {
+            for (String underworldLine : underworldBlock)
+              result.add(underworldLine);
+          }
+        } else {
+          // Remember current position.
+          log.mark(MafiaSessionLogReader.MARK_LIMIT);
 
-    private boolean isLineOnBlackList(
-            final String line) {
-        return line.startsWith("mall.php") || line.startsWith("manageprices.php")
-                || line.startsWith("familiarnames.php");
-    }
-
-    private boolean isEncounterBlockStart(
-            String line, String line2) {
-        // Add support for Rain Man detection
-
-        boolean isAdventure = (line.startsWith(UsefulPatterns.SQUARE_BRACKET_OPEN) &&
-                UsefulPatterns.TURNS_USED.matcher(line).matches()) ||
-                (line2.startsWith(ENCOUNTER_START_STRING) &&
-                        BROKEN_AREAS_ENCOUNTER_SET.contains(line2));
-
-        boolean isRainman = line.contains("cast 1 Rain Man");
-
-        return isAdventure || isRainman;
-
-    }
-
-    private boolean isConsumableBlockStart(
-            String line) {
-        boolean isConsumable = (line.startsWith(USE_STRING) || line.startsWith(EAT_STRING)
-                || line.startsWith(DRINK_STRING) || line.startsWith(BUY_STRING) 
-                || line.startsWith( SPLEEN_STRING ))   
-                && UsefulPatterns.CONSUMABLE_USED.matcher(line).matches();
-
-        return isConsumable;
-
-    }
-
-    private List<String> parseEncounterBlock()
-            throws IOException {
-        final List<String> result = Lists.newArrayList();
-        String line;
-
-        while ((line = log.readLine()) != null) {
-            /**
-             * Mafia saves a familiar pound gain this way in older versions:
-             *
-             * <pre>
-             * Round _NUMBER_: _FAMNAME_ gains a pound!
-             *
-             * familiar _FAMTYPE_ (_POUNDS_ lbs)
-             *
-             * </pre>
-             *
-             * This is problematic because empty lines will end the while loop
-             * even though the combat rundown isn't over. Thus we attempt to
-             * skip the above mentioned lines.
-             */
-            if (line.endsWith(FAMILIAR_POUND_GAIN_END_STRING)) {
-                // Remember current position.
-                log.mark(500);
-
-                // Check next line, if it is empty, the problematic logging is
-                // occurring, otherwise reset back to the original position.
-                final String tmpLine = log.readLine();
-                if (tmpLine.length() <= 0) {
-                    log.readLine();
-                    log.readLine();
-                    line = log.readLine();
-
-                    if (line == null)
-                        break;
-                } else
-                    log.reset();
+          // Look-ahead of three lines to try and see whether the combat
+          // is actually continued.
+          boolean isFightContinued = false;
+          for (int i = 0; i < 3; i++) {
+            final String tmpLine = log.readLine();
+            // A square bracket means that a new turn was started. Extra
+            // check for the level 12 quest bossfight.
+            if (tmpLine == null || tmpLine.startsWith(UsefulPatterns.SQUARE_BRACKET_OPEN)
+                || tmpLine.startsWith(LEVEL_12_QUEST_BOSSFIGHT_BEGINNING_STRING))
+              break;
+            else if (tmpLine.startsWith(UsefulPatterns.COMBAT_ROUND_LINE_BEGINNING_STRING)) {
+              isFightContinued = true;
+              line = tmpLine;
+              break;
             }
+          }
 
-            // If there is an empty line, it means the encounter is over. There
-            // are cases were this is not true for combats however, because
-            // sometimes mafia puts empty lines in which aren't actually
-            // supposed to be there. Such "false" empty lines should be
-            // attempted to be recognised and skipped.
-            if (line.trim().length() <= 0) {
-                //Special case for ed fights
-                //If previous line was:
-                //choice.php?pwd&whichchoice=1023&option=1
-                //then that means we are in the 'Underworld'
-                //we need to include all lines up to
-                //choice.php?pwd&whichchoice=1024&option=1
-                //in the current encounter
-                //if we see
-                //choice.php?pwd&whichchoice=1024&option=2
-                //Then this means we had to go back to our tomb
-            	if (result.get( result.size() - 1 ).contains( "choice.php?" ) && result.get( result.size() -1  ).contains( "whichchoice=1023&option=1" )) {
-                    final List<String> underworldBlock = Lists.newArrayList();
-                	boolean edIsDead = true;
-                	log.mark( 600 ); //Just incase something goes wrong
-                	
-                	String lookAhead;
-                    while (edIsDead && (lookAhead = log.readLine()) != null ) {
-                    	if (lookAhead.startsWith( UsefulPatterns.SQUARE_BRACKET_OPEN )) {
-                    		//Means a new turn happened and something went wrong with log
-                    		//just reset all the way back.
-                    		break;
-                    	} else if (lookAhead.contains( "choice.php" ) && lookAhead.contains( "whichchoice=1024&option=2" )) {
-                    		//Means we headed Home
-                    		line = lookAhead;
-                    		edIsDead = false;//Don't reset
-                    		break;
-                    	} else if (lookAhead.contains( "choice.php" ) && lookAhead.contains( "whichchoice=1024&option=1" )) {
-                    		edIsDead = false;//Don't reset
-                    		line = lookAhead;//This will naturally be added
-                    		break;
-                    	} else if (lookAhead.length() <= 0) {
-                    		continue;//blank lines are expected
-                    	} else {
-                    		underworldBlock.add( lookAhead );
-                    	}
-                    }
-                    
-                    if (edIsDead) {
-                    	//Means error occurred
-                		log.reset();
-                    	break;
-                    }
-                    
-                    if (underworldBlock.size() > 0) {
-                    	for (String underworldLine : underworldBlock) 
-                    		result.add(underworldLine);
-                    }
-                } else {
-                	// Remember current position.
-                    log.mark(600);
-
-                    // Look-ahead of three lines to try and see whether the combat
-                    // is actually continued.
-                    boolean isFightContinued = false;
-                    for (int i = 0; i < 3; i++) {
-                        final String tmpLine = log.readLine();
-                        // A square bracket means that a new turn was started. Extra
-                        // check for the level 12 quest bossfight.
-                        if (tmpLine == null || tmpLine.startsWith(UsefulPatterns.SQUARE_BRACKET_OPEN)
-                                || tmpLine.startsWith(LEVEL_12_QUEST_BOSSFIGHT_BEGINNING_STRING))
-                            break;
-                        else if (tmpLine.startsWith(UsefulPatterns.COMBAT_ROUND_LINE_BEGINNING_STRING)) {
-                            isFightContinued = true;
-                            line = tmpLine;
-                            break;
-                        }
-                    }
-                    
-                    // If the fight has ended, set the reader back to the original
-                    // position and stop the while loop.
-                    if (!isFightContinued) {
-                        log.reset();
-                        break;
-                    }
-                }
-            }
-
-            result.add(line);
+          // If the fight has ended, set the reader back to the original
+          // position and stop the while loop.
+          if (!isFightContinued) {
+            log.reset();
+            break;
+          }
         }
+      }
 
-        if (line == null)
-            hasNext = false;
-
-        return result;
+      result.add(line);
     }
 
-    private List<String> parsePlayerSnapshotBlock()
-            throws IOException {
-        final List<String> result = Lists.newArrayList();
-        String line;
+    if (line == null)
+      hasNext = false;
 
-        // Add first three lines of the snapshot without check, so that the end
-        // of the snapshot is not prematurely recognised.
-        result.add(log.readLine());
-        result.add(log.readLine());
-        result.add(log.readLine());
-        while ((line = log.readLine()) != null && !line.equals(SNAPSHOT_START_END))
-            result.add(line);
+    return result;
+  }
 
-        if (line == null)
-            hasNext = false;
+  private List<String> parsePlayerSnapshotBlock()
+      throws IOException {
+    final List<String> result = Lists.newArrayList();
+    String line;
 
-        return result;
+    // Add first three lines of the snapshot without check, so that the end
+    // of the snapshot is not prematurely recognised.
+    result.add(log.readLine());
+    result.add(log.readLine());
+    result.add(log.readLine());
+    while ((line = log.readLine()) != null && !line.equals(SNAPSHOT_START_END))
+      result.add(line);
+
+    if (line == null)
+      hasNext = false;
+
+    return result;
+  }
+
+  private List<String> parseNormalBlock()
+      throws IOException {
+    final List<String> result = Lists.newArrayList();
+    String line;
+
+    while ((line = log.readLine()) != null && line.length() > 0)
+      result.add(line);
+
+    if (line == null)
+      hasNext = false;
+
+    return result;
+  }
+
+  /**
+   * Use this method to check whether {@link #next()} is still able to return
+   * another {@link LogBlock}.
+   *
+   * @return True if there are still blocks left to parse in the session log.
+   */
+  boolean hasNext() {
+    return hasNext;
+  }
+
+  /**
+   * Closes the {@link Reader} used to read the session log.
+   */
+  void close() {
+    // Calling close() on a reader should not actually throw an exception,
+    // so we'll just catch it in here.
+    try {
+      log.close();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * An enumeration of all the possible types that a {@link LogBlock} can
+   * have.
+   */
+  static enum LogBlockType {
+    ENCOUNTER_BLOCK, CONSUMABLE_BLOCK, PLAYER_SNAPSHOT_BLOCK, ASCENSION_DATA_BLOCK, HYBRID_DATA_BLOCK, OTHER_BLOCK;
+  }
+
+  /**
+   * Implementations of this interface are container classes to hold the block
+   * of text that was parsed by a {@link MafiaSessionLogReader} and link it
+   * with a certain version of {@link LogBlockType}.
+   */
+  static interface LogBlock {
+    List<String> getBlockLines();
+
+    LogBlockType getBlockType();
+  }
+
+  private static class LogBlockImpl implements LogBlock {
+    private final List<String> blockLines;
+
+    private final LogBlockType blockType;
+
+    LogBlockImpl(
+        final List<String> blockLines, final LogBlockType blockType) {
+      if (blockLines == null)
+        throw new NullPointerException("The list of lines must not be null.");
+      if (blockType == null)
+        throw new NullPointerException("The block type must not be null.");
+
+      this.blockLines = blockLines;
+      this.blockType = blockType;
     }
 
-    private List<String> parseNormalBlock()
-            throws IOException {
-        final List<String> result = Lists.newArrayList();
-        String line;
-
-        while ((line = log.readLine()) != null && line.length() > 0)
-            result.add(line);
-
-        if (line == null)
-            hasNext = false;
-
-        return result;
+    @Override
+    public List<String> getBlockLines() {
+      return Collections.unmodifiableList(blockLines);
     }
 
-    /**
-     * Use this method to check whether {@link #next()} is still able to return
-     * another {@link LogBlock}.
-     *
-     * @return True if there are still blocks left to parse in the session log.
-     */
-    boolean hasNext() {
-        return hasNext;
+    @Override
+    public LogBlockType getBlockType() {
+      return blockType;
     }
-
-    /**
-     * Closes the {@link Reader} used to read the session log.
-     */
-    void close() {
-        // Calling close() on a reader should not actually throw an exception,
-        // so we'll just catch it in here.
-        try {
-            log.close();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * An enumeration of all the possible types that a {@link LogBlock} can
-     * have.
-     */
-    static enum LogBlockType {
-        ENCOUNTER_BLOCK, CONSUMABLE_BLOCK, PLAYER_SNAPSHOT_BLOCK, ASCENSION_DATA_BLOCK, HYBRID_DATA_BLOCK, OTHER_BLOCK;
-    }
-
-    /**
-     * Implementations of this interface are container classes to hold the block
-     * of text that was parsed by a {@link MafiaSessionLogReader} and link it
-     * with a certain version of {@link LogBlockType}.
-     */
-    static interface LogBlock {
-        List<String> getBlockLines();
-
-        LogBlockType getBlockType();
-    }
-
-    private static class LogBlockImpl implements LogBlock {
-        private final List<String> blockLines;
-
-        private final LogBlockType blockType;
-
-        LogBlockImpl(
-                final List<String> blockLines, final LogBlockType blockType) {
-            if (blockLines == null)
-                throw new NullPointerException("The list of lines must not be null.");
-            if (blockType == null)
-                throw new NullPointerException("The block type must not be null.");
-
-            this.blockLines = blockLines;
-            this.blockType = blockType;
-        }
-
-        public List<String> getBlockLines() {
-            return Collections.unmodifiableList(blockLines);
-        }
-
-        public LogBlockType getBlockType() {
-            return blockType;
-        }
-    }
+  }
 }

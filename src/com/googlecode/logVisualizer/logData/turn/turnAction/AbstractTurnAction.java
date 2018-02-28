@@ -35,53 +35,54 @@ package com.googlecode.logVisualizer.logData.turn.turnAction;
  * given subclass are also immutable.
  */
 public abstract class AbstractTurnAction<T extends AbstractTurnAction<?>> implements Comparable<T> {
-    private final int turnNumber;
+  private final int turnNumber;
 
-    /**
-     * @param turnNumber
-     *            The turn number of this turn action to set.
-     * @throws IllegalArgumentException
-     *             if turnNumber is below 0
-     */
-    public AbstractTurnAction(
-                              final int turnNumber) {
-        if (turnNumber < 0)
-            throw new IllegalArgumentException("Turn number below 0.");
+  /**
+   * @param turnNumber
+   *            The turn number of this turn action to set.
+   * @throws IllegalArgumentException
+   *             if turnNumber is below 0
+   */
+  public AbstractTurnAction(
+      final int turnNumber) {
+    if (turnNumber < 0)
+      throw new IllegalArgumentException("Turn number below 0.");
 
-        this.turnNumber = turnNumber;
-    }
+    this.turnNumber = turnNumber;
+  }
 
-    /**
-     * @return The turn number of the turn action.
-     */
-    public int getTurnNumber() {
-        return turnNumber;
-    }
+  /**
+   * @return The turn number of the turn action.
+   */
+  public int getTurnNumber() {
+    return turnNumber;
+  }
 
-    /**
-     * @return The difference between the turn number of this turn action and
-     *         the turn number of the given turn action.
-     */
-    public int compareTo(
-                         final T t) {
-        return turnNumber - t.getTurnNumber();
-    }
+  /**
+   * @return The difference between the turn number of this turn action and
+   *         the turn number of the given turn action.
+   */
+  @Override
+  public int compareTo(
+      final T t) {
+    return turnNumber - t.getTurnNumber();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (o != null)
-            if (o instanceof AbstractTurnAction<?>)
-                return ((AbstractTurnAction<?>) o).getTurnNumber() == turnNumber;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o != null)
+      if (o instanceof AbstractTurnAction<?>)
+        return ((AbstractTurnAction<?>) o).getTurnNumber() == turnNumber;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 37;
-        result = 31 * result + turnNumber;
+  @Override
+  public int hashCode() {
+    int result = 37;
+    result = 31 * result + turnNumber;
 
-        return result;
-    }
+    return result;
+  }
 }

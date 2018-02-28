@@ -32,27 +32,27 @@ import com.googlecode.logVisualizer.util.Maps;
  * A simple enumeration for various turn types.
  */
 public enum TurnVersion {
-    COMBAT, NONCOMBAT, OTHER, NOT_DEFINED;
+  COMBAT, NONCOMBAT, OTHER, NOT_DEFINED;
 
-    private static final Map<String, TurnVersion> stringToEnum = Maps.newHashMap();
+  private static final Map<String, TurnVersion> stringToEnum = Maps.newHashMap();
 
-    static {
-        for (final TurnVersion op : values())
-            stringToEnum.put(op.toString(), op);
-    }
+  static {
+    for (final TurnVersion op : values())
+      stringToEnum.put(op.toString(), op);
+  }
 
-    /**
-     * @return The enum whose toString method returns a string which is equal to
-     *         the given string. If no match is found this method will return
-     *         {@code NOT_DEFINED}.
-     */
-    public static TurnVersion fromString(
-                                         final String turnVersionName) {
-        if (turnVersionName == null)
-            throw new NullPointerException("The turn version name must not be null.");
+  /**
+   * @return The enum whose toString method returns a string which is equal to
+   *         the given string. If no match is found this method will return
+   *         {@code NOT_DEFINED}.
+   */
+  public static TurnVersion fromString(
+      final String turnVersionName) {
+    if (turnVersionName == null)
+      throw new NullPointerException("The turn version name must not be null.");
 
-        final TurnVersion turnVersion = stringToEnum.get(turnVersionName);
+    final TurnVersion turnVersion = stringToEnum.get(turnVersionName);
 
-        return turnVersion != null ? turnVersion : NOT_DEFINED;
-    }
+    return turnVersion != null ? turnVersion : NOT_DEFINED;
+  }
 }

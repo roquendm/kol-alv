@@ -42,87 +42,93 @@ import com.googlecode.logVisualizer.chart.AbstractChart;
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
 
 abstract class ConsumptionBarChartBuilder extends AbstractChart {
-    private final static Paint[] DEFAULT_COLORS = ChartColor.createDefaultPaintArray();
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6539025413319580647L;
 
-    private final String xLable;
+  private final static Paint[] DEFAULT_COLORS = ChartColor.createDefaultPaintArray();
 
-    private final String yLable;
+  private final String xLable;
 
-    protected ConsumptionBarChartBuilder(
-                                         final String title, final String xLable,
-                                         final String yLable, final boolean includeLegend) {
-        super(title, null, includeLegend);
-        this.xLable = xLable;
-        this.yLable = yLable;
-    }
+  private final String yLable;
 
-    protected abstract ConsumptionDataset createDataset();
+  protected ConsumptionBarChartBuilder(
+      final String title, final String xLable,
+      final String yLable, final boolean includeLegend) {
+    super(title, null, includeLegend);
+    this.xLable = xLable;
+    this.yLable = yLable;
+  }
 
-    private JFreeChart createChart(
-                                   final ConsumptionDataset dataset) {
-        final JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(),
-                                                                    xLable,
-                                                                    yLable,
-                                                                    dataset,
-                                                                    PlotOrientation.VERTICAL,
-                                                                    isIncludeLegend(),
-                                                                    true,
-                                                                    false);
-        final CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        final StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
-        final CategoryAxis categoryAxis = plot.getDomainAxis();
-        final NumberAxis numberAxis = (NumberAxis) plot.getRangeAxis();
+  protected abstract ConsumptionDataset createDataset();
 
-        plot.setNoDataMessage("No data available");
-        plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-        setBarShadowVisible(chart, false);
-        setStackColors(dataset, renderer);
+  private JFreeChart createChart(
+      final ConsumptionDataset dataset) {
+    final JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(),
+        xLable,
+        yLable,
+        dataset,
+        PlotOrientation.VERTICAL,
+        isIncludeLegend(),
+        true,
+        false);
+    final CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    final StackedBarRenderer renderer = (StackedBarRenderer) plot.getRenderer();
+    final CategoryAxis categoryAxis = plot.getDomainAxis();
+    final NumberAxis numberAxis = (NumberAxis) plot.getRangeAxis();
 
-        renderer.setDrawBarOutline(false);
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseItemLabelGenerator(new ConsumptionLableGenerator());
-        renderer.setBaseToolTipGenerator(new ConsumptionToolTipGenerator());
+    plot.setNoDataMessage("No data available");
+    plot.setBackgroundPaint(Color.white);
+    plot.setRangeGridlinePaint(Color.black);
+    plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+    setBarShadowVisible(chart, false);
+    setStackColors(dataset, renderer);
 
-        categoryAxis.setCategoryMargin(0.07);
-        categoryAxis.setUpperMargin(0.01);
-        categoryAxis.setLowerMargin(0.01);
-        numberAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        numberAxis.setUpperMargin(0.1);
+    renderer.setDrawBarOutline(false);
+    renderer.setBaseItemLabelsVisible(true);
+    renderer.setBaseItemLabelGenerator(new ConsumptionLableGenerator());
+    renderer.setBaseToolTipGenerator(new ConsumptionToolTipGenerator());
 
-        return chart;
-    }
+    categoryAxis.setCategoryMargin(0.07);
+    categoryAxis.setUpperMargin(0.01);
+    categoryAxis.setLowerMargin(0.01);
+    numberAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    numberAxis.setUpperMargin(0.1);
 
-    private void setStackColors(
-                                final ConsumptionDataset dataset, final StackedBarRenderer renderer) {
-        int foodCounter = 0;
-        int boozeCounter = 0;
-        int spleenCounter = 0;
+    return chart;
+  }
 
-        for (int i = 0; i < dataset.getRowCount(); i++) {
-            final Consumable c = dataset.getConsumable(dataset.getRowKey(i).toString());
-            if (c != null)
-                switch (c.getConsumableVersion()) {
-                    case FOOD:
-                        renderer.setSeriesPaint(i, DEFAULT_COLORS[foodCounter]);
-                        foodCounter++;
-                        break;
-                    case BOOZE:
-                        renderer.setSeriesPaint(i, DEFAULT_COLORS[boozeCounter]);
-                        boozeCounter++;
-                        break;
-                    default:
-                        renderer.setSeriesPaint(i, DEFAULT_COLORS[spleenCounter]);
-                        spleenCounter++;
-                }
-            else
-                renderer.setSeriesPaint(i, ChartColor.LIGHT_GRAY);
+  @SuppressWarnings("static-method")
+  private void setStackColors(
+      final ConsumptionDataset dataset, final StackedBarRenderer renderer) {
+    int foodCounter = 0;
+    int boozeCounter = 0;
+    int spleenCounter = 0;
+
+    for (int i = 0; i < dataset.getRowCount(); i++) {
+      final Consumable c = dataset.getConsumable(dataset.getRowKey(i).toString());
+      if (c != null)
+        switch (c.getConsumableVersion()) {
+          case FOOD:
+            renderer.setSeriesPaint(i, DEFAULT_COLORS[foodCounter]);
+            foodCounter++;
+            break;
+          case BOOZE:
+            renderer.setSeriesPaint(i, DEFAULT_COLORS[boozeCounter]);
+            boozeCounter++;
+            break;
+          default:
+            renderer.setSeriesPaint(i, DEFAULT_COLORS[spleenCounter]);
+            spleenCounter++;
         }
+      else
+        renderer.setSeriesPaint(i, Color.LIGHT_GRAY);
     }
+  }
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        return new ChartPanel(createChart(createDataset()), false);
-    }
+  @Override
+  protected ChartPanel createChartPanel() {
+    return new ChartPanel(createChart(createDataset()), false);
+  }
 }

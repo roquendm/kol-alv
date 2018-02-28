@@ -35,7 +35,13 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.jfree.ui.RefineryUtilities;
 
@@ -55,225 +61,233 @@ import com.googlecode.logVisualizer.util.Lists;
  * than through the {@link #createResultsPane()} method.
  */
 abstract class TurnEntitySearchDialog extends JDialog {
-    private final List<TurnContainer> turnList;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3451774511103774719L;
 
-    private SearchStringMatcher searchMatcher;
+  final List<TurnContainer> turnList;
 
-    private TurnEntity selectedTurn;
+  SearchStringMatcher searchMatcher;
 
-    /**
-     * Creates the search dialog with
-     * {@link SearchStringMatchers#AREA_NAME_MATCHER} as the default search
-     * string matcher.
-     * 
-     * @param owner
-     *            The frame owning this dialog.
-     * @param logData
-     *            The log data.
-     * @param title
-     *            The title of the dialog window.
-     * @throws NullPointerException
-     *             if logData is {@code null}
-     */
-    TurnEntitySearchDialog(
-                           final JFrame owner, final LogDataHolder logData, final String title) {
-        this(owner, logData, title, SearchStringMatchers.AREA_NAME_MATCHER);
-    }
+  private TurnEntity selectedTurn;
 
-    /**
-     * Creates the search dialog.
-     * 
-     * @param owner
-     *            The frame owning this dialog.
-     * @param logData
-     *            The log data.
-     * @param title
-     *            The title of the dialog window.
-     * @param defaultMatcher
-     *            The search mode selected when this dialog opens.
-     * @throws NullPointerException
-     *             if logData is {@code null}; if defaultMatcher is {@code null}
-     */
-    TurnEntitySearchDialog(
-                           final JFrame owner, final LogDataHolder logData, final String title,
-                           final SearchStringMatcher defaultMatcher) {
-        super(owner, title, true);
+  /**
+   * Creates the search dialog with
+   * {@link SearchStringMatchers#AREA_NAME_MATCHER} as the default search
+   * string matcher.
+   *
+   * @param owner
+   *            The frame owning this dialog.
+   * @param logData
+   *            The log data.
+   * @param title
+   *            The title of the dialog window.
+   * @throws NullPointerException
+   *             if logData is {@code null}
+   */
+  TurnEntitySearchDialog(
+      final JFrame owner, final LogDataHolder logData, final String title) {
+    this(owner, logData, title, SearchStringMatchers.AREA_NAME_MATCHER);
+  }
 
-        if (logData == null)
-            throw new NullPointerException("The log data must not be null.");
-        if (defaultMatcher == null)
-            throw new NullPointerException("The default search string matcher must not be null.");
-        turnList = createTurnList(logData);
-        searchMatcher = defaultMatcher;
+  /**
+   * Creates the search dialog.
+   *
+   * @param owner
+   *            The frame owning this dialog.
+   * @param logData
+   *            The log data.
+   * @param title
+   *            The title of the dialog window.
+   * @param defaultMatcher
+   *            The search mode selected when this dialog opens.
+   * @throws NullPointerException
+   *             if logData is {@code null}; if defaultMatcher is {@code null}
+   */
+  TurnEntitySearchDialog(
+      final JFrame owner, final LogDataHolder logData, final String title,
+      final SearchStringMatcher defaultMatcher) {
+    super(owner, title, true);
 
-        setLayout(new BorderLayout(0, 15));
-        add(createSearchFieldPanel(defaultMatcher), BorderLayout.NORTH);
-        add(createResultsPane(), BorderLayout.CENTER);
+    if (logData == null)
+      throw new NullPointerException("The log data must not be null.");
+    if (defaultMatcher == null)
+      throw new NullPointerException("The default search string matcher must not be null.");
+    turnList = createTurnList(logData);
+    searchMatcher = defaultMatcher;
 
-        setSize(800, 600);
-        RefineryUtilities.centerFrameOnScreen(this);
-    }
+    setLayout(new BorderLayout(0, 15));
+    add(createSearchFieldPanel(defaultMatcher), BorderLayout.NORTH);
+    add(createResultsPane(), BorderLayout.CENTER);
 
-    private JPanel createSearchFieldPanel(
-                                          final SearchStringMatcher defaultMatcher) {
-        final JPanel searchFieldPanel = new JPanel(new GridBagLayout());
-        final JComboBox searchModeChooser = new JComboBox(SearchStringMatchers.MATCHERS.toArray());
-        final JTextField searchField = new JTextField();
-        final JLabel modelabel = new JLabel("Search mode:");
-        final JLabel searchLabel = new JLabel("Search string:");
+    setSize(800, 600);
+    RefineryUtilities.centerFrameOnScreen(this);
+  }
 
-        searchModeChooser.setSelectedItem(defaultMatcher);
+  @SuppressWarnings("unchecked")
+  private JPanel createSearchFieldPanel(
+      final SearchStringMatcher defaultMatcher) {
+    final JPanel searchFieldPanel = new JPanel(new GridBagLayout());
+    @SuppressWarnings("rawtypes")
+    final JComboBox searchModeChooser = new JComboBox(SearchStringMatchers.MATCHERS.toArray());
+    final JTextField searchField = new JTextField();
+    final JLabel modelabel = new JLabel("Search mode:");
+    final JLabel searchLabel = new JLabel("Search string:");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(10, 20, 0, 30);
-        searchFieldPanel.add(modelabel, gbc);
+    searchModeChooser.setSelectedItem(defaultMatcher);
 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 0, 0, 20);
-        searchFieldPanel.add(searchModeChooser, gbc);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 1;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(10, 20, 0, 30);
+    searchFieldPanel.add(modelabel, gbc);
 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(25, 20, 0, 30);
-        searchFieldPanel.add(searchLabel, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 2;
+    gbc.gridy = 1;
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(10, 0, 0, 20);
+    searchFieldPanel.add(searchModeChooser, gbc);
 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(25, 0, 0, 20);
-        searchFieldPanel.add(searchField, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 2;
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = new Insets(25, 20, 0, 30);
+    searchFieldPanel.add(searchLabel, gbc);
 
-        searchModeChooser.addActionListener(new ActionListener() {
-            public void actionPerformed(
-                                        ActionEvent e) {
-                if (searchModeChooser.isFocusOwner())
-                    searchMatcher = (SearchStringMatcher) searchModeChooser.getSelectedItem();
-            }
-        });
-        searchField.addKeyListener(new KeyAdapter() {
-            private final char SPACE = ' ';
+    gbc = new GridBagConstraints();
+    gbc.gridx = 2;
+    gbc.gridy = 2;
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(25, 0, 0, 20);
+    searchFieldPanel.add(searchField, gbc);
 
-            @Override
-            public void keyTyped(
-                                 final KeyEvent e) {
-                final char key = e.getKeyChar();
+    searchModeChooser.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(
+          ActionEvent e) {
+        if (searchModeChooser.isFocusOwner())
+          searchMatcher = (SearchStringMatcher) searchModeChooser.getSelectedItem();
+      }
+    });
+    searchField.addKeyListener(new KeyAdapter() {
+      private final char SPACE = ' ';
 
-                // Adding a space does nothing for the search, so no action
-                // necessary.
-                if (key == SPACE)
-                    return;
+      @Override
+      public void keyTyped(
+          final KeyEvent e) {
+        final char key = e.getKeyChar();
 
-                // The last character isn't added to the text field yet, so we
-                // add it manually if it is valid.
-                final String searchString;
-                if (key != KeyEvent.CHAR_UNDEFINED)
-                    searchString = (searchField.getText() + key).trim().toLowerCase();
-                else
-                    searchString = searchField.getText().trim().toLowerCase();
+        // Adding a space does nothing for the search, so no action
+        // necessary.
+        if (key == SPACE)
+          return;
 
-                final SearchStringMatcher matcher = searchMatcher;
+        // The last character isn't added to the text field yet, so we
+        // add it manually if it is valid.
+        final String searchString;
+        if (key != KeyEvent.CHAR_UNDEFINED)
+          searchString = (searchField.getText() + key).trim().toLowerCase();
+        else
+          searchString = searchField.getText().trim().toLowerCase();
 
-                // Populate the results display with valid turns.
-                clearResults();
-                final List<TurnContainer> newResults = Lists.newArrayList(50);
-                for (final TurnContainer tc : turnList)
-                    if (searchString.length() <= 0 || matcher.matches(tc.getTurn(), searchString))
-                        newResults.add(tc);
+        final SearchStringMatcher matcher = searchMatcher;
 
-                addResults(newResults);
-            }
-        });
+        // Populate the results display with valid turns.
+        clearResults();
+        final List<TurnContainer> newResults = Lists.newArrayList(50);
+        for (final TurnContainer tc : turnList)
+          if (searchString.length() <= 0 || matcher.matches(tc.getTurn(), searchString))
+            newResults.add(tc);
 
-        return searchFieldPanel;
-    }
+        addResults(newResults);
+      }
+    });
 
-    /**
-     * Returns a read-only list of all turns that are used for the search in
-     * this dialog.
-     * <p>
-     * Only use turns part of this collection for the result display.
-     * 
-     * @return A read-only list of all turns enclosed in their respective
-     *         {@link TurnContainer}.
-     */
-    protected List<TurnContainer> getTurnsList() {
-        return Lists.immutableListOf(turnList);
-    }
+    return searchFieldPanel;
+  }
 
-    /**
-     * Sets the turn that was selected in some way before this dialog was
-     * closed.
-     */
-    protected void setSelectedTurn(
-                                   final TurnEntity selectedTurn) {
-        this.selectedTurn = selectedTurn;
-    }
+  /**
+   * Returns a read-only list of all turns that are used for the search in
+   * this dialog.
+   * <p>
+   * Only use turns part of this collection for the result display.
+   *
+   * @return A read-only list of all turns enclosed in their respective
+   *         {@link TurnContainer}.
+   */
+  protected List<TurnContainer> getTurnsList() {
+    return Lists.immutableListOf(turnList);
+  }
 
-    /**
-     * Returns the turn that was selected in some way before this dialog was
-     * closed. This method is the only one that can be considered safe to call
-     * once the dialog is closed.
-     * <p>
-     * How the turn was selected is specific to the implementation class.
-     * 
-     * @return The selected turn.
-     */
-    protected TurnEntity getSelectedTurn() {
-        return selectedTurn;
-    }
+  /**
+   * Sets the turn that was selected in some way before this dialog was
+   * closed.
+   */
+  protected void setSelectedTurn(
+      final TurnEntity selectedTurn) {
+    this.selectedTurn = selectedTurn;
+  }
 
-    /**
-     * This method has to return the complete UI for displaying the search
-     * results.
-     * 
-     * @return The UI for the search results.
-     */
-    protected abstract JComponent createResultsPane();
+  /**
+   * Returns the turn that was selected in some way before this dialog was
+   * closed. This method is the only one that can be considered safe to call
+   * once the dialog is closed.
+   * <p>
+   * How the turn was selected is specific to the implementation class.
+   *
+   * @return The selected turn.
+   */
+  protected TurnEntity getSelectedTurn() {
+    return selectedTurn;
+  }
 
-    /**
-     * This methods needs to create the create the complete turn list that is
-     * later used for search and result display.
-     * 
-     * @param logData
-     *            The log data.
-     * @return The complete list of all turns later used for search and result
-     *         display purposes.
-     */
-    protected abstract List<TurnContainer> createTurnList(
-                                                          final LogDataHolder logData);
+  /**
+   * This method has to return the complete UI for displaying the search
+   * results.
+   *
+   * @return The UI for the search results.
+   */
+  protected abstract JComponent createResultsPane();
 
-    /**
-     * Clears the displayed search results.
-     */
-    protected abstract void clearResults();
+  /**
+   * This methods needs to create the create the complete turn list that is
+   * later used for search and result display.
+   *
+   * @param logData
+   *            The log data.
+   * @return The complete list of all turns later used for search and result
+   *         display purposes.
+   */
+  protected abstract List<TurnContainer> createTurnList(
+      final LogDataHolder logData);
 
-    /**
-     * Add the given turn to the results and display it.
-     */
-    protected abstract void addResult(
-                                      final TurnContainer tc);
+  /**
+   * Clears the displayed search results.
+   */
+  protected abstract void clearResults();
 
-    /**
-     * Add the given turns to the results and display them.
-     * <p>
-     * This method needs to be able to add the given list of turns without UI
-     * slow-downs in the result display.
-     */
-    protected abstract void addResults(
-                                       final Collection<TurnContainer> results);
+  /**
+   * Add the given turn to the results and display it.
+   */
+  protected abstract void addResult(
+      final TurnContainer tc);
+
+  /**
+   * Add the given turns to the results and display them.
+   * <p>
+   * This method needs to be able to add the given list of turns without UI
+   * slow-downs in the result display.
+   */
+  protected abstract void addResults(
+      final Collection<TurnContainer> results);
 }

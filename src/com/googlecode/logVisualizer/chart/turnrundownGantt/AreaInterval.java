@@ -31,83 +31,83 @@ import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 import com.googlecode.logVisualizer.util.Lists;
 
 public final class AreaInterval {
-    private final String name;
+  private final String name;
 
-    private int startTurn;
+  private int startTurn;
 
-    private int endTurn;
+  private int endTurn;
 
-    private List<TurnInterval> subIntervals = Lists.newArrayList();
+  private List<TurnInterval> subIntervals = Lists.newArrayList();
 
-    public AreaInterval(
-                        final TurnInterval area, final String areaIntervalName) {
-        name = areaIntervalName;
-        startTurn = area.getStartTurn();
-        endTurn = area.getEndTurn();
-        subIntervals.add(area);
-    }
+  public AreaInterval(
+      final TurnInterval area, final String areaIntervalName) {
+    name = areaIntervalName;
+    startTurn = area.getStartTurn();
+    endTurn = area.getEndTurn();
+    subIntervals.add(area);
+  }
 
-    public AreaInterval(
-                        final String name, final int startTurn, final int endTurn) {
-        this(new SimpleTurnInterval(name, startTurn, endTurn), name);
-    }
+  public AreaInterval(
+      final String name, final int startTurn, final int endTurn) {
+    this(new SimpleTurnInterval(name, startTurn, endTurn), name);
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public int getStartTurn() {
-        return startTurn;
-    }
+  public int getStartTurn() {
+    return startTurn;
+  }
 
-    public int getEndTurn() {
-        return endTurn;
-    }
+  public int getEndTurn() {
+    return endTurn;
+  }
 
-    public void addSubInterval(
-                               final TurnInterval interval) {
-        if (interval.getStartTurn() < startTurn)
-            startTurn = interval.getStartTurn();
-        if (interval.getEndTurn() > endTurn)
-            endTurn = interval.getEndTurn();
+  public void addSubInterval(
+      final TurnInterval interval) {
+    if (interval.getStartTurn() < startTurn)
+      startTurn = interval.getStartTurn();
+    if (interval.getEndTurn() > endTurn)
+      endTurn = interval.getEndTurn();
 
-        subIntervals.add(interval);
-    }
+    subIntervals.add(interval);
+  }
 
-    public TurnInterval getSubInterval(
-                                       final int index) {
-        return index < subIntervals.size() && index >= 0 ? subIntervals.get(index) : null;
-    }
+  public TurnInterval getSubInterval(
+      final int index) {
+    return index < subIntervals.size() && index >= 0 ? subIntervals.get(index) : null;
+  }
 
-    public void setSubIntervals(
-                                final List<TurnInterval> subIntervals) {
-        this.subIntervals = subIntervals;
-    }
+  public void setSubIntervals(
+      final List<TurnInterval> subIntervals) {
+    this.subIntervals = subIntervals;
+  }
 
-    public List<TurnInterval> getSubIntervals() {
-        return subIntervals;
-    }
+  public List<TurnInterval> getSubIntervals() {
+    return subIntervals;
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (o != null && o instanceof AreaInterval)
-            return startTurn == ((AreaInterval) o).getStartTurn()
-                   && endTurn == ((AreaInterval) o).getEndTurn()
-                   && name.equals(((AreaInterval) o).getName())
-                   && subIntervals.equals(((AreaInterval) o).getSubIntervals());
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o != null && o instanceof AreaInterval)
+      return startTurn == ((AreaInterval) o).getStartTurn()
+      && endTurn == ((AreaInterval) o).getEndTurn()
+      && name.equals(((AreaInterval) o).getName())
+      && subIntervals.equals(((AreaInterval) o).getSubIntervals());
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 3242;
-        result = 31 * result + startTurn;
-        result = 31 * result + endTurn;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + subIntervals.hashCode();
+  @Override
+  public int hashCode() {
+    int result = 3242;
+    result = 31 * result + startTurn;
+    result = 31 * result + endTurn;
+    result = 31 * result + name.hashCode();
+    result = 31 * result + subIntervals.hashCode();
 
-        return result;
-    }
+    return result;
+  }
 }

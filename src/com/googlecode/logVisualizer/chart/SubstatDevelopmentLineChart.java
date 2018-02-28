@@ -45,73 +45,79 @@ import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 import com.googlecode.logVisualizer.logData.turn.turnAction.DayChange;
 
 public final class SubstatDevelopmentLineChart extends LineChartBuilder {
-    public SubstatDevelopmentLineChart(
-                                       final LogDataHolder logData) {
-        super(logData, "Substat development", "Turn number", "Substats gained", true);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 4998109753749394295L;
+
+  public SubstatDevelopmentLineChart(
+      final LogDataHolder logData) {
+    super(logData, "Substat development", "Turn number", "Substats gained", true);
+  }
+
+  @Override
+  protected ChartPanel createChartPanel() {
+    final ChartPanel panel = super.createChartPanel();
+    final XYPlot plot = (XYPlot) panel.getChart().getPlot();
+
+    for (final DayChange dc : getLogData().getDayChanges()) {
+      final ValueMarker day = new ValueMarker(dc.getTurnNumber());
+      day.setLabel("Day " + dc.getDayNumber());
+      day.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+      day.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+      day.setStroke(new BasicStroke(2));
+      day.setPaint(new Color(175, 175, 255));
+      plot.addDomainMarker(day);
     }
 
-    @Override
-    protected ChartPanel createChartPanel() {
-        final ChartPanel panel = super.createChartPanel();
-        final XYPlot plot = (XYPlot) panel.getChart().getPlot();
+    return panel;
+  }
 
-        for (final DayChange dc : getLogData().getDayChanges()) {
-            final ValueMarker day = new ValueMarker(dc.getTurnNumber());
-            day.setLabel("Day " + dc.getDayNumber());
-            day.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-            day.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-            day.setStroke(new BasicStroke(2));
-            day.setPaint(new Color(175, 175, 255));
-            plot.addDomainMarker(day);
-        }
+  @Override
+  protected XYDataset createDataset() {
+    final XYSeriesCollection datasets = new XYSeriesCollection();
+    final XYSeries muscleDataset = new XYSeries("Muscle", false);
+    final XYSeries mystDataset = new XYSeries("Mysticality", false);
+    final XYSeries moxieDataset = new XYSeries("Moxie", false);
 
-        return panel;
+    Statgain stats = Statgain.NO_STATS;
+    if (getLogData().isDetailedLog())
+      for (final SingleTurn si : getLogData().getTurnsSpent())
+        stats = addStatValues(muscleDataset, mystDataset, moxieDataset, stats, si);
+    else
+      for (final TurnInterval ti : getLogData().getTurnIntervalsSpent())
+        stats = addStatValues(muscleDataset, mystDataset, moxieDataset, stats, ti);
+
+    // If the log actually held any statgain data, add it to the collection.
+    if (!stats.isAllStatsZero()) {
+      datasets.addSeries(muscleDataset);
+      datasets.addSeries(mystDataset);
+      datasets.addSeries(moxieDataset);
     }
 
-    @Override
-    protected XYDataset createDataset() {
-        final XYSeriesCollection datasets = new XYSeriesCollection();
-        final XYSeries muscleDataset = new XYSeries("Muscle", false);
-        final XYSeries mystDataset = new XYSeries("Mysticality", false);
-        final XYSeries moxieDataset = new XYSeries("Moxie", false);
+    return datasets;
+  }
 
-        Statgain stats = Statgain.NO_STATS;
-        if (getLogData().isDetailedLog())
-            for (final SingleTurn si : getLogData().getTurnsSpent())
-                stats = addStatValues(muscleDataset, mystDataset, moxieDataset, stats, si);
-        else
-            for (final TurnInterval ti : getLogData().getTurnIntervalsSpent())
-                stats = addStatValues(muscleDataset, mystDataset, moxieDataset, stats, ti);
+  @SuppressWarnings("static-method")
+  private Statgain addStatValues(
+      final XYSeries muscleDataset, final XYSeries mystDataset,
+      final XYSeries moxieDataset, Statgain stats, final Turn t) {
+    // Add statgain of the current turn interval to the total statgains.
+    stats = stats.addStats(t.getStatGain());
+    for (final Consumable c : t.getConsumablesUsed())
+      stats = stats.addStats(c.getStatGain());
 
-        // If the log actually held any statgain data, add it to the collection.
-        if (!stats.isAllStatsZero()) {
-            datasets.addSeries(muscleDataset);
-            datasets.addSeries(mystDataset);
-            datasets.addSeries(moxieDataset);
-        }
+    // Add current total statgains to the datasets.
+    muscleDataset.add(t.getTurnNumber(), stats.mus);
+    mystDataset.add(t.getTurnNumber(), stats.myst);
+    moxieDataset.add(t.getTurnNumber(), stats.mox);
 
-        return datasets;
-    }
+    return stats;
+  }
 
-    private Statgain addStatValues(
-                                   final XYSeries muscleDataset, final XYSeries mystDataset,
-                                   final XYSeries moxieDataset, Statgain stats, final Turn t) {
-        // Add statgain of the current turn interval to the total statgains.
-        stats = stats.addStats(t.getStatGain());
-        for (final Consumable c : t.getConsumablesUsed())
-            stats = stats.addStats(c.getStatGain());
-
-        // Add current total statgains to the datasets.
-        muscleDataset.add(t.getTurnNumber(), stats.mus);
-        mystDataset.add(t.getTurnNumber(), stats.myst);
-        moxieDataset.add(t.getTurnNumber(), stats.mox);
-
-        return stats;
-    }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new StatDevelopmentChartMouseEventListener(getLogData()));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new StatDevelopmentChartMouseEventListener(getLogData()));
+  }
 }

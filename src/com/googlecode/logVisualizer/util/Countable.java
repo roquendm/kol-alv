@@ -36,47 +36,47 @@ package com.googlecode.logVisualizer.util;
  * For the most part, this interface is merely a means to use the class
  * {@link CountableSet} so refer to that class for deciding whether you want to
  * use this interface or not.
- * 
+ *
  * @see CountableSet
  */
 public interface Countable<T extends Countable<?>> extends Comparable<T> {
-    /**
-     * @return The name of this countable.
-     */
-    public String getName();
+  /**
+   * @return The name of this countable.
+   */
+  public String getName();
 
-    /**
-     * @param amount
-     *            The amount to set.
-     */
-    public void setAmount(
-                          int amount);
+  /**
+   * @param amount
+   *            The amount to set.
+   */
+  public void setAmount(
+      int amount);
 
-    /**
-     * @return The amount.
-     */
-    public int getAmount();
+  /**
+   * @return The amount.
+   */
+  public int getAmount();
 
-    /**
-     * @return The object used for comparing two different Countable instances.
-     */
-    public Comparable<?> getComparator();
+  /**
+   * @return The object used for comparing two different Countable instances.
+   */
+  public Comparable<?> getComparator();
 
-    /**
-     * Merges the given Countable instance with this Countable instance. The
-     * given Countable instance is not altered by this method.
-     * <p>
-     * Note that the object returned by {@link #getComparator()} before a merge
-     * must be equal to the object returned afterwards.
-     * 
-     * @param c
-     *            The Countable instance to be merged.
-     */
-    public void merge(
-                      T t);
+  /**
+   * Merges the given Countable instance with this Countable instance. The
+   * given Countable instance is not altered by this method.
+   * <p>
+   * Note that the object returned by {@link #getComparator()} before a merge
+   * must be equal to the object returned afterwards.
+   *
+   * @param c
+   *            The Countable instance to be merged.
+   */
+  public void merge(
+      T t);
 
-    /**
-     * @return A deep copy of this Countable instance.
-     */
-    public T newInstance();
+  /**
+   * @return A deep copy of this Countable instance.
+   */
+  public T newInstance();
 }

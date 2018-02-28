@@ -32,21 +32,25 @@ import org.jfree.chart.axis.NumberAxis;
  * than desirable results in the form of blank unused space behind the graphs.
  */
 final class FixedZoomNumberAxis extends NumberAxis {
-    private final double lastXValue;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -748745554810306916L;
+  private final double lastXValue;
 
-    FixedZoomNumberAxis(
-                        final double lastXValue) {
-        super(null);
+  FixedZoomNumberAxis(
+      final double lastXValue) {
+    super(null);
 
-        this.lastXValue = lastXValue;
-    }
+    this.lastXValue = lastXValue;
+  }
 
-    @Override
-    public void resizeRange(
-                            final double percent, final double anchorValue) {
-        if (percent > 0.0)
-            super.resizeRange(percent, anchorValue);
-        else
-            setRange(0, lastXValue);
-    }
+  @Override
+  public void resizeRange(
+      final double percent, final double anchorValue) {
+    if (percent > 0.0)
+      super.resizeRange(percent, anchorValue);
+    else
+      setRange(0, lastXValue);
+  }
 }

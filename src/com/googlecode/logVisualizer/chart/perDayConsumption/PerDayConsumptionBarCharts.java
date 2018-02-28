@@ -25,19 +25,25 @@
 package com.googlecode.logVisualizer.chart.perDayConsumption;
 
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.logSummary.ConsumptionSummary.ConsumptionDayStats;
 
 public final class PerDayConsumptionBarCharts extends JTabbedPane {
-    public PerDayConsumptionBarCharts(
-                                      final LogDataHolder logData) {
-        super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3360187492483930819L;
 
-        for (final ConsumptionDayStats consumptionStats : logData.getLogSummary()
-                                                                 .getConsumptionSummary()
-                                                                 .getDayStatistics())
-            addTab("Day " + consumptionStats.getDayNumber(),
-                   new PerDayConsumptionBarChart(consumptionStats));
-    }
+  public PerDayConsumptionBarCharts(
+      final LogDataHolder logData) {
+    super(SwingConstants.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+    for (final ConsumptionDayStats consumptionStats : logData.getLogSummary()
+        .getConsumptionSummary()
+        .getDayStatistics())
+      addTab("Day " + consumptionStats.getDayNumber(),
+          new PerDayConsumptionBarChart(consumptionStats));
+  }
 }

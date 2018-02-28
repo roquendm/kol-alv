@@ -34,94 +34,96 @@ import java.util.Map.Entry;
  * Utility class with static helper methods for maps.
  */
 public final class Maps {
-    private Maps() {}
+  private Maps() {}
 
-    /**
-     * @return A new {@link HashMap}.
-     */
-    public static <K, V> Map<K, V> newHashMap() {
-        return new HashMap<K, V>();
-    }
+  /**
+   * @return A new {@link HashMap}.
+   */
+  public static <K, V> Map<K, V> newHashMap() {
+    return new HashMap<K, V>();
+  }
 
-    /**
-     * @param initialCapacity
-     *            The initial capacity of the new {@link HashMap}.
-     * @return A new {@link HashMap} with the given initial capacity.
-     */
-    public static <K, V> Map<K, V> newHashMap(
-                                              final int initialCapacity) {
-        return new HashMap<K, V>(initialCapacity);
-    }
+  /**
+   * @param initialCapacity
+   *            The initial capacity of the new {@link HashMap}.
+   * @return A new {@link HashMap} with the given initial capacity.
+   */
+  public static <K, V> Map<K, V> newHashMap(
+      final int initialCapacity) {
+    return new HashMap<K, V>(initialCapacity);
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new {@link HashMap}.
-     * @return A new {@link HashMap} populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> newHashMap(
-                                              final Collection<Pair<? extends K, ? extends V>> elements) {
-        final Map<K, V> map = newHashMap((int) (elements.size() * 1.4));
-        for (final Pair<? extends K, ? extends V> element : elements)
-            map.put(element.getVar1(), element.getVar2());
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new {@link HashMap}.
+   * @return A new {@link HashMap} populated with the given key-value-pairs.
+   */
+  public static <K, V> Map<K, V> newHashMap(
+      final Collection<Pair<? extends K, ? extends V>> elements) {
+    final Map<K, V> map = newHashMap((int) (elements.size() * 1.4));
+    for (final Pair<? extends K, ? extends V> element : elements)
+      map.put(element.getVar1(), element.getVar2());
 
-        return map;
-    }
+    return map;
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new {@link HashMap}.
-     * @return A new {@link HashMap} populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> newHashMap(
-                                              final Iterable<Entry<K, V>> elements) {
-        final Map<K, V> map = newHashMap();
-        for (final Entry<K, V> element : elements)
-            map.put(element.getKey(), element.getValue());
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new {@link HashMap}.
+   * @return A new {@link HashMap} populated with the given key-value-pairs.
+   */
+  public static <K, V> Map<K, V> newHashMap(
+      final Iterable<Entry<K, V>> elements) {
+    final Map<K, V> map = newHashMap();
+    for (final Entry<K, V> element : elements)
+      map.put(element.getKey(), element.getValue());
 
-        return map;
-    }
+    return map;
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new {@link HashMap}.
-     * @return A new {@link HashMap} populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> newHashMap(
-                                              final Pair<? extends K, ? extends V>... elements) {
-        final Map<K, V> map = newHashMap((int) (elements.length * 1.4));
-        for (final Pair<? extends K, ? extends V> element : elements)
-            map.put(element.getVar1(), element.getVar2());
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new {@link HashMap}.
+   * @return A new {@link HashMap} populated with the given key-value-pairs.
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> Map<K, V> newHashMap(
+      final Pair<? extends K, ? extends V>... elements) {
+    final Map<K, V> map = newHashMap((int) (elements.length * 1.4));
+    for (final Pair<? extends K, ? extends V> element : elements)
+      map.put(element.getVar1(), element.getVar2());
 
-        return map;
-    }
+    return map;
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new immutable map.
-     * @return A new immutable map populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> immutableMapOf(
-                                                  final Collection<Pair<? extends K, ? extends V>> elements) {
-        return Collections.unmodifiableMap(newHashMap(elements));
-    }
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new immutable map.
+   * @return A new immutable map populated with the given key-value-pairs.
+   */
+  public static <K, V> Map<K, V> immutableMapOf(
+      final Collection<Pair<? extends K, ? extends V>> elements) {
+    return Collections.unmodifiableMap(newHashMap(elements));
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new immutable map.
-     * @return A new immutable map populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> immutableMapOf(
-                                                  final Iterable<Entry<K, V>> elements) {
-        return Collections.unmodifiableMap(newHashMap(elements));
-    }
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new immutable map.
+   * @return A new immutable map populated with the given key-value-pairs.
+   */
+  public static <K, V> Map<K, V> immutableMapOf(
+      final Iterable<Entry<K, V>> elements) {
+    return Collections.unmodifiableMap(newHashMap(elements));
+  }
 
-    /**
-     * @param elements
-     *            The key-value-pairs to be added to the new immutable map.
-     * @return A new immutable map populated with the given key-value-pairs.
-     */
-    public static <K, V> Map<K, V> immutableMapOf(
-                                                  final Pair<? extends K, ? extends V>... elements) {
-        return Collections.unmodifiableMap(newHashMap(elements));
-    }
+  /**
+   * @param elements
+   *            The key-value-pairs to be added to the new immutable map.
+   * @return A new immutable map populated with the given key-value-pairs.
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> Map<K, V> immutableMapOf(
+      final Pair<? extends K, ? extends V>... elements) {
+    return Collections.unmodifiableMap(newHashMap(elements));
+  }
 }

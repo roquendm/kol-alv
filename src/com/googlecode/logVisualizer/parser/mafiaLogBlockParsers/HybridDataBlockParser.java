@@ -26,12 +26,7 @@ package com.googlecode.logVisualizer.parser.mafiaLogBlockParsers;
 
 import java.util.List;
 
-import sun.awt.windows.awtLocalization_zh_TW;
-
 import com.googlecode.logVisualizer.logData.LogDataHolder;
-import com.googlecode.logVisualizer.logData.LogDataHolder.AscensionPath;
-import com.googlecode.logVisualizer.logData.LogDataHolder.CharacterClass;
-import com.googlecode.logVisualizer.logData.LogDataHolder.GameMode;
 import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 
@@ -45,38 +40,40 @@ import com.googlecode.logVisualizer.util.DataNumberPair;
  */
 public final class HybridDataBlockParser implements LogBlockParser {
 
-	public static final String ACTION_HYBRID = "Hybridizing yourself";
-	public static final String ACTION_MAKE_TONIC = "Making a Gene Tonic";
-	public static final String ACQUIRE_INRINSIC = "You acquire an intrinsic: ";
-	public static final String ACQUIRE_ITEM = "You acquire an item: ";
-	public static final String GENE_TONIC = "Gene Tonic";
-	
-    public void parseBlock(final List<String> block, final LogDataHolder logData) {
-    	
-    	String action = null; //Either Hybridinzing or Making
-    	String result = null; //Either the intrinsic or a gene tonic
-    	for (String line : block) {
-    		if (line.startsWith( ACQUIRE_INRINSIC )) {
-    			result = line.substring( ACQUIRE_INRINSIC.length() );
-    		} else if (line.startsWith( ACQUIRE_ITEM ) && line.contains( GENE_TONIC )) {
-    			result = line.substring( ACQUIRE_ITEM.length() );
-    		} else if (line.startsWith( ACTION_HYBRID )) {
-    			action = "Hybridizing";
-    		} else if (line.startsWith( ACTION_MAKE_TONIC )) {
-    			action = "Making";
-    		}
-    	}
-    
-    	if (action != null && result != null) {
-            final Turn currentInterval = logData.getLastTurnSpent();
-            final int currentTurn = currentInterval.getTurnNumber();
-           
-            DataNumberPair<String> hybridData = DataNumberPair.of(action + " " + result, currentTurn);
-    		logData.addHybridContent( hybridData );
-    	}    	
+  public static final String ACTION_HYBRID = "Hybridizing yourself";
+  public static final String ACTION_MAKE_TONIC = "Making a Gene Tonic";
+  public static final String ACQUIRE_INRINSIC = "You acquire an intrinsic: ";
+  public static final String ACQUIRE_ITEM = "You acquire an item: ";
+  public static final String GENE_TONIC = "Gene Tonic";
+
+  @Override
+  @SuppressWarnings("boxing")
+  public void parseBlock(final List<String> block, final LogDataHolder logData) {
+
+    String action = null; //Either Hybridinzing or Making
+    String result = null; //Either the intrinsic or a gene tonic
+    for (String line : block) {
+      if (line.startsWith( ACQUIRE_INRINSIC )) {
+        result = line.substring( ACQUIRE_INRINSIC.length() );
+      } else if (line.startsWith( ACQUIRE_ITEM ) && line.contains( GENE_TONIC )) {
+        result = line.substring( ACQUIRE_ITEM.length() );
+      } else if (line.startsWith( ACTION_HYBRID )) {
+        action = "Hybridizing";
+      } else if (line.startsWith( ACTION_MAKE_TONIC )) {
+        action = "Making";
+      }
     }
-    
-    public static boolean isHybridBlock(String line) {
-    	return line.startsWith( ACTION_HYBRID ) || line.startsWith( ACTION_MAKE_TONIC );
+
+    if (action != null && result != null) {
+      final Turn currentInterval = logData.getLastTurnSpent();
+      final int currentTurn = currentInterval.getTurnNumber();
+
+      DataNumberPair<String> hybridData = DataNumberPair.of(action + " " + result, currentTurn);
+      logData.addHybridContent( hybridData );
     }
+  }
+
+  public static boolean isHybridBlock(String line) {
+    return line.startsWith( ACTION_HYBRID ) || line.startsWith( ACTION_MAKE_TONIC );
+  }
 }

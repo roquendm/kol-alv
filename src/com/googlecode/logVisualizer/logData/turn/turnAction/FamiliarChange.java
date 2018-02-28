@@ -33,66 +33,66 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * after the change.
  */
 public final class FamiliarChange extends AbstractTurnAction<FamiliarChange> {
-    public static final FamiliarChange NO_FAMILIAR = new FamiliarChange("none", 0);
+  public static final FamiliarChange NO_FAMILIAR = new FamiliarChange("none", 0);
 
-    private final String familiarName;
+  private final String familiarName;
 
-    /**
-     * @param familiarName
-     *            The name of the equipped familiar after this familiar change
-     *            occurred to set.
-     * @param turnNumber
-     *            The turn number of this familiar change to set.
-     * @throws NullPointerException
-     *             if famliarName is {@code null}
-     * @throws IllegalArgumentException
-     *             if turnNumber is below 0
-     */
-    public FamiliarChange(
-                          final String familiarName, final int turnNumber) {
-        super(turnNumber);
+  /**
+   * @param familiarName
+   *            The name of the equipped familiar after this familiar change
+   *            occurred to set.
+   * @param turnNumber
+   *            The turn number of this familiar change to set.
+   * @throws NullPointerException
+   *             if famliarName is {@code null}
+   * @throws IllegalArgumentException
+   *             if turnNumber is below 0
+   */
+  public FamiliarChange(
+      final String familiarName, final int turnNumber) {
+    super(turnNumber);
 
-        if (familiarName == null)
-            throw new NullPointerException("Familiar name must not be null.");
+    if (familiarName == null)
+      throw new NullPointerException("Familiar name must not be null.");
 
-        this.familiarName = familiarName;
-    }
+    this.familiarName = familiarName;
+  }
 
-    /**
-     * @return The name of the equipped familiar after this familiar change
-     *         occurred.
-     */
-    public String getFamiliarName() {
-        return familiarName;
-    }
+  /**
+   * @return The name of the equipped familiar after this familiar change
+   *         occurred.
+   */
+  public String getFamiliarName() {
+    return familiarName;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(30);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(30);
 
-        str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-        str.append(getTurnNumber());
-        str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(familiarName);
+    str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+    str.append(getTurnNumber());
+    str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(familiarName);
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (super.equals(o))
-            return o instanceof FamiliarChange;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (super.equals(o))
+      return o instanceof FamiliarChange;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 22;
-        result = 31 * result + getTurnNumber();
+  @Override
+  public int hashCode() {
+    int result = 22;
+    result = 31 * result + getTurnNumber();
 
-        return result;
-    }
+    return result;
+  }
 }

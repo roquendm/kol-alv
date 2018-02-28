@@ -26,7 +26,12 @@ package com.googlecode.logVisualizer.logData.turn;
 
 import java.util.Collection;
 
-import com.googlecode.logVisualizer.logData.*;
+import com.googlecode.logVisualizer.logData.CombatItem;
+import com.googlecode.logVisualizer.logData.Item;
+import com.googlecode.logVisualizer.logData.MPGain;
+import com.googlecode.logVisualizer.logData.MeatGain;
+import com.googlecode.logVisualizer.logData.Skill;
+import com.googlecode.logVisualizer.logData.Statgain;
 import com.googlecode.logVisualizer.logData.consumables.Consumable;
 
 /**
@@ -36,129 +41,129 @@ import com.googlecode.logVisualizer.logData.consumables.Consumable;
  * accessible through the {@link TurnEntity} interface.
  */
 public interface Turn extends TurnEntity {
-    /**
-     * @param stats
-     *            The stat gains to add.
-     */
-    public void addStatGain(
-                            final Statgain stats);
+  /**
+   * @param stats
+   *            The stat gains to add.
+   */
+  public void addStatGain(
+      final Statgain stats);
 
-    /**
-     * @param stats
-     *            The stat gains to set.
-     */
-    public void setStatGain(
-                            final Statgain stats);
+  /**
+   * @param stats
+   *            The stat gains to set.
+   */
+  public void setStatGain(
+      final Statgain stats);
 
-    /**
-     * @param mpGain
-     *            The MP gains to set.
-     */
-    public void setMPGain(
-                          final MPGain mpGain);
+  /**
+   * @param mpGain
+   *            The MP gains to set.
+   */
+  public void setMPGain(
+      final MPGain mpGain);
 
-    /**
-     * @param mpGain
-     *            The MP gains to add.
-     */
-    public void addMPGain(
-                          final MPGain mpGain);
+  /**
+   * @param mpGain
+   *            The MP gains to add.
+   */
+  public void addMPGain(
+      final MPGain mpGain);
 
-    /**
-     * @param meat
-     *            The meat data to set.
-     */
-    public void setMeat(
-                        final MeatGain meat);
+  /**
+   * @param meat
+   *            The meat data to set.
+   */
+  public void setMeat(
+      final MeatGain meat);
 
-    /**
-     * @param meat
-     *            The meat data to add.
-     */
-    public void addMeat(
-                        final MeatGain meat);
+  /**
+   * @param meat
+   *            The meat data to add.
+   */
+  public void addMeat(
+      final MeatGain meat);
 
-    /**
-     * @param droppedItem
-     *            The item to add.
-     */
-    public void addDroppedItem(
-                               final Item droppedItem);
+  /**
+   * @param droppedItem
+   *            The item to add.
+   */
+  public void addDroppedItem(
+      final Item droppedItem);
 
-    /**
-     * @param droppedItems
-     *            The dropped items to set.
-     */
-    public void setDroppedItems(
-                                final Collection<Item> droppedItems);
+  /**
+   * @param droppedItems
+   *            The dropped items to set.
+   */
+  public void setDroppedItems(
+      final Collection<Item> droppedItems);
 
-    /***
-     * 
-     * @param combatItem the combat item to add
-     */
-    public void addCombatItemUsed(final CombatItem combatItem);
-    
-    /**
-     * @parmam collection of combat items to set
-     */
-    public void setCombatItemsUsed(final Collection<CombatItem> combatItems);
-    
-    /**
-     * @param skill
-     *            The skill to add.
-     */
-    public void addSkillCast(
-                             final Skill skill);
+  /***
+   *
+   * @param combatItem the combat item to add
+   */
+  public void addCombatItemUsed(final CombatItem combatItem);
 
-    /**
-     * @param skillsCast
-     *            The skills cast to set.
-     */
-    public void setSkillsCast(
-                              final Collection<Skill> skillsCast);
+  /**
+   * @parmam collection of combat items to set
+   */
+  public void setCombatItemsUsed(final Collection<CombatItem> combatItems);
 
-    /**
-     * @param consumable
-     *            The consumable to add.
-     */
-    public void addConsumableUsed(
-                                  final Consumable consumable);
+  /**
+   * @param skill
+   *            The skill to add.
+   */
+  public void addSkillCast(
+      final Skill skill);
 
-    /**
-     * @param consumablesUsed
-     *            The consumables used to set.
-     */
-    public void setConsumablesUsed(
-                                   final Collection<Consumable> consumablesUsed);
+  /**
+   * @param skillsCast
+   *            The skills cast to set.
+   */
+  public void setSkillsCast(
+      final Collection<Skill> skillsCast);
 
-    /**
-     * @param freeRunaways
-     *            The number of successful free runaways to add.
-     */
-    public void addFreeRunaways(
-                                final int freeRunaways);
+  /**
+   * @param consumable
+   *            The consumable to add.
+   */
+  public void addConsumableUsed(
+      final Consumable consumable);
 
-    /**
-     * @param freeRunaways
-     *            The number of successful free runaways to set.
-     */
-    public void setFreeRunaways(
-                                final int freeRunaways);
+  /**
+   * @param consumablesUsed
+   *            The consumables used to set.
+   */
+  public void setConsumablesUsed(
+      final Collection<Consumable> consumablesUsed);
 
-    /**
-     * @param notes
-     *            The notes tagged to this turn to set.
-     */
-    public void setNotes(
-                         final String notes);
+  /**
+   * @param freeRunaways
+   *            The number of successful free runaways to add.
+   */
+  public void addFreeRunaways(
+      final int freeRunaways);
 
-    /**
-     * Adds the given notes to this turn. The already existing notes and the
-     * ones added will be divided by a line break ({@code"\n"}).
-     * 
-     * @param notes
-     *            The notes tagged to this turn to add.
-     */
-    public void addNotes(
-                         final String notes);
+  /**
+   * @param freeRunaways
+   *            The number of successful free runaways to set.
+   */
+  public void setFreeRunaways(
+      final int freeRunaways);
+
+  /**
+   * @param notes
+   *            The notes tagged to this turn to set.
+   */
+  public void setNotes(
+      final String notes);
+
+  /**
+   * Adds the given notes to this turn. The already existing notes and the
+   * ones added will be divided by a line break ({@code"\n"}).
+   *
+   * @param notes
+   *            The notes tagged to this turn to add.
+   */
+  public void addNotes(
+      final String notes);
 }

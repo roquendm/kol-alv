@@ -37,44 +37,50 @@ import com.googlecode.logVisualizer.logData.Skill;
 import com.googlecode.logVisualizer.util.Lists;
 
 public final class SkillMPCostBarChart extends HorizontalBarChartBuilder {
-    public SkillMPCostBarChart(
-                               final LogDataHolder logData) {
-        super(logData, "MP cost of Skills", "Skill", "MP cost", false);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6812749450771057471L;
+
+  public SkillMPCostBarChart(
+      final LogDataHolder logData) {
+    super(logData, "MP cost of Skills", "Skill", "MP cost", false);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    final String seriesName = "MP cost of Skills";
+
+    // Create new list to not destroy the sorting of the old one.
+    final List<Skill> skills = Lists.newArrayList(getLogData().getAllSkillsCast());
+
+    // Sort from highest MP cost to lowest MP cost.
+    Collections.sort(skills, new Comparator<Skill>() {
+
+      @Override
+      public int compare(
+          final Skill o1, final Skill o2) {
+        return o2.getMpCost() - o1.getMpCost();
+      }
+    });
+
+    // Add skills to dataset.
+    for (final Skill s : skills) {
+      if (s.getMpCost() > 0)
+        dataset.addValue(s.getMpCost(), seriesName, s.getName());
+
+      // The chart isn't readable anymore with too many entries
+      if (dataset.getColumnCount() > 45)
+        break;
     }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        final String seriesName = "MP cost of Skills";
+    return dataset;
+  }
 
-        // Create new list to not destroy the sorting of the old one.
-        final List<Skill> skills = Lists.newArrayList(getLogData().getAllSkillsCast());
-
-        // Sort from highest MP cost to lowest MP cost.
-        Collections.sort(skills, new Comparator<Skill>() {
-
-            public int compare(
-                               final Skill o1, final Skill o2) {
-                return o2.getMpCost() - o1.getMpCost();
-            }
-        });
-
-        // Add skills to dataset.
-        for (final Skill s : skills) {
-            if (s.getMpCost() > 0)
-                dataset.addValue(s.getMpCost(), seriesName, s.getName());
-
-            // The chart isn't readable anymore with too many entries
-            if (dataset.getColumnCount() > 45)
-                break;
-        }
-
-        return dataset;
-    }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new SkillCastOnTurnsChartMouseEventListener(getLogData()));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new SkillCastOnTurnsChartMouseEventListener(getLogData()));
+  }
 }

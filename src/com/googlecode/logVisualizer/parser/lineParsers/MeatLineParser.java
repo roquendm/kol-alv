@@ -39,54 +39,54 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code You gain _amount_ Meat}
  */
 public final class MeatLineParser extends AbstractLineParser {
-    // String lenght of "You gain " is 9.
-    private static final int GAIN_START_STRING_LENGHT = 9;
+  // String lenght of "You gain " is 9.
+  private static final int GAIN_START_STRING_LENGHT = 9;
 
-    private static final Pattern MEAT_GAIN = Pattern.compile("^You gain \\d*,?\\d+ Meat");
+  private static final Pattern MEAT_GAIN = Pattern.compile("^You gain \\d*,?\\d+ Meat");
 
-    private final Matcher meatGainMatcher = MEAT_GAIN.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher meatGainMatcher = MEAT_GAIN.matcher(UsefulPatterns.EMPTY_STRING);
 
-    private final MeatGainType meatGainType;
+  private final MeatGainType meatGainType;
 
-    /**
-     * @param type
-     *            The mp gain type which decides to which kind of mp gain all
-     *            parsed mp gains from this line parser will be added to.
-     */
-    public MeatLineParser(
-                          final MeatGainType type) {
-        meatGainType = type;
-    }
+  /**
+   * @param type
+   *            The mp gain type which decides to which kind of mp gain all
+   *            parsed mp gains from this line parser will be added to.
+   */
+  public MeatLineParser(
+      final MeatGainType type) {
+    meatGainType = type;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        final String informationPart = line.substring(GAIN_START_STRING_LENGHT);
-        final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    final String informationPart = line.substring(GAIN_START_STRING_LENGHT);
+    final int whiteSpaceIndex = informationPart.indexOf(UsefulPatterns.WHITE_SPACE);
 
-        final String amountString = informationPart.substring(0, whiteSpaceIndex);
-        final int amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
-                                                                 UsefulPatterns.EMPTY_STRING));
+    final String amountString = informationPart.substring(0, whiteSpaceIndex);
+    final int amount = Integer.parseInt(amountString.replace(UsefulPatterns.COMMA,
+        UsefulPatterns.EMPTY_STRING));
 
-        if (meatGainType == MeatGainType.ENCOUNTER)
-            logData.getLastTurnSpent().addMeat(new MeatGain(amount, 0, 0));
-        else
-            logData.getLastTurnSpent().addMeat(new MeatGain(0, amount, 0));
-    }
+    if (meatGainType == MeatGainType.ENCOUNTER)
+      logData.getLastTurnSpent().addMeat(new MeatGain(amount, 0, 0));
+    else
+      logData.getLastTurnSpent().addMeat(new MeatGain(0, amount, 0));
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(
-                                       final String line) {
-        return meatGainMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(
+      final String line) {
+    return meatGainMatcher.reset(line).matches();
+  }
 
-    public static enum MeatGainType {
-        ENCOUNTER, OTHER;
-    }
+  public static enum MeatGainType {
+    ENCOUNTER, OTHER;
+  }
 }

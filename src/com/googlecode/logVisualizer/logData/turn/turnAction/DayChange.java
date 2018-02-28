@@ -33,65 +33,65 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class DayChange extends AbstractTurnAction<DayChange> {
-    private static final String DAY_STRING = "Day";
+  private static final String DAY_STRING = "Day";
 
-    private static final String DELIMITER_STRING = "===";
+  private static final String DELIMITER_STRING = "===";
 
-    private final int dayNumber;
+  private final int dayNumber;
 
-    /**
-     * @param dayNumber
-     *            The day number after this day change to set.
-     * @param turnNumber
-     *            The turn number of this day change to set.
-     * @throws IllegalArgumentException
-     *             if dayNumber is below 1; if turnNumber is below 0
-     */
-    public DayChange(
-                     final int dayNumber, final int turnNumber) {
-        super(turnNumber);
+  /**
+   * @param dayNumber
+   *            The day number after this day change to set.
+   * @param turnNumber
+   *            The turn number of this day change to set.
+   * @throws IllegalArgumentException
+   *             if dayNumber is below 1; if turnNumber is below 0
+   */
+  public DayChange(
+      final int dayNumber, final int turnNumber) {
+    super(turnNumber);
 
-        if (dayNumber < 1)
-            throw new IllegalArgumentException("Day number below 1.");
+    if (dayNumber < 1)
+      throw new IllegalArgumentException("Day number below 1.");
 
-        this.dayNumber = dayNumber;
-    }
+    this.dayNumber = dayNumber;
+  }
 
-    /**
-     * @return The day number after this day change.
-     */
-    public int getDayNumber() {
-        return dayNumber;
-    }
+  /**
+   * @return The day number after this day change.
+   */
+  public int getDayNumber() {
+    return dayNumber;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(15);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(15);
 
-        str.append(DELIMITER_STRING);
-        str.append(DAY_STRING);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(dayNumber);
-        str.append(DELIMITER_STRING);
+    str.append(DELIMITER_STRING);
+    str.append(DAY_STRING);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(dayNumber);
+    str.append(DELIMITER_STRING);
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (super.equals(o) && o instanceof DayChange)
-            return ((DayChange) o).getDayNumber() == dayNumber;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (super.equals(o) && o instanceof DayChange)
+      return ((DayChange) o).getDayNumber() == dayNumber;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 11;
-        result = 31 * result + super.hashCode();
-        result = 31 * result + dayNumber;
+  @Override
+  public int hashCode() {
+    int result = 11;
+    result = 31 * result + super.hashCode();
+    result = 31 * result + dayNumber;
 
-        return result;
-    }
+    return result;
+  }
 }

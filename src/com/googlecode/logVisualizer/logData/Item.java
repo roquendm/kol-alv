@@ -40,151 +40,153 @@ import com.googlecode.logVisualizer.util.Countable;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class Item extends AbstractCountable<Item> {
-    private int foundOnTurn = -1;
+  private int foundOnTurn = -1;
 
-    /**
-     * @param name
-     *            The name of this item to set.
-     * @param amount
-     *            The amount of this item to set.
-     * @throws IllegalArgumentException
-     *             if amount is below 1
-     */
-    public Item(
-                final String name, final int amount) {
-        super(name, amount);
+  /**
+   * @param name
+   *            The name of this item to set.
+   * @param amount
+   *            The amount of this item to set.
+   * @throws IllegalArgumentException
+   *             if amount is below 1
+   */
+  public Item(
+      final String name, final int amount) {
+    super(name, amount);
 
-        if (amount < 1)
-            throw new IllegalArgumentException("Amount below 1.");
-    }
+    if (amount < 1)
+      throw new IllegalArgumentException("Amount below 1.");
+  }
 
-    /**
-     * @param name
-     *            The name of this item to set.
-     * @param amount
-     *            The amount of this item to set.
-     * @param foundOnTurn
-     *            The turn on which this item was found to set.
-     * @throws IllegalArgumentException
-     *             if amount is below 1; if foundOnTurn is below 0
-     */
-    public Item(
-                final String name, final int amount, final int foundOnTurn) {
-        this(name, amount);
-        setFoundOnTurn(foundOnTurn);
-    }
+  /**
+   * @param name
+   *            The name of this item to set.
+   * @param amount
+   *            The amount of this item to set.
+   * @param foundOnTurn
+   *            The turn on which this item was found to set.
+   * @throws IllegalArgumentException
+   *             if amount is below 1; if foundOnTurn is below 0
+   */
+  public Item(
+      final String name, final int amount, final int foundOnTurn) {
+    this(name, amount);
+    setFoundOnTurn(foundOnTurn);
+  }
 
-    /**
-     * @param foundOnTurn
-     *            The turn on which this item was found to set.
-     * @throws IllegalArgumentException
-     *             if foundOnTurn is below 0
-     */
-    public void setFoundOnTurn(
-                               final int foundOnTurn) {
-        if (foundOnTurn < 0)
-            throw new IllegalArgumentException("Turn number below 0.");
+  /**
+   * @param foundOnTurn
+   *            The turn on which this item was found to set.
+   * @throws IllegalArgumentException
+   *             if foundOnTurn is below 0
+   */
+  public void setFoundOnTurn(
+      final int foundOnTurn) {
+    if (foundOnTurn < 0)
+      throw new IllegalArgumentException("Turn number below 0.");
 
-        this.foundOnTurn = foundOnTurn;
-    }
+    this.foundOnTurn = foundOnTurn;
+  }
 
-    /**
-     * @return The turn on which this item was found. If no turn was specified,
-     *         -1 will be returned.
-     */
-    public int getFoundOnTurn() {
-        return foundOnTurn;
-    }
+  /**
+   * @return The turn on which this item was found. If no turn was specified,
+   *         -1 will be returned.
+   */
+  public int getFoundOnTurn() {
+    return foundOnTurn;
+  }
 
-    /**
-     * @param amount
-     *            The amount of this item to set.
-     * @throws IllegalArgumentException
-     *             if amount is below 1
-     * @see Countable
-     */
-    @Override
-    public void setAmount(
-                          final int amount) {
-        if (amount < 1)
-            throw new IllegalArgumentException("Amount below 1.");
+  /**
+   * @param amount
+   *            The amount of this item to set.
+   * @throws IllegalArgumentException
+   *             if amount is below 1
+   * @see Countable
+   */
+  @Override
+  public void setAmount(
+      final int amount) {
+    if (amount < 1)
+      throw new IllegalArgumentException("Amount below 1.");
 
-        super.setAmount(amount);
-    }
+    super.setAmount(amount);
+  }
 
-    /**
-     * This method not only adds the amount of the given Item to this instance,
-     * it also compares the turn number of the given item with the one from this
-     * instance and sets this instance's turn number to the one which was
-     * smaller.
-     * 
-     * @see Countable
-     */
-    @Override
-    public void merge(
-                      final Item i) {
-        super.merge(i);
+  /**
+   * This method not only adds the amount of the given Item to this instance,
+   * it also compares the turn number of the given item with the one from this
+   * instance and sets this instance's turn number to the one which was
+   * smaller.
+   *
+   * @see Countable
+   */
+  @Override
+  public void merge(
+      final Item i) {
+    super.merge(i);
 
-        if (i.getFoundOnTurn() < foundOnTurn)
-            foundOnTurn = i.getFoundOnTurn();
-    }
+    if (i.getFoundOnTurn() < foundOnTurn)
+      foundOnTurn = i.getFoundOnTurn();
+  }
 
-    /**
-     * @return The name of this item.
-     * @see Countable
-     */
-    public Comparable<String> getComparator() {
-        return getName();
-    }
+  /**
+   * @return The name of this item.
+   * @see Countable
+   */
+  @Override
+  public Comparable<String> getComparator() {
+    return getName();
+  }
 
-    /**
-     * @return A deep copy of this object.
-     * @see Countable
-     */
-    public Item newInstance() {
-        return foundOnTurn < 0 ? new Item(getName(), getAmount()) : new Item(getName(),
-                                                                             getAmount(),
-                                                                             foundOnTurn);
-    }
+  /**
+   * @return A deep copy of this object.
+   * @see Countable
+   */
+  @Override
+  public Item newInstance() {
+    return foundOnTurn < 0 ? new Item(getName(), getAmount()) : new Item(getName(),
+        getAmount(),
+        foundOnTurn);
+  }
 
-    /**
-     * @return An alphabetic comparison between this item and another one.
-     *         Equal to {@code this.getName().compareToIgnoreCase(i.getName())}.
-     */
-    @Override
-    public int compareTo(
-                         final Item i) {
-        return getName().compareToIgnoreCase(i.getName());
-    }
+  /**
+   * @return An alphabetic comparison between this item and another one.
+   *         Equal to {@code this.getName().compareToIgnoreCase(i.getName())}.
+   */
+  @Override
+  public int compareTo(
+      final Item i) {
+    return getName().compareToIgnoreCase(i.getName());
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(40);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(40);
 
-        str.append(getName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
-        str.append(getAmount());
-        str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
+    str.append(getName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
+    str.append(getAmount());
+    str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (super.equals(o) && o instanceof Item)
-            return ((Item) o).getFoundOnTurn() == foundOnTurn;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (super.equals(o) && o instanceof Item)
+      return ((Item) o).getFoundOnTurn() == foundOnTurn;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 65;
-        result = 31 * result + super.hashCode();
-        result = 31 * result + foundOnTurn;
+  @Override
+  public int hashCode() {
+    int result = 65;
+    result = 31 * result + super.hashCode();
+    result = 31 * result + foundOnTurn;
 
-        return result;
-    }
+    return result;
+  }
 }

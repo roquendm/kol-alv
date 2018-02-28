@@ -40,52 +40,53 @@ import com.googlecode.logVisualizer.util.Maps;
  * class.
  */
 abstract class DataPerLevelSummary<T> {
-    private final Map<Integer, T> levelData = Maps.newHashMap();
+  private final Map<Integer, T> levelData = Maps.newHashMap();
 
-    /**
-     * @return The result of both given data objects added together.
-     */
-    abstract T getDataAddition(
-                               final T data1, final T data2);
+  /**
+   * @return The result of both given data objects added together.
+   */
+  abstract T getDataAddition(
+      final T data1, final T data2);
 
-    /**
-     * Adds the given data to the given level.
-     * 
-     * @param levelNumber
-     *            The level number.
-     * @param meatData
-     *            The data to add to the given level.
-     */
-    public void addLevelData(
-                             final int levelNumber, final T data) {
-        final Integer lvl = Integer.valueOf(levelNumber);
-        if (levelData.containsKey(lvl)) {
-            final T newData = getDataAddition(levelData.get(lvl), data);
-            levelData.put(lvl, newData);
-        } else
-            levelData.put(lvl, data);
-    }
+  /**
+   * Adds the given data to the given level.
+   *
+   * @param levelNumber
+   *            The level number.
+   * @param meatData
+   *            The data to add to the given level.
+   */
+  public void addLevelData(
+      final int levelNumber, final T data) {
+    final Integer lvl = Integer.valueOf(levelNumber);
+    if (levelData.containsKey(lvl)) {
+      final T newData = getDataAddition(levelData.get(lvl), data);
+      levelData.put(lvl, newData);
+    } else
+      levelData.put(lvl, data);
+  }
 
-    /**
-     * @param levelNumber
-     *            The level number of the wanted data.
-     * @return The data of the given level.
-     */
-    public T getLevelData(
-                          final int levelNumber) {
-        return levelData.get(levelNumber);
-    }
+  /**
+   * @param levelNumber
+   *            The level number of the wanted data.
+   * @return The data of the given level.
+   */
+  @SuppressWarnings("boxing")
+  public T getLevelData(
+      final int levelNumber) {
+    return levelData.get(levelNumber);
+  }
 
-    /**
-     * @return A sorted list of the data of all levels.
-     */
-    public List<DataNumberPair<T>> getAllLevelsData() {
-        final List<DataNumberPair<T>> result = Lists.newArrayList(levelData.size());
-        for (final Integer i : levelData.keySet())
-            result.add(DataNumberPair.of(levelData.get(i), i));
+  /**
+   * @return A sorted list of the data of all levels.
+   */
+  public List<DataNumberPair<T>> getAllLevelsData() {
+    final List<DataNumberPair<T>> result = Lists.newArrayList(levelData.size());
+    for (final Integer i : levelData.keySet())
+      result.add(DataNumberPair.of(levelData.get(i), i));
 
-        Collections.sort(result);
+    Collections.sort(result);
 
-        return result;
-    }
+    return result;
+  }
 }

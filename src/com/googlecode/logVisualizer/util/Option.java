@@ -37,89 +37,89 @@ package com.googlecode.logVisualizer.util;
  * static final field {@link Option#NONE} in a type-safe way.
  */
 public class Option<E> {
-    private final E element;
+  private final E element;
 
-    /**
-     * Use this object when referring to no data. Usual idiomatic Java would
-     * probably use {@code null} in such cases.
-     * <p>
-     * If you call {@link Option#get()} on this object, an
-     * {@link UnsupportedOperationException} will be thrown.
-     */
-    public static final Option<?> NONE = new Option<Object>(null) {
-        @Override
-        public Object get() {
-            throw new UnsupportedOperationException("The None-Option doesn't have an element.");
-        }
-    };
-
-    /**
-     * Creates an Option instance containing the given data.
-     * 
-     * @param element
-     *            The data contained inside the Option.
-     * @throws IllegalArgumentException
-     *             if the element is {@code null}
-     * @return The created Option instance with the given data.
-     */
-    public static <T> Option<T> some(
-                                     final T element) {
-        if (element == null)
-            throw new IllegalArgumentException("The element must not be null.");
-
-        return new Option<T>(element);
-    }
-
-    /**
-     * Returns the {@link Option#NONE} object in a more type-safe way.
-     * 
-     * @return An Option instance containing no data. Is equal with
-     *         {@link Option#NONE}.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Option<T> none() {
-        return (Option<T>) NONE;
-    }
-
-    private Option(
-                   final E element) {
-        this.element = element;
-    }
-
-    /**
-     * @return The data contained inside this Option instance.
-     */
-    public E get() {
-        return element;
-    }
-
-    /**
-     * @return True in case this Option instance contains data, otherwise false.
-     */
-    public boolean isSome() {
-        return element != null;
-    }
-
+  /**
+   * Use this object when referring to no data. Usual idiomatic Java would
+   * probably use {@code null} in such cases.
+   * <p>
+   * If you call {@link Option#get()} on this object, an
+   * {@link UnsupportedOperationException} will be thrown.
+   */
+  public static final Option<?> NONE = new Option<Object>(null) {
     @Override
-    public boolean equals(
-                          final Object o) {
-        if (o == this)
-            return true;
-
-        if (o == NONE)
-            return false;
-
-        if (o == null)
-            return false;
-
-        if (o instanceof Option<?>)
-            return ((Option<?>) o).get().equals(element);
-
-        return false;
+    public Object get() {
+      throw new UnsupportedOperationException("The None-Option doesn't have an element.");
     }
+  };
 
-    @Override
-    public int hashCode() {
-        return this == NONE ? 767 : 767 * 31 + element.hashCode();
-    }
+  /**
+   * Creates an Option instance containing the given data.
+   *
+   * @param element
+   *            The data contained inside the Option.
+   * @throws IllegalArgumentException
+   *             if the element is {@code null}
+   * @return The created Option instance with the given data.
+   */
+  public static <T> Option<T> some(
+      final T element) {
+    if (element == null)
+      throw new IllegalArgumentException("The element must not be null.");
+
+    return new Option<T>(element);
+  }
+
+  /**
+   * Returns the {@link Option#NONE} object in a more type-safe way.
+   *
+   * @return An Option instance containing no data. Is equal with
+   *         {@link Option#NONE}.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Option<T> none() {
+    return (Option<T>) NONE;
+  }
+
+  Option(
+      final E element) {
+    this.element = element;
+  }
+
+  /**
+   * @return The data contained inside this Option instance.
+   */
+  public E get() {
+    return element;
+  }
+
+  /**
+   * @return True in case this Option instance contains data, otherwise false.
+   */
+  public boolean isSome() {
+    return element != null;
+  }
+
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o == this)
+      return true;
+
+    if (o == NONE)
+      return false;
+
+    if (o == null)
+      return false;
+
+    if (o instanceof Option<?>)
+      return ((Option<?>) o).get().equals(element);
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return this == NONE ? 767 : 767 * 31 + element.hashCode();
+  }
 }

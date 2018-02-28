@@ -27,9 +27,14 @@ package com.googlecode.logVisualizer.gui.projectUpdatesViewer;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
@@ -45,48 +50,56 @@ import org.xml.sax.SAXException;
  * reader light).
  */
 public final class ProjectUpdateViewer extends JFrame {
-    private static final Pattern ALV_VERSION_FILE_NAME = Pattern.compile("AscensionLogVisualizer \\d+.\\d+.\\d+.jar.*");
+  /**
+   *
+   */
+  private static final long serialVersionUID = 2747768667688170241L;
+  //private static final Pattern ALV_VERSION_FILE_NAME = Pattern.compile("AscensionLogVisualizer \\d+.\\d+.\\d+.jar.*");
 
-    /**
-     * Static instancing method to show the project update viewer frame.
-     * <p>
-     * If there were problems with the connection or the feed parsing, an error
-     * dialog will be shown instead.
-     */
-    public static void showProjectUpdateViewer() {
-        try {
-            final List<ProjectUpdateContainer> updates = ProjectFeedReader.readUpdatesFeed("http://code.google.com/feeds/p/ascension-log-visualizer/updates/basic");
-            new ProjectUpdateViewer(updates);
-        } catch (final UnknownHostException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null,
-                                          "Could not connect to the server.",
-                                          "Connection Error",
-                                          JOptionPane.ERROR_MESSAGE);
-        } catch (final IOException e) {
-            e.printStackTrace();
-            showStandardErrorMessage();
-        } catch (final XPathExpressionException e) {
-            e.printStackTrace();
-            showStandardErrorMessage();
-        } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
-            showStandardErrorMessage();
-        } catch (final SAXException e) {
-            e.printStackTrace();
-            showStandardErrorMessage();
-        }
+  /**
+   * Static instancing method to show the project update viewer frame.
+   * <p>
+   * If there were problems with the connection or the feed parsing, an error
+   * dialog will be shown instead.
+   */
+  @SuppressWarnings("unused")
+  public static void showProjectUpdateViewer() {
+    try {
+      final List<ProjectUpdateContainer> updates = ProjectFeedReader.readUpdatesFeed("http://code.google.com/feeds/p/ascension-log-visualizer/updates/basic");
+      new ProjectUpdateViewer(updates);
+    } catch (final UnknownHostException e) {
+      e.printStackTrace();
+      JOptionPane.showMessageDialog(null,
+          "Could not connect to the server.",
+          "Connection Error",
+          JOptionPane.ERROR_MESSAGE);
+    } catch (final IOException e) {
+      e.printStackTrace();
+      showStandardErrorMessage();
+    } catch (final XPathExpressionException e) {
+      e.printStackTrace();
+      showStandardErrorMessage();
+    } catch (final ParserConfigurationException e) {
+      e.printStackTrace();
+      showStandardErrorMessage();
+    } catch (final SAXException e) {
+      e.printStackTrace();
+      showStandardErrorMessage();
     }
+  }
 
-    /**
-     * Checks the project website for a newer version of the ALV. In case the
-     * server couldn't be reached or the data couldn't be parsed, this method
-     * will return false.
-     * 
-     * @return True if there is a version newer than the current one uploaded to
-     *         the project website, false otherwise.
-     */
-    public static boolean isNewerVersionUploaded() {
+  /**
+   * Checks the project website for a newer version of the ALV. In case the
+   * server couldn't be reached or the data couldn't be parsed, this method
+   * will return false.
+   *
+   * @return True if there is a version newer than the current one uploaded to
+   *         the project website, false otherwise.
+   */
+  public static boolean isNewerVersionUploaded() {
+    return false;
+
+    /** TODO: this is obviously broken.
         try {
             for (final ProjectUpdateContainer puc : ProjectFeedReader.readUpdatesFeed("http://code.google.com/feeds/p/ascension-log-visualizer/downloads/basic"))
                 if (ALV_VERSION_FILE_NAME.matcher(puc.getTitle()).matches()
@@ -97,59 +110,61 @@ public final class ProjectUpdateViewer extends JFrame {
         }
 
         return false;
-    }
+     */
+  }
 
-    private static void showStandardErrorMessage() {
-        JOptionPane.showMessageDialog(null,
-                                      "An error occurred while checking for project news updates.",
-                                      "Error Occurred",
-                                      JOptionPane.ERROR_MESSAGE);
-    }
+  private static void showStandardErrorMessage() {
+    JOptionPane.showMessageDialog(null,
+        "An error occurred while checking for project news updates.",
+        "Error Occurred",
+        JOptionPane.ERROR_MESSAGE);
+  }
 
-    private final JTextArea contentArea;
+  final JTextArea contentArea;
 
-    private ProjectUpdateViewer(
-                                final List<ProjectUpdateContainer> updates) {
-        super("Project Updates since the release of this version");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+  private ProjectUpdateViewer(
+      final List<ProjectUpdateContainer> updates) {
+    super("Project Updates since the release of this version");
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        contentArea = new JTextArea();
-        contentArea.setLineWrap(true);
-        contentArea.setWrapStyleWord(true);
-        contentArea.setEditable(false);
+    final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    contentArea = new JTextArea();
+    contentArea.setLineWrap(true);
+    contentArea.setWrapStyleWord(true);
+    contentArea.setEditable(false);
 
-        splitPane.setTopComponent(new JScrollPane(createUpdatesTable(updates)));
-        splitPane.setBottomComponent(new JScrollPane(contentArea));
-        splitPane.setDividerLocation(250);
+    splitPane.setTopComponent(new JScrollPane(createUpdatesTable(updates)));
+    splitPane.setBottomComponent(new JScrollPane(contentArea));
+    splitPane.setDividerLocation(250);
 
-        setContentPane(splitPane);
-        setSize(800, 600);
-        RefineryUtilities.centerFrameOnScreen(this);
-        setVisible(true);
-    }
+    setContentPane(splitPane);
+    setSize(800, 600);
+    RefineryUtilities.centerFrameOnScreen(this);
+    setVisible(true);
+  }
 
-    private JTable createUpdatesTable(
-                                      final List<ProjectUpdateContainer> updates) {
-        final ProjectFeedUpdateTableModel updatesTableData = new ProjectFeedUpdateTableModel(updates);
-        final JTable projectUpdatesTable = new JTable(updatesTableData);
+  private JTable createUpdatesTable(
+      final List<ProjectUpdateContainer> updates) {
+    final ProjectFeedUpdateTableModel updatesTableData = new ProjectFeedUpdateTableModel(updates);
+    final JTable projectUpdatesTable = new JTable(updatesTableData);
 
-        projectUpdatesTable.setShowGrid(false);
-        final TableColumn dateCol = projectUpdatesTable.getColumnModel().getColumn(1);
-        dateCol.setMinWidth(150);
-        dateCol.setMaxWidth(150);
-        dateCol.setPreferredWidth(150);
-        projectUpdatesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectUpdatesTable.getSelectionModel()
-                           .addListSelectionListener(new ListSelectionListener() {
-                               public void valueChanged(
-                                                        final ListSelectionEvent arg0) {
-                                   contentArea.setText(updates.get(projectUpdatesTable.getSelectedRow())
-                                                              .getContent());
-                                   contentArea.setCaretPosition(0);
-                               }
-                           });
+    projectUpdatesTable.setShowGrid(false);
+    final TableColumn dateCol = projectUpdatesTable.getColumnModel().getColumn(1);
+    dateCol.setMinWidth(150);
+    dateCol.setMaxWidth(150);
+    dateCol.setPreferredWidth(150);
+    projectUpdatesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    projectUpdatesTable.getSelectionModel()
+    .addListSelectionListener(new ListSelectionListener() {
+      @Override
+      public void valueChanged(
+          final ListSelectionEvent arg0) {
+        contentArea.setText(updates.get(projectUpdatesTable.getSelectedRow())
+            .getContent());
+        contentArea.setCaretPosition(0);
+      }
+    });
 
-        return projectUpdatesTable;
-    }
+    return projectUpdatesTable;
+  }
 }

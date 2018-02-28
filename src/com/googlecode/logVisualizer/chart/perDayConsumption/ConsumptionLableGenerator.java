@@ -31,29 +31,32 @@ import com.googlecode.logVisualizer.logData.consumables.Consumable;
 
 final class ConsumptionLableGenerator implements CategoryItemLabelGenerator {
 
-    public String generateLabel(
-                                final CategoryDataset dataset, final int row, final int column) {
-        final ConsumptionDataset data = (ConsumptionDataset) dataset;
-        final Consumable c = data.getConsumable(data.getRowKey(row).toString());
-        if (c != null) {
-            final StringBuilder str = new StringBuilder(50);
-            str.append(c.getName());
-            str.append(" (");
-            str.append(c.getAdventureGain());
-            str.append(")");
+  @Override
+  public String generateLabel(
+      final CategoryDataset dataset, final int row, final int column) {
+    final ConsumptionDataset data = (ConsumptionDataset) dataset;
+    final Consumable c = data.getConsumable(data.getRowKey(row).toString());
+    if (c != null) {
+      final StringBuilder str = new StringBuilder(50);
+      str.append(c.getName());
+      str.append(" (");
+      str.append(c.getAdventureGain());
+      str.append(")");
 
-            return str.toString();
-        }
-        return null;
+      return str.toString();
     }
+    return null;
+  }
 
-    public String generateColumnLabel(
-                                      final CategoryDataset dataset, final int column) {
-        return dataset.getColumnKey(column).toString();
-    }
+  @Override
+  public String generateColumnLabel(
+      final CategoryDataset dataset, final int column) {
+    return dataset.getColumnKey(column).toString();
+  }
 
-    public String generateRowLabel(
-                                   final CategoryDataset dataset, final int row) {
-        return dataset.getRowKey(row).toString();
-    }
+  @Override
+  public String generateRowLabel(
+      final CategoryDataset dataset, final int row) {
+    return dataset.getRowKey(row).toString();
+  }
 }

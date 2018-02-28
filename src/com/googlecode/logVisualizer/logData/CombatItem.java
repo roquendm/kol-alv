@@ -24,13 +24,12 @@
 
 package com.googlecode.logVisualizer.logData;
 
-import com.googlecode.logVisualizer.logData.consumables.Consumable;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.AbstractCountable;
 import com.googlecode.logVisualizer.util.Countable;
 
 /**
- * A relatively simple representation for combat items used during combat. 
+ * A relatively simple representation for combat items used during combat.
  * <p>
  * All methods in this class throw a {@link NullPointerException} if a null
  * object reference is passed in any parameter.
@@ -38,139 +37,141 @@ import com.googlecode.logVisualizer.util.Countable;
  * Note: This class has a natural ordering that is inconsistent with equals.
  */
 public final class CombatItem extends AbstractCountable<CombatItem> {
-    private int turnNumberUsed = -1;
+  private int turnNumberUsed = -1;
 
-    /**
-     * @param name
-     *            The name of this item to set.
-     * @param amount
-     *            The amount of this item being used
-     * @throws IllegalArgumentException
-     *             if amount is below 1
-     */
-    public CombatItem( final String name, int amount) {
-        super(name, amount);
-    }
+  /**
+   * @param name
+   *            The name of this item to set.
+   * @param amount
+   *            The amount of this item being used
+   * @throws IllegalArgumentException
+   *             if amount is below 1
+   */
+  public CombatItem( final String name, int amount) {
+    super(name, amount);
+  }
 
-    /**
-     * @param name
-     *            The name of this item to set.
-     * @param amount
-     *            The amount of this item to set.
-     * @param foundOnTurn
-     *            The turn on which this item was found to set.
-     * @throws IllegalArgumentException
-     *             if amount is below 1; if foundOnTurn is below 0
-     */
-    public CombatItem( final String name, final int amount, final int turnNumberUsed) {
-        this(name, amount);
-        setTurnUsed( turnNumberUsed );
-    }
+  /**
+   * @param name
+   *            The name of this item to set.
+   * @param amount
+   *            The amount of this item to set.
+   * @param foundOnTurn
+   *            The turn on which this item was found to set.
+   * @throws IllegalArgumentException
+   *             if amount is below 1; if foundOnTurn is below 0
+   */
+  public CombatItem( final String name, final int amount, final int turnNumberUsed) {
+    this(name, amount);
+    setTurnUsed( turnNumberUsed );
+  }
 
-    /**
-     * @param foundOnTurn
-     *            The turn on which this item was found to set.
-     * @throws IllegalArgumentException
-     *             if foundOnTurn is below 0
-     */
-    public void setTurnUsed(final int turnNumberUsed) {
-        if (turnNumberUsed < 0)
-            throw new IllegalArgumentException("Turn number below 0.");
+  /**
+   * @param foundOnTurn
+   *            The turn on which this item was found to set.
+   * @throws IllegalArgumentException
+   *             if foundOnTurn is below 0
+   */
+  public void setTurnUsed(final int turnNumberUsed) {
+    if (turnNumberUsed < 0)
+      throw new IllegalArgumentException("Turn number below 0.");
 
-        this.turnNumberUsed = turnNumberUsed;
-    }
+    this.turnNumberUsed = turnNumberUsed;
+  }
 
-    /**
-     * @return The turn on which this item was used. If no turn was specified, -1 will be returned.
-     */
-    public int getTurnUsed() {
-        return this.turnNumberUsed;
-    }
+  /**
+   * @return The turn on which this item was used. If no turn was specified, -1 will be returned.
+   */
+  public int getTurnUsed() {
+    return this.turnNumberUsed;
+  }
 
-    /**
-     * @param amount
-     *            The amount of this item to set.
-     * @throws IllegalArgumentException
-     *             if amount is below 1
-     * @see Countable
-     */
-    @Override
-    public void setAmount( final int amount ) {
-        if (amount < 1)
-            throw new IllegalArgumentException("Amount below 1.");
+  /**
+   * @param amount
+   *            The amount of this item to set.
+   * @throws IllegalArgumentException
+   *             if amount is below 1
+   * @see Countable
+   */
+  @Override
+  public void setAmount( final int amount ) {
+    if (amount < 1)
+      throw new IllegalArgumentException("Amount below 1.");
 
-        super.setAmount(amount);
-    }
+    super.setAmount(amount);
+  }
 
-    /**
-     * This method not only adds the amount of the given Item to this instance,
-     * it also compares the turn number of the given item with the one from this
-     * instance and sets this instance's turn number to the one which was
-     * smaller.
-     * 
-     * @see Countable
-     */
-    @Override
-    public void merge(
-                      final CombatItem i) {
-        super.merge(i);
-        
-        if (i.getTurnUsed() < turnNumberUsed)
-        	turnNumberUsed = i.getTurnUsed();
-    }
+  /**
+   * This method not only adds the amount of the given Item to this instance,
+   * it also compares the turn number of the given item with the one from this
+   * instance and sets this instance's turn number to the one which was
+   * smaller.
+   *
+   * @see Countable
+   */
+  @Override
+  public void merge(
+      final CombatItem i) {
+    super.merge(i);
 
-    /**
-     * @return The name of this item.
-     * @see Countable
-     */
-    public Comparable<String> getComparator() {
-        return getName();
-    }
+    if (i.getTurnUsed() < turnNumberUsed)
+      turnNumberUsed = i.getTurnUsed();
+  }
 
-    /**
-     * @return A deep copy of this object.
-     * @see Countable
-     */
-    public CombatItem newInstance() {
-        return turnNumberUsed < 0 ? new CombatItem(getName(), getAmount()) : new CombatItem(getName(), getAmount(), turnNumberUsed);
-    }
+  /**
+   * @return The name of this item.
+   * @see Countable
+   */
+  @Override
+  public Comparable<String> getComparator() {
+    return getName();
+  }
 
-    /**
-     * @return An alphabetic comparison between this item and another one.
-     *         Equal to {@code this.getName().compareToIgnoreCase(i.getName())}.
-     */
-    @Override
-    public int compareTo(final CombatItem i) {
-        return getAmount() - i.getAmount();
-    }
+  /**
+   * @return A deep copy of this object.
+   * @see Countable
+   */
+  @Override
+  public CombatItem newInstance() {
+    return turnNumberUsed < 0 ? new CombatItem(getName(), getAmount()) : new CombatItem(getName(), getAmount(), turnNumberUsed);
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(40);
+  /**
+   * @return An alphabetic comparison between this item and another one.
+   *         Equal to {@code this.getName().compareToIgnoreCase(i.getName())}.
+   */
+  @Override
+  public int compareTo(final CombatItem i) {
+    return getAmount() - i.getAmount();
+  }
 
-        str.append(getName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
-        str.append(getAmount());
-        str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(40);
 
-        return str.toString();
-    }
+    str.append(getName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
+    str.append(getAmount());
+    str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
 
-    @Override
-    public boolean equals(final Object o) {
-        if (super.equals(o) && o instanceof CombatItem)
-            return ((CombatItem) o).getTurnUsed() == turnNumberUsed;
+    return str.toString();
+  }
 
-        return false;
-    }
+  @Override
+  public boolean equals(final Object o) {
+    if (super.equals(o) && o instanceof CombatItem)
+      return ((CombatItem) o).getTurnUsed() == turnNumberUsed;
 
-    @Override
-    public int hashCode() {
-        int result = 65;
-        result = 31 * result + super.hashCode();
-        result = 31 * result + turnNumberUsed;
+    return false;
+  }
 
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = 65;
+    result = 31 * result + super.hashCode();
+    result = 31 * result + turnNumberUsed;
+
+    return result;
+  }
 }

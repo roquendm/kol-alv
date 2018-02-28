@@ -43,86 +43,91 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
  * A class to handle some basic structures which all charts have in common.
  */
 public abstract class AbstractChart extends JPanel {
-    private final String title;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8477765463577943011L;
 
-    private final boolean isIncludeLegend;
+  private final String title;
 
-    private final LogDataHolder logData;
+  private final boolean isIncludeLegend;
 
-    protected AbstractChart(
-                            final String title, final LogDataHolder logData,
-                            final boolean isIncludeLegend) {
-        super(new BorderLayout());
-        this.title = title;
-        this.logData = logData;
-        this.isIncludeLegend = isIncludeLegend;
-    }
+  private final LogDataHolder logData;
 
-    /**
-     * Adds the chart to this Panel.
-     */
-    protected void addChart() {
-        final ChartPanel cp = createChartPanel();
-        addChartPanelListeners(cp);
-        add(cp, BorderLayout.CENTER);
-    }
+  protected AbstractChart(
+      final String title, final LogDataHolder logData,
+      final boolean isIncludeLegend) {
+    super(new BorderLayout());
+    this.title = title;
+    this.logData = logData;
+    this.isIncludeLegend = isIncludeLegend;
+  }
 
-    /**
-     * Empty method body. Override in implementing classes to add listeners of
-     * your choice to the finished chart panel.
-     */
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {}
+  /**
+   * Adds the chart to this Panel.
+   */
+  protected void addChart() {
+    final ChartPanel cp = createChartPanel();
+    addChartPanelListeners(cp);
+    add(cp, BorderLayout.CENTER);
+  }
 
-    /**
-     * @return The finished chart.
-     */
-    protected abstract ChartPanel createChartPanel();
+  /**
+   * Empty method body. Override in implementing classes to add listeners of
+   * your choice to the finished chart panel.
+   */
+  protected void addChartPanelListeners(
+      @SuppressWarnings("unused") final ChartPanel cp) {}
 
-    /**
-     * @return The title of the chart.
-     */
-    protected String getTitle() {
-        return title;
-    }
+  /**
+   * @return The finished chart.
+   */
+  protected abstract ChartPanel createChartPanel();
 
-    /**
-     * @return A flag for whether a legend should be shown in the chart.
-     */
-    protected boolean isIncludeLegend() {
-        return isIncludeLegend;
-    }
+  /**
+   * @return The title of the chart.
+   */
+  protected String getTitle() {
+    return title;
+  }
 
-    /**
-     * @return The ascension log from whose data the chart is created.
-     */
-    protected LogDataHolder getLogData() {
-        return logData;
-    }
+  /**
+   * @return A flag for whether a legend should be shown in the chart.
+   */
+  protected boolean isIncludeLegend() {
+    return isIncludeLegend;
+  }
 
-    /**
-     * Sets the visibility of bar shadows.
-     * <p>
-     * JFreeChart 1.0.11 changed the <b>default</b> look by painting shadows for
-     * bars. To revert back to the old look, you can disable the shadows with
-     * this method.
-     * 
-     * @param chart
-     *            The chart for which the shadow visibility should be set.
-     * @param isVisibile
-     *            The flag for the shadow visibility.
-     */
-    public static void setBarShadowVisible(
-                                           final JFreeChart chart, final boolean isVisibile) {
-        if (chart != null)
-            if (chart.getPlot() instanceof CategoryPlot) {
-                final CategoryItemRenderer cir = ((CategoryPlot) chart.getPlot()).getRenderer();
-                if (cir instanceof BarRenderer)
-                    ((BarRenderer) cir).setShadowVisible(isVisibile);
-            } else if (chart.getPlot() instanceof XYPlot) {
-                final XYItemRenderer xyir = ((XYPlot) chart.getPlot()).getRenderer();
-                if (xyir instanceof XYBarRenderer)
-                    ((XYBarRenderer) xyir).setShadowVisible(isVisibile);
-            }
-    }
+  /**
+   * @return The ascension log from whose data the chart is created.
+   */
+  protected LogDataHolder getLogData() {
+    return logData;
+  }
+
+  /**
+   * Sets the visibility of bar shadows.
+   * <p>
+   * JFreeChart 1.0.11 changed the <b>default</b> look by painting shadows for
+   * bars. To revert back to the old look, you can disable the shadows with
+   * this method.
+   *
+   * @param chart
+   *            The chart for which the shadow visibility should be set.
+   * @param isVisibile
+   *            The flag for the shadow visibility.
+   */
+  public static void setBarShadowVisible(
+      final JFreeChart chart, final boolean isVisibile) {
+    if (chart != null)
+      if (chart.getPlot() instanceof CategoryPlot) {
+        final CategoryItemRenderer cir = ((CategoryPlot) chart.getPlot()).getRenderer();
+        if (cir instanceof BarRenderer)
+          ((BarRenderer) cir).setShadowVisible(isVisibile);
+      } else if (chart.getPlot() instanceof XYPlot) {
+        final XYItemRenderer xyir = ((XYPlot) chart.getPlot()).getRenderer();
+        if (xyir instanceof XYBarRenderer)
+          ((XYBarRenderer) xyir).setShadowVisible(isVisibile);
+      }
+  }
 }

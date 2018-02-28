@@ -36,45 +36,53 @@ import com.googlecode.logVisualizer.util.Lists;
  * feed updates.
  */
 final class ProjectFeedUpdateTableModel extends AbstractTableModel {
-    private static final String[] COLUMN_NAMES = { "Title", "Date" };
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5900207458782083612L;
 
-    private final List<ProjectUpdateContainer> updates;
+  private static final String[] COLUMN_NAMES = { "Title", "Date" };
 
-    ProjectFeedUpdateTableModel(
-                                final Collection<ProjectUpdateContainer> updates) {
-        super();
-        this.updates = Lists.newArrayList(updates);
-    }
+  private final List<ProjectUpdateContainer> updates;
 
-    @Override
-    public boolean isCellEditable(
-                                  final int rowIndex, final int columnIndex) {
-        return false;
-    }
+  ProjectFeedUpdateTableModel(
+      final Collection<ProjectUpdateContainer> updates) {
+    super();
+    this.updates = Lists.newArrayList(updates);
+  }
 
-    @Override
-    public void setValueAt(
-                           final Object aValue, final int rowIndex, final int columnIndex) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean isCellEditable(
+      final int rowIndex, final int columnIndex) {
+    return false;
+  }
 
-    @Override
-    public String getColumnName(
-                                final int column) {
-        return COLUMN_NAMES[column];
-    }
+  @Override
+  public void setValueAt(
+      final Object aValue, final int rowIndex, final int columnIndex) {
+    throw new UnsupportedOperationException();
+  }
 
-    public int getColumnCount() {
-        return COLUMN_NAMES.length;
-    }
+  @Override
+  public String getColumnName(
+      final int column) {
+    return COLUMN_NAMES[column];
+  }
 
-    public int getRowCount() {
-        return updates.size();
-    }
+  @Override
+  public int getColumnCount() {
+    return COLUMN_NAMES.length;
+  }
 
-    public Object getValueAt(
-                             final int rowIndex, final int columnIndex) {
-        return columnIndex == 0 ? updates.get(rowIndex).getTitle() : updates.get(rowIndex)
-                                                                            .getUpdated();
-    }
+  @Override
+  public int getRowCount() {
+    return updates.size();
+  }
+
+  @Override
+  public Object getValueAt(
+      final int rowIndex, final int columnIndex) {
+    return columnIndex == 0 ? updates.get(rowIndex).getTitle() : updates.get(rowIndex)
+        .getUpdated();
+  }
 }

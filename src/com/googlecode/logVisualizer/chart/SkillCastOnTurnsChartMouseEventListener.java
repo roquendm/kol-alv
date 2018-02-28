@@ -41,51 +41,54 @@ import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.logData.turn.TurnInterval;
 
 final class SkillCastOnTurnsChartMouseEventListener implements ChartMouseListener {
-    private final LogDataHolder logData;
+  private final LogDataHolder logData;
 
-    SkillCastOnTurnsChartMouseEventListener(
-                                            final LogDataHolder logData) {
-        this.logData = logData;
-    }
+  SkillCastOnTurnsChartMouseEventListener(
+      final LogDataHolder logData) {
+    this.logData = logData;
+  }
 
-    public void chartMouseMoved(
-                                final ChartMouseEvent arg0) {}
+  @Override
+  public void chartMouseMoved(
+      final ChartMouseEvent arg0) {}
 
-    public void chartMouseClicked(
-                                  final ChartMouseEvent e) {
-        if (e.getEntity() instanceof CategoryItemEntity) {
-            final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
-            final String skillName = (String) entity.getColumnKey();
+  @Override
+  public void chartMouseClicked(
+      final ChartMouseEvent e) {
+    if (e.getEntity() instanceof CategoryItemEntity) {
+      final CategoryItemEntity entity = (CategoryItemEntity) e.getEntity();
+      final String skillName = (String) entity.getColumnKey();
 
-            final StringBuilder str = new StringBuilder(250);
-            if (logData.isDetailedLog())
-                for (final SingleTurn st : logData.getTurnsSpent()) {
-                    if (st.isSkillCast(skillName))
-                        str.append(st.getTurnNumber() + ": "
-                                   + getCastedSkill(st, skillName).getAmount() + "\n");
-                }
-            else
-                for (final TurnInterval ti : logData.getTurnIntervalsSpent())
-                    if (ti.isSkillCast(skillName))
-                        str.append(ti.getStartTurn() + "-" + ti.getEndTurn() + ": "
-                                   + getCastedSkill(ti, skillName).getAmount() + "\n");
-
-            final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-            text.setPreferredSize(new Dimension(500, 450));
-            JOptionPane.showMessageDialog(null, text, "Turn numbers and amount of casts of "
-                                                      + skillName, JOptionPane.INFORMATION_MESSAGE);
+      final StringBuilder str = new StringBuilder(250);
+      if (logData.isDetailedLog())
+        for (final SingleTurn st : logData.getTurnsSpent()) {
+          if (st.isSkillCast(skillName))
+            str.append(st.getTurnNumber() + ": "
+                + getCastedSkill(st, skillName).getAmount() + "\n");
         }
-    }
+      else
+        for (final TurnInterval ti : logData.getTurnIntervalsSpent())
+          if (ti.isSkillCast(skillName))
+            str.append(ti.getStartTurn() + "-" + ti.getEndTurn() + ": "
+                + getCastedSkill(ti, skillName).getAmount() + "\n");
 
-    private Skill getCastedSkill(
-                                 final Turn turn, final String skillName) {
-        Skill castedSkill = null;
-        for (final Skill s : turn.getSkillsCast())
-            if (s.getName().equals(skillName)) {
-                castedSkill = s;
-                break;
-            }
-
-        return castedSkill;
+      final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+      text.setPreferredSize(new Dimension(500, 450));
+      JOptionPane.showMessageDialog(null, text, "Turn numbers and amount of casts of "
+          + skillName, JOptionPane.INFORMATION_MESSAGE);
     }
+  }
+
+  @SuppressWarnings("static-method")
+  private Skill getCastedSkill(
+      final Turn turn, final String skillName) {
+    Skill castedSkill = null;
+    for (final Skill s : turn.getSkillsCast())
+      if (s.getName().equals(skillName)) {
+        castedSkill = s;
+        break;
+      }
+
+    return castedSkill;
+  }
 }

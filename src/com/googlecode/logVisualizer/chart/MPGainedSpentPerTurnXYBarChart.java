@@ -51,110 +51,123 @@ import com.googlecode.logVisualizer.logData.turn.SingleTurn;
 import com.googlecode.logVisualizer.util.Lists;
 
 public final class MPGainedSpentPerTurnXYBarChart extends VerticalXYBarChartBuilder {
-    public MPGainedSpentPerTurnXYBarChart(
-                                          final LogDataHolder logData) {
-        super(logData, "MP gained/spent per turn", "Turn number", "MP gained/spent", true);
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8168383798119181161L;
+
+  public MPGainedSpentPerTurnXYBarChart(
+      final LogDataHolder logData) {
+    super(logData, "MP gained/spent per turn", "Turn number", "MP gained/spent", true);
+  }
+
+  /**
+   * Method overridden to make the MP spent bar colour use a bit of alpha,
+   * otherwise MP gains below MP spent wouldn't be viewable.
+   */
+  @Override
+  protected ChartPanel createChartPanel() {
+    final ChartPanel panel = super.createChartPanel();
+    final XYPlot plot = (XYPlot) panel.getChart().getPlot();
+    final XYBarRenderer renderer = (XYBarRenderer) plot.getRenderer();
+    final XYDataset dataset = plot.getDataset();
+
+    for (int i = 0; i < dataset.getSeriesCount(); i++)
+      if (dataset.getSeriesKey(i).equals("MP spent"))
+        renderer.setSeriesPaint(i, new Color(255, 80, 80, 200));
+      else if (dataset.getSeriesKey(i).equals("MP gained"))
+        renderer.setSeriesPaint(i, new Color(100, 100, 255));
+
+    return panel;
+  }
+
+  @Override
+  protected IntervalXYDataset createDataset() {
+    final XYSeriesCollection datasets = new XYSeriesCollection();
+
+    if (getLogData().isDetailedLog()) {
+      final XYSeries gainedDataset = new XYSeries("MP gained", false);
+      final XYSeries spentDataset = new XYSeries("MP spent", false);
+
+      for (final SingleTurn st : getLogData().getTurnsSpent()) {
+        gainedDataset.add(st.getTurnNumber(), st.getMPGain().getTotalMPGains());
+
+        int spentMP = 0;
+        for (final Skill s : st.getSkillsCast())
+          spentMP += s.getMpCost();
+        spentDataset.add(st.getTurnNumber(), spentMP);
+      }
+
+      datasets.addSeries(spentDataset);
+      datasets.addSeries(gainedDataset);
     }
 
-    /**
-     * Method overridden to make the MP spent bar colour use a bit of alpha,
-     * otherwise MP gains below MP spent wouldn't be viewable.
-     */
-    @Override
-    protected ChartPanel createChartPanel() {
-        final ChartPanel panel = super.createChartPanel();
-        final XYPlot plot = (XYPlot) panel.getChart().getPlot();
-        final XYBarRenderer renderer = (XYBarRenderer) plot.getRenderer();
-        final XYDataset dataset = plot.getDataset();
+    return datasets;
+  }
 
-        for (int i = 0; i < dataset.getSeriesCount(); i++)
-            if (dataset.getSeriesKey(i).equals("MP spent"))
-                renderer.setSeriesPaint(i, new Color(255, 80, 80, 200));
-            else if (dataset.getSeriesKey(i).equals("MP gained"))
-                renderer.setSeriesPaint(i, new Color(100, 100, 255));
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    if (getLogData().isDetailedLog())
+      cp.addChartMouseListener(new MPGainedSpentPerTurnChartMouseListener());
+  }
 
-        return panel;
+  private final class MPGainedSpentPerTurnChartMouseListener implements ChartMouseListener {
+    public MPGainedSpentPerTurnChartMouseListener() {
+      // TODO Auto-generated constructor stub
     }
 
     @Override
-    protected IntervalXYDataset createDataset() {
-        final XYSeriesCollection datasets = new XYSeriesCollection();
+    public void chartMouseMoved(
+        final ChartMouseEvent arg0) {}
 
-        if (getLogData().isDetailedLog()) {
-            final XYSeries gainedDataset = new XYSeries("MP gained", false);
-            final XYSeries spentDataset = new XYSeries("MP spent", false);
+    @Override
+    public void chartMouseClicked(
+        final ChartMouseEvent e) {
+      if (e.getEntity() instanceof XYItemEntity) {
+        final XYItemEntity entity = (XYItemEntity) e.getEntity();
+        final int turnNumber = entity.getDataset().getX(0, entity.getItem()).intValue();
 
-            for (final SingleTurn st : getLogData().getTurnsSpent()) {
-                gainedDataset.add(st.getTurnNumber(), st.getMPGain().getTotalMPGains());
+        SingleTurn turn = null;
+        for (final SingleTurn st : getLogData().getTurnsSpent())
+          if (st.getTurnNumber() == turnNumber) {
+            turn = st;
+            break;
+          }
 
-                int spentMP = 0;
-                for (final Skill s : st.getSkillsCast())
-                    spentMP += s.getMpCost();
-                spentDataset.add(st.getTurnNumber(), spentMP);
-            }
-
-            datasets.addSeries(spentDataset);
-            datasets.addSeries(gainedDataset);
+        final StringBuilder str = new StringBuilder(250);
+        str.append("MP spent:\n\n");
+        int totalSpent = 0;
+        @SuppressWarnings("null")
+        final List<Skill> skills = Lists.newArrayList(turn.getSkillsCast());
+        Collections.sort(skills, new Comparator<Skill>() {
+          @Override
+          public int compare(
+              final Skill o1, final Skill o2) {
+            return o2.getMpCost() - o1.getMpCost();
+          }
+        });
+        for (final Skill s : skills) {
+          totalSpent += s.getMpCost();
+          str.append("Cast " + s.getAmount() + " " + s.getName() + ": " + s.getMpCost()
+          + " MP\n");
         }
+        str.append("\nTotal MP spent: " + totalSpent + " MP\n");
+        str.append("\n\nMP gained:\n\n");
+        str.append("Inside encounter: " + turn.getMPGain().encounterMPGain + " MP\n");
+        str.append("Starfish: " + turn.getMPGain().starfishMPGain + " MP\n");
+        str.append("Resting: " + turn.getMPGain().restingMPGain + " MP\n");
+        str.append("Outside encounter: " + turn.getMPGain().outOfEncounterMPGain + " MP\n");
+        str.append("Consumables: " + turn.getMPGain().consumableMPGain + " MP\n");
+        str.append("\nTotal MP gained: " + turn.getMPGain().getTotalMPGains() + " MP\n");
 
-        return datasets;
+        final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
+        text.setPreferredSize(new Dimension(550, 400));
+        JOptionPane.showMessageDialog(null,
+            text,
+            "MP gained/spent on turn " + turn,
+            JOptionPane.INFORMATION_MESSAGE);
+      }
     }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        if (getLogData().isDetailedLog())
-            cp.addChartMouseListener(new MPGainedSpentPerTurnChartMouseListener());
-    }
-
-    private final class MPGainedSpentPerTurnChartMouseListener implements ChartMouseListener {
-        public void chartMouseMoved(
-                                    final ChartMouseEvent arg0) {}
-
-        public void chartMouseClicked(
-                                      final ChartMouseEvent e) {
-            if (e.getEntity() instanceof XYItemEntity) {
-                final XYItemEntity entity = (XYItemEntity) e.getEntity();
-                final int turnNumber = entity.getDataset().getX(0, entity.getItem()).intValue();
-
-                SingleTurn turn = null;
-                for (final SingleTurn st : getLogData().getTurnsSpent())
-                    if (st.getTurnNumber() == turnNumber) {
-                        turn = st;
-                        break;
-                    }
-
-                final StringBuilder str = new StringBuilder(250);
-                str.append("MP spent:\n\n");
-                int totalSpent = 0;
-                final List<Skill> skills = Lists.newArrayList(turn.getSkillsCast());
-                Collections.sort(skills, new Comparator<Skill>() {
-                    public int compare(
-                                       final Skill o1, final Skill o2) {
-                        return o2.getMpCost() - o1.getMpCost();
-                    }
-                });
-                for (final Skill s : skills) {
-                    totalSpent += s.getMpCost();
-                    str.append("Cast " + s.getAmount() + " " + s.getName() + ": " + s.getMpCost()
-                               + " MP\n");
-                }
-                str.append("\nTotal MP spent: " + totalSpent + " MP\n");
-                str.append("\n\nMP gained:\n\n");
-                str.append("Inside encounter: " + turn.getMPGain().encounterMPGain + " MP\n");
-                str.append("Starfish: " + turn.getMPGain().starfishMPGain + " MP\n");
-                str.append("Resting: " + turn.getMPGain().restingMPGain + " MP\n");
-                str.append("Outside encounter: " + turn.getMPGain().outOfEncounterMPGain + " MP\n");
-                str.append("Consumables: " + turn.getMPGain().consumableMPGain + " MP\n");
-                str.append("\nTotal MP gained: " + turn.getMPGain().getTotalMPGains() + " MP\n");
-
-                final JScrollPane text = new JScrollPane(new JTextArea(str.toString()));
-                text.setPreferredSize(new Dimension(550, 400));
-                JOptionPane.showMessageDialog(null,
-                                              text,
-                                              "MP gained/spent on turn " + turn,
-                                              JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
+  }
 }

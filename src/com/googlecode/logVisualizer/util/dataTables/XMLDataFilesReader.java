@@ -24,8 +24,8 @@
 
 package com.googlecode.logVisualizer.util.dataTables;
 
-import java.io.*;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
@@ -33,12 +33,12 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import net.java.dev.spellcast.utilities.DataUtilities;
-import net.java.dev.spellcast.utilities.UtilityConstants;
-
 import com.googlecode.logVisualizer.util.Lists;
 import com.googlecode.logVisualizer.util.Pair;
 import com.googlecode.logVisualizer.util.xmlLogs.XMLAccessException;
+
+import net.java.dev.spellcast.utilities.DataUtilities;
+import net.java.dev.spellcast.utilities.UtilityConstants;
 
 /**
  * This class can read the simple XML data files used by the Ascension Log
@@ -49,108 +49,109 @@ import com.googlecode.logVisualizer.util.xmlLogs.XMLAccessException;
  * object reference is passed in any parameter.
  */
 final class XMLDataFilesReader {
-    static {
-        System.setProperty("javax.xml.stream.XMLInputFactory", "com.bea.xml.stream.MXParserFactory");
-        System.setProperty("javax.xml.stream.XMLEventFactory", "com.bea.xml.stream.EventFactory");
+  static {
+    System.setProperty("javax.xml.stream.XMLInputFactory", "com.bea.xml.stream.MXParserFactory");
+    System.setProperty("javax.xml.stream.XMLEventFactory", "com.bea.xml.stream.EventFactory");
+  }
+
+  /**
+   * Returns a list of lists containing the key-value pair of every argument
+   * in the given data node.
+   *
+   * @param filename
+   *            The XML data file name which is supposed to be parsed.
+   * @param dataNodeName
+   *            The name of the data node in the XML data file, which has all
+   *            its data contained in its arguments.
+   * @return The resulting data from the given XML data file.
+   * @throws IllegalArgumentException
+   *             if the given file name doesn't contain any characters; if the
+   *             given data node name doesn't contain any characters
+   */
+  @SuppressWarnings("resource")
+  static List<List<Pair<String, String>>> parseXMLDataFile(
+      final String filename,
+      final String dataNodeName)
+          throws XMLAccessException {
+    if (filename == null)
+      throw new NullPointerException("The file name must not be null.");
+    if (dataNodeName == null)
+      throw new NullPointerException("The data node name must not be null.");
+
+    if (filename.length() <= 0)
+      throw new IllegalArgumentException("The given file name doesn't contain any characters.");
+    if (dataNodeName.length() <= 0)
+      throw new IllegalArgumentException("The given data node name doesn't contain any characters.");
+
+    final List<List<Pair<String, String>>> resultList;
+
+    final InputStream in = DataUtilities.getInputStream(UtilityConstants.KOL_DATA_DIRECTORY,
+        filename);
+
+    // File doesn't exist
+    if (in == DataUtilities.EMPTY_STREAM)
+      return Lists.newArrayList();
+
+    try {
+      final XMLInputFactory factory = XMLInputFactory.newInstance();
+      final XMLStreamReader parser = factory.createXMLStreamReader(in);
+
+      final XMLDataFilesReader reader = new XMLDataFilesReader(parser, dataNodeName);
+      resultList = reader.parseDataFile();
+
+      parser.close();
+    } catch (final XMLStreamException e) {
+      e.printStackTrace();
+      throw new XMLAccessException("Could not read XML file.");
     }
 
-    /**
-     * Returns a list of lists containing the key-value pair of every argument
-     * in the given data node.
-     * 
-     * @param filename
-     *            The XML data file name which is supposed to be parsed.
-     * @param dataNodeName
-     *            The name of the data node in the XML data file, which has all
-     *            its data contained in its arguments.
-     * @return The resulting data from the given XML data file.
-     * @throws IllegalArgumentException
-     *             if the given file name doesn't contain any characters; if the
-     *             given data node name doesn't contain any characters
-     */
-    static List<List<Pair<String, String>>> parseXMLDataFile(
-                                                             final String filename,
-                                                             final String dataNodeName)
-                                                                                       throws XMLAccessException {
-        if (filename == null)
-            throw new NullPointerException("The file name must not be null.");
-        if (dataNodeName == null)
-            throw new NullPointerException("The data node name must not be null.");
-
-        if (filename.length() <= 0)
-            throw new IllegalArgumentException("The given file name doesn't contain any characters.");
-        if (dataNodeName.length() <= 0)
-            throw new IllegalArgumentException("The given data node name doesn't contain any characters.");
-
-        final List<List<Pair<String, String>>> resultList;
-
-        final InputStream in = DataUtilities.getInputStream(UtilityConstants.KOL_DATA_DIRECTORY,
-                                                            filename);
-
-        // File doesn't exist
-        if (in == DataUtilities.EMPTY_STREAM)
-            return Lists.newArrayList();
-
-        try {
-            final XMLInputFactory factory = XMLInputFactory.newInstance();
-            final XMLStreamReader parser = factory.createXMLStreamReader(in);
-
-            final XMLDataFilesReader reader = new XMLDataFilesReader(parser, dataNodeName);
-            resultList = reader.parseDataFile();
-
-            parser.close();
-        } catch (final XMLStreamException e) {
-            e.printStackTrace();
-            throw new XMLAccessException("Could not read XML file.");
-        }
-
-        try {
-            in.close();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-
-        return resultList;
+    try {
+      in.close();
+    } catch (final IOException e) {
+      e.printStackTrace();
     }
 
-    private final XMLStreamReader parser;
+    return resultList;
+  }
 
-    private final String dataNodeName;
+  private final XMLStreamReader parser;
 
-    private XMLDataFilesReader(
-                               final XMLStreamReader parser, final String dataNodeName) {
-        if (parser == null)
-            throw new NullPointerException("The XML parser must not be null.");
-        if (dataNodeName == null)
-            throw new NullPointerException("The data node name must not be null.");
+  private final String dataNodeName;
 
-        this.parser = parser;
-        this.dataNodeName = dataNodeName;
+  private XMLDataFilesReader(
+      final XMLStreamReader parser, final String dataNodeName) {
+    if (parser == null)
+      throw new NullPointerException("The XML parser must not be null.");
+    if (dataNodeName == null)
+      throw new NullPointerException("The data node name must not be null.");
+
+    this.parser = parser;
+    this.dataNodeName = dataNodeName;
+  }
+
+  private List<List<Pair<String, String>>> parseDataFile()
+      throws XMLStreamException {
+    final List<List<Pair<String, String>>> result = Lists.newArrayList(200);
+
+    while (parser.hasNext()) {
+      switch (parser.getEventType()) {
+        case XMLStreamConstants.START_ELEMENT:
+          if (parser.getLocalName().equals(dataNodeName)) {
+            final List<Pair<String, String>> arguments = Lists.newArrayList(4);
+            for (int i = 0; i < parser.getAttributeCount(); i++)
+              arguments.add(Pair.of(parser.getAttributeLocalName(i),
+                  parser.getAttributeValue(i)));
+
+            result.add(arguments);
+          }
+
+          break;
+        default:
+          break;
+      }
+      parser.next();
     }
 
-    private List<List<Pair<String, String>>> parseDataFile()
-                                                            throws XMLStreamException {
-        final List<List<Pair<String, String>>> result = Lists.newArrayList(200);
-
-        while (parser.hasNext()) {
-            switch (parser.getEventType()) {
-                case XMLStreamConstants.START_ELEMENT:
-                    if (parser.getLocalName().equals(dataNodeName)) {
-                        final List<Pair<String, String>> arguments = Lists.newArrayList(4);
-                        for (int i = 0; i < parser.getAttributeCount(); i++)
-                            arguments.add(Pair.of(parser.getAttributeLocalName(i),
-                                                  parser.getAttributeValue(i)));
-
-                        result.add(arguments);
-                    }
-
-                    break;
-                default:
-                    break;
-            }
-            parser.next();
-        }
-
-        return result;
-    }
+    return result;
+  }
 }

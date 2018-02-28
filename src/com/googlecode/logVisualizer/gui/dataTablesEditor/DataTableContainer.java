@@ -44,90 +44,90 @@ import com.googlecode.logVisualizer.util.Maps;
  * object reference is passed in any parameter.
  */
 final class DataTableContainer {
-    private final Map<String, DataPoint> dataTable;
+  private final Map<String, DataPoint> dataTable;
 
-    private final DataPoint emptyDataPoint;
+  private final DataPoint emptyDataPoint;
 
-    /**
-     * Creates a {@link DataPoint} collection that only consist of names.
-     */
-    DataTableContainer(
-                       final Iterable<String> names) {
-        dataTable = Maps.newHashMap(150);
-        for (final String name : names)
-            dataTable.put(name, new DataPoint(name));
+  /**
+   * Creates a {@link DataPoint} collection that only consist of names.
+   */
+  DataTableContainer(
+      final Iterable<String> names) {
+    dataTable = Maps.newHashMap(150);
+    for (final String name : names)
+      dataTable.put(name, new DataPoint(name));
 
-        emptyDataPoint = new DataPoint("none");
+    emptyDataPoint = new DataPoint("none");
+  }
+
+  /**
+   * Creates a {@link DataPoint} collection based on the given
+   * {@link DataPoint}s.
+   */
+  DataTableContainer(
+      final Collection<DataPoint> dataPoints) {
+    if (dataPoints.isEmpty())
+      throw new IllegalArgumentException("The data point collection must not be empty.");
+
+    dataTable = Maps.newHashMap((int) (dataPoints.size() * 1.4));
+    DataPoint tmp = null;
+    for (final DataPoint dp : dataPoints) {
+      tmp = dp;
+      dataTable.put(dp.getName(), dp);
     }
 
-    /**
-     * Creates a {@link DataPoint} collection based on the given
-     * {@link DataPoint}s.
-     */
-    DataTableContainer(
-                       final Collection<DataPoint> dataPoints) {
-        if (dataPoints.isEmpty())
-            throw new IllegalArgumentException("The data point collection must not be empty.");
+    emptyDataPoint = new DataPoint(tmp);
+    emptyDataPoint.setValueOf("name", "none");
+  }
 
-        dataTable = Maps.newHashMap((int) (dataPoints.size() * 1.4));
-        DataPoint tmp = null;
-        for (final DataPoint dp : dataPoints) {
-            tmp = dp;
-            dataTable.put(dp.getName(), dp);
-        }
+  /**
+   * @param name
+   *            The name of the {@link DataPoint} that should be returned.
+   * @return The {@link DataPoint} with the given name. Returns {@code null}
+   *         if no data point has the given name.
+   */
+  DataPoint getDataPointByName(
+      final String name) {
+    return dataTable.get(name);
+  }
 
-        emptyDataPoint = new DataPoint(tmp);
-        emptyDataPoint.setValueOf("name", "none");
-    }
+  /**
+   * @param dp
+   *            The {@link DataPoint} to add to the collection.
+   */
+  void addDataPoint(
+      final DataPoint dp) {
+    dataTable.put(dp.getName(), dp);
+  }
 
-    /**
-     * @param name
-     *            The name of the {@link DataPoint} that should be returned.
-     * @return The {@link DataPoint} with the given name. Returns {@code null}
-     *         if no data point has the given name.
-     */
-    DataPoint getDataPointByName(
-                                 final String name) {
-        return dataTable.get(name);
-    }
+  /**
+   * @param dp
+   *            The {@link DataPoint} to remove from the collection. Note that
+   *            this operation is based on the {@link DataPoint#getName()}
+   *            property and not equals.
+   */
+  void removeDataPoint(
+      final DataPoint dp) {
+    dataTable.remove(dp.getName());
+  }
 
-    /**
-     * @param dp
-     *            The {@link DataPoint} to add to the collection.
-     */
-    void addDataPoint(
-                      final DataPoint dp) {
-        dataTable.put(dp.getName(), dp);
-    }
+  /**
+   * @return A collection containing all {@link DataPoint}s. The collection is
+   *         sorted by name.
+   */
+  Collection<DataPoint> getDataTable() {
+    final List<DataPoint> list = Lists.newArrayList(dataTable.values());
+    Collections.sort(list);
 
-    /**
-     * @param dp
-     *            The {@link DataPoint} to remove from the collection. Note that
-     *            this operation is based on the {@link DataPoint#getName()}
-     *            property and not equals.
-     */
-    void removeDataPoint(
-                         final DataPoint dp) {
-        dataTable.remove(dp.getName());
-    }
+    return list;
+  }
 
-    /**
-     * @return A collection containing all {@link DataPoint}s. The collection is
-     *         sorted by name.
-     */
-    Collection<DataPoint> getDataTable() {
-        final List<DataPoint> list = Lists.newArrayList(dataTable.values());
-        Collections.sort(list);
-
-        return list;
-    }
-
-    /**
-     * @return A new {@link DataPoint} point instance containing all the
-     *         value-pairs (with dummy values) that are also used by the
-     *         {@link DataPoint}s in this collection.
-     */
-    DataPoint getDataPointTemplate() {
-        return new DataPoint(emptyDataPoint);
-    }
+  /**
+   * @return A new {@link DataPoint} point instance containing all the
+   *         value-pairs (with dummy values) that are also used by the
+   *         {@link DataPoint}s in this collection.
+   */
+  DataPoint getDataPointTemplate() {
+    return new DataPoint(emptyDataPoint);
+  }
 }

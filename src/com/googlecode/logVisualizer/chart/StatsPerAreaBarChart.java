@@ -34,37 +34,42 @@ import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.logSummary.AreaStatgains;
 
 public final class StatsPerAreaBarChart extends HorizontalStackedBarChartBuilder {
-    public StatsPerAreaBarChart(
-                                final LogDataHolder logData) {
-        super(logData, "Stats gained per area", "Area", "Stats gained", true);
+  /**
+   *
+   */
+  private static final long serialVersionUID = -4032100094140287901L;
+
+  public StatsPerAreaBarChart(
+      final LogDataHolder logData) {
+    super(logData, "Stats gained per area", "Area", "Stats gained", true);
+  }
+
+  @Override
+  protected CategoryDataset createDataset() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+    // Create sorted area statgains list.
+    final List<AreaStatgains> areas = getLogData().getLogSummary().getAreasStatgains();
+
+    // Add the values to the chart dataset.
+    for (final AreaStatgains as : areas) {
+      if (as.getStatgain().getTotalStatgain() > 0) {
+        dataset.addValue(as.getStatgain().mus, "Muscle", as.getAreaName());
+        dataset.addValue(as.getStatgain().myst, "Mysticality", as.getAreaName());
+        dataset.addValue(as.getStatgain().mox, "Moxie", as.getAreaName());
+      }
+
+      // The chart looks ugly with too many entries.
+      if (dataset.getColumnCount() >= 40)
+        break;
     }
 
-    @Override
-    protected CategoryDataset createDataset() {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    return dataset;
+  }
 
-        // Create sorted area statgains list.
-        final List<AreaStatgains> areas = getLogData().getLogSummary().getAreasStatgains();
-
-        // Add the values to the chart dataset.
-        for (final AreaStatgains as : areas) {
-            if (as.getStatgain().getTotalStatgain() > 0) {
-                dataset.addValue(as.getStatgain().mus, "Muscle", as.getAreaName());
-                dataset.addValue(as.getStatgain().myst, "Mysticality", as.getAreaName());
-                dataset.addValue(as.getStatgain().mox, "Moxie", as.getAreaName());
-            }
-
-            // The chart looks ugly with too many entries.
-            if (dataset.getColumnCount() >= 40)
-                break;
-        }
-
-        return dataset;
-    }
-
-    @Override
-    protected void addChartPanelListeners(
-                                          final ChartPanel cp) {
-        cp.addChartMouseListener(new AreaListChartMouseEventListener(getLogData()));
-    }
+  @Override
+  protected void addChartPanelListeners(
+      final ChartPanel cp) {
+    cp.addChartMouseListener(new AreaListChartMouseEventListener(getLogData()));
+  }
 }

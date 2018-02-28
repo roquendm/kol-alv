@@ -29,101 +29,101 @@ package com.googlecode.logVisualizer.logData.logSummary;
  * Realm, specifically the RNG of finding Bloopers and Bullet Bills.
  */
 public final class InexplicableDoor {
-    private int turnsSpent;
+  private int turnsSpent;
 
-    private int bloopersFound;
+  private int bloopersFound;
 
-    private int bulletsFound;
+  private int bulletsFound;
 
-    InexplicableDoor() {}
+  InexplicableDoor() {}
 
-    /**
-     * @param turnsSpent
-     *            The number of turns spent in the 8-Bit Realm to set.
-     * @throws IllegalArgumentException
-     *             if turnsSpent is below 0
-     */
-    public void setTurnsSpent(
-                              final int turnsSpent) {
-        if (turnsSpent < 0)
-            throw new IllegalArgumentException("You cannot spent less than 0 turns somewhere.");
+  /**
+   * @param turnsSpent
+   *            The number of turns spent in the 8-Bit Realm to set.
+   * @throws IllegalArgumentException
+   *             if turnsSpent is below 0
+   */
+  public void setTurnsSpent(
+      final int turnsSpent) {
+    if (turnsSpent < 0)
+      throw new IllegalArgumentException("You cannot spent less than 0 turns somewhere.");
 
-        this.turnsSpent = turnsSpent;
-    }
+    this.turnsSpent = turnsSpent;
+  }
 
-    /**
-     * @return The number of turns spent in the 8-Bit Realm.
-     */
-    public int getTurnsSpent() {
-        return turnsSpent;
-    }
+  /**
+   * @return The number of turns spent in the 8-Bit Realm.
+   */
+  public int getTurnsSpent() {
+    return turnsSpent;
+  }
 
-    /**
-     * @param bloopersFound
-     *            The number of Bloopers found in the 8-Bit Realm to set.
-     * @throws IllegalArgumentException
-     *             if bloopersFound is below 0
-     */
-    public void setBloopersFound(
-                                 final int bloopersFound) {
-        if (bloopersFound < 0)
-            throw new IllegalArgumentException("You cannot find less than 0 Bloopers.");
+  /**
+   * @param bloopersFound
+   *            The number of Bloopers found in the 8-Bit Realm to set.
+   * @throws IllegalArgumentException
+   *             if bloopersFound is below 0
+   */
+  public void setBloopersFound(
+      final int bloopersFound) {
+    if (bloopersFound < 0)
+      throw new IllegalArgumentException("You cannot find less than 0 Bloopers.");
 
-        this.bloopersFound = bloopersFound;
-    }
+    this.bloopersFound = bloopersFound;
+  }
 
-    /**
-     * @return The number of Bloopers found in the 8-Bit Realm.
-     */
-    public int getBloopersFound() {
-        return bloopersFound;
-    }
+  /**
+   * @return The number of Bloopers found in the 8-Bit Realm.
+   */
+  public int getBloopersFound() {
+    return bloopersFound;
+  }
 
-    /**
-     * @param bulletsFound
-     *            The number of Bullet Bills found in the 8-Bit Realm to set.
-     * @throws IllegalArgumentException
-     *             if bulletsFound is below 0
-     */
-    public void setBulletsFound(
-                                final int bulletsFound) {
-        if (bloopersFound < 0)
-            throw new IllegalArgumentException("You cannot find less than 0 Bullet Bills.");
+  /**
+   * @param bulletsFound
+   *            The number of Bullet Bills found in the 8-Bit Realm to set.
+   * @throws IllegalArgumentException
+   *             if bulletsFound is below 0
+   */
+  public void setBulletsFound(
+      final int bulletsFound) {
+    if (bloopersFound < 0)
+      throw new IllegalArgumentException("You cannot find less than 0 Bullet Bills.");
 
-        this.bulletsFound = bulletsFound;
-    }
+    this.bulletsFound = bulletsFound;
+  }
 
-    /**
-     * @return The number of Bullet Bills found in the 8-Bit Realm.
-     */
-    public int getBulletsFound() {
-        return bulletsFound;
-    }
+  /**
+   * @return The number of Bullet Bills found in the 8-Bit Realm.
+   */
+  public int getBulletsFound() {
+    return bulletsFound;
+  }
 
-    @Override
-    public boolean equals(
-                          final Object o) {
-        if (o == this)
-            return true;
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o == this)
+      return true;
 
-        if (o == null)
-            return false;
+    if (o == null)
+      return false;
 
-        if (o instanceof InexplicableDoor)
-            return ((InexplicableDoor) o).getTurnsSpent() == turnsSpent
-                   && ((InexplicableDoor) o).getBloopersFound() == bloopersFound
-                   && ((InexplicableDoor) o).getBulletsFound() == bulletsFound;
+    if (o instanceof InexplicableDoor)
+      return ((InexplicableDoor) o).getTurnsSpent() == turnsSpent
+      && ((InexplicableDoor) o).getBloopersFound() == bloopersFound
+      && ((InexplicableDoor) o).getBulletsFound() == bulletsFound;
 
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = 222;
-        result = 31 * result + turnsSpent;
-        result = 31 * result + bloopersFound;
-        result = 31 * result + bulletsFound;
+  @Override
+  public int hashCode() {
+    int result = 222;
+    result = 31 * result + turnsSpent;
+    result = 31 * result + bloopersFound;
+    result = 31 * result + bulletsFound;
 
-        return result;
-    }
+    return result;
+  }
 }

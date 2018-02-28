@@ -31,6 +31,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
+import com.googlecode.logVisualizer.parser.MafiaSessionLogReader;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 import com.googlecode.logVisualizer.util.Lists;
@@ -39,66 +40,67 @@ import com.googlecode.logVisualizer.util.Lists;
  * A parser for the familiar summary at the end of preparsed ascension logs.
  */
 public final class FamiliarSummaryBlockParser extends AbstractBlockParser {
-    private static final Pattern NOT_FAMILIAR_NAME = Pattern.compile("\\s*:.*");
+  private static final Pattern NOT_FAMILIAR_NAME = Pattern.compile("\\s*:.*");
 
-    // Slightly untidy looking regex used so future familiars with numbers in
-    // their name will work with this.
-    private static final Pattern NOT_TURNS_SPENT = Pattern.compile("^[\\w\\p{Punct}\\s]+:\\s*|[\\p{L}\\s]+\\(.*\\)\\s*");
+  // Slightly untidy looking regex used so future familiars with numbers in
+  // their name will work with this.
+  private static final Pattern NOT_TURNS_SPENT = Pattern.compile("^[\\w\\p{Punct}\\s]+:\\s*|[\\p{L}\\s]+\\(.*\\)\\s*");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final BufferedReader reader, final LogDataHolder logData)
-                                                                                      throws IOException {
-        final List<DataNumberPair<String>> familiarUsage = Lists.newArrayList();
-        int emptyLineCounter = 0;
-        String line;
-        Scanner scanner;
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("boxing")
+  @Override
+  protected void doParsing(
+      final BufferedReader reader, final LogDataHolder logData)
+          throws IOException {
+    final List<DataNumberPair<String>> familiarUsage = Lists.newArrayList();
+    int emptyLineCounter = 0;
+    String line;
+    Scanner scanner;
 
-        while ((line = reader.readLine()) != null)
-            if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
-                if (UsefulPatterns.NAME_COLON_NUMBER.matcher(line).matches()) {
-                    String familiarName;
-                    int turns;
+    while ((line = reader.readLine()) != null)
+      if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
+        if (UsefulPatterns.NAME_COLON_NUMBER.matcher(line).matches()) {
+          String familiarName;
+          int turns;
 
-                    // Parse familiar name
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(NOT_FAMILIAR_NAME);
-                    familiarName = scanner.next();
-                    scanner.close();
+          // Parse familiar name
+          scanner = new Scanner(line);
+          scanner.useDelimiter(NOT_FAMILIAR_NAME);
+          familiarName = scanner.next();
+          scanner.close();
 
-                    // Parse turns spent with this familiar
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(NOT_TURNS_SPENT);
-                    turns = scanner.nextInt();
-                    scanner.close();
+          // Parse turns spent with this familiar
+          scanner = new Scanner(line);
+          scanner.useDelimiter(NOT_TURNS_SPENT);
+          turns = scanner.nextInt();
+          scanner.close();
 
-                    // Add familiar usage to the list
-                    familiarUsage.add(DataNumberPair.of(familiarName, turns));
-                }
+          // Add familiar usage to the list
+          familiarUsage.add(DataNumberPair.of(familiarName, turns));
+        }
 
-                emptyLineCounter = 0;
-            } else {
-                emptyLineCounter++;
-                if (emptyLineCounter >= 2) {
-                    reader.reset();
-                    break;
-                }
-                reader.mark(10);
-            }
+        emptyLineCounter = 0;
+      } else {
+        emptyLineCounter++;
+        if (emptyLineCounter >= 2) {
+          reader.reset();
+          break;
+        }
+        reader.mark(MafiaSessionLogReader.MARK_LIMIT);
+      }
 
-        // Set the familiar usage list to the on created here
-        logData.getLogSummary().setFamiliarUsage(familiarUsage);
-    }
+    // Set the familiar usage list to the on created here
+    logData.getLogSummary().setFamiliarUsage(familiarUsage);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleBlock(
-                                        final String line) {
-        return line.contains("FAMILIARS");
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleBlock(
+      final String line) {
+    return line.contains("FAMILIARS");
+  }
 }

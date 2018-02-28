@@ -34,48 +34,48 @@ import com.googlecode.logVisualizer.logData.turn.TurnInterval;
  * through turn intervals or single turns.
  */
 public final class SearchDialogs {
-    /**
-     * Displays a search dialog for areas (= turn intervals).
-     * 
-     * @param owner
-     *            The Frame from which the dialog is displayed.
-     * @param logData
-     *            The log data.
-     * @return The turn interval selected inside the dialog, may be {@code null}
-     *         in case no turn interval was selected.
-     */
-    public static TurnInterval showAreaSearchDialog(
-                                                    final JFrame owner, final LogDataHolder logData) {
-        final AreaSearchDialog dialog = new AreaSearchDialog(owner, logData);
+  /**
+   * Displays a search dialog for areas (= turn intervals).
+   *
+   * @param owner
+   *            The Frame from which the dialog is displayed.
+   * @param logData
+   *            The log data.
+   * @return The turn interval selected inside the dialog, may be {@code null}
+   *         in case no turn interval was selected.
+   */
+  public static TurnInterval showAreaSearchDialog(
+      final JFrame owner, final LogDataHolder logData) {
+    final AreaSearchDialog dialog = new AreaSearchDialog(owner, logData);
 
-        return (TurnInterval) dialog.getSelectedTurn();
-    }
+    return (TurnInterval) dialog.getSelectedTurn();
+  }
 
-    /**
-     * Displays a search dialog for single turns.
-     * 
-     * @param owner
-     *            The Frame from which the dialog is displayed.
-     * @param logData
-     *            The log data.
-     * @return The turn interval corresponding to the selected turn inside the
-     *         dialog, will be {@code null} in case no turn was selected.
-     */
-    public static TurnInterval showTurnSearchDialog(
-                                                    final JFrame owner, final LogDataHolder logData) {
-        final TurnSearchDialog dialog = new TurnSearchDialog(owner, logData);
+  /**
+   * Displays a search dialog for single turns.
+   *
+   * @param owner
+   *            The Frame from which the dialog is displayed.
+   * @param logData
+   *            The log data.
+   * @return The turn interval corresponding to the selected turn inside the
+   *         dialog, will be {@code null} in case no turn was selected.
+   */
+  public static TurnInterval showTurnSearchDialog(
+      final JFrame owner, final LogDataHolder logData) {
+    final TurnSearchDialog dialog = new TurnSearchDialog(owner, logData);
 
-        if (dialog.getSelectedTurn() != null) {
-            final int turnNumber = dialog.getSelectedTurn().getTurnNumber();
-            TurnInterval intervalOfTurn = null;
-            for (final TurnInterval ti : logData.getTurnIntervalsSpent())
-                if (ti.getStartTurn() < turnNumber && ti.getEndTurn() >= turnNumber) {
-                    intervalOfTurn = ti;
-                    break;
-                }
+    if (dialog.getSelectedTurn() != null) {
+      final int turnNumber = dialog.getSelectedTurn().getTurnNumber();
+      TurnInterval intervalOfTurn = null;
+      for (final TurnInterval ti : logData.getTurnIntervalsSpent())
+        if (ti.getStartTurn() < turnNumber && ti.getEndTurn() >= turnNumber) {
+          intervalOfTurn = ti;
+          break;
+        }
 
-            return intervalOfTurn;
-        } else
-            return null;
-    }
+      return intervalOfTurn;
+    } else
+      return null;
+  }
 }

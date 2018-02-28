@@ -31,6 +31,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.LogDataHolder;
+import com.googlecode.logVisualizer.parser.MafiaSessionLogReader;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 import com.googlecode.logVisualizer.util.DataNumberPair;
 import com.googlecode.logVisualizer.util.Lists;
@@ -39,64 +40,65 @@ import com.googlecode.logVisualizer.util.Lists;
  * A parser for the semirare summary at the end of preparsed ascension logs.
  */
 public final class SemirareSummaryBlockParser extends AbstractBlockParser {
-    private static final Pattern NUMBER_COLON_NAME = Pattern.compile("^\\d+\\s*:\\s*\\w+.*");
+  private static final Pattern NUMBER_COLON_NAME = Pattern.compile("^\\d+\\s*:\\s*\\w+.*");
 
-    private static final Pattern NOT_SEMIRARE_NAME = Pattern.compile(".+:\\s*");
+  private static final Pattern NOT_SEMIRARE_NAME = Pattern.compile(".+:\\s*");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final BufferedReader reader, final LogDataHolder logData)
-                                                                                      throws IOException {
-        final List<DataNumberPair<String>> semirares = Lists.newArrayList();
-        int emptyLineCounter = 0;
-        String line;
-        Scanner scanner;
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("boxing")
+  @Override
+  protected void doParsing(
+      final BufferedReader reader, final LogDataHolder logData)
+          throws IOException {
+    final List<DataNumberPair<String>> semirares = Lists.newArrayList();
+    int emptyLineCounter = 0;
+    String line;
+    Scanner scanner;
 
-        while ((line = reader.readLine()) != null)
-            if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
-                if (NUMBER_COLON_NAME.matcher(line).matches()) {
-                    final String semirareName;
-                    final int turnNumber;
+    while ((line = reader.readLine()) != null)
+      if (!line.equals(UsefulPatterns.EMPTY_STRING)) {
+        if (NUMBER_COLON_NAME.matcher(line).matches()) {
+          final String semirareName;
+          final int turnNumber;
 
-                    // Pares the semirare name
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(NOT_SEMIRARE_NAME);
-                    semirareName = scanner.next();
-                    scanner.close();
+          // Pares the semirare name
+          scanner = new Scanner(line);
+          scanner.useDelimiter(NOT_SEMIRARE_NAME);
+          semirareName = scanner.next();
+          scanner.close();
 
-                    // Parse the turn number
-                    scanner = new Scanner(line);
-                    scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
-                    turnNumber = scanner.nextInt();
-                    scanner.close();
+          // Parse the turn number
+          scanner = new Scanner(line);
+          scanner.useDelimiter(UsefulPatterns.NOT_A_NUMBER);
+          turnNumber = scanner.nextInt();
+          scanner.close();
 
-                    // Add the semirare to the list
-                    semirares.add(DataNumberPair.of(semirareName, turnNumber));
-                }
+          // Add the semirare to the list
+          semirares.add(DataNumberPair.of(semirareName, turnNumber));
+        }
 
-                emptyLineCounter = 0;
-            } else {
-                emptyLineCounter++;
-                if (emptyLineCounter >= 2) {
-                    reader.reset();
-                    break;
-                }
-                reader.mark(10);
-            }
+        emptyLineCounter = 0;
+      } else {
+        emptyLineCounter++;
+        if (emptyLineCounter >= 2) {
+          reader.reset();
+          break;
+        }
+        reader.mark(MafiaSessionLogReader.MARK_LIMIT);
+      }
 
-        // Set the semirare list
-        logData.getLogSummary().setSemirares(semirares);
-    }
+    // Set the semirare list
+    logData.getLogSummary().setSemirares(semirares);
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleBlock(
-                                        final String line) {
-        return line.contains("SEMI-RARES");
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleBlock(
+      final String line) {
+    return line.contains("SEMI-RARES");
+  }
 }

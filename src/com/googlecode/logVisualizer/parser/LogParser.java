@@ -33,29 +33,29 @@ import com.googlecode.logVisualizer.util.textualLogs.TextLogCreator;
  * An interface for an ascension log parser.
  */
 public interface LogParser {
-    /**
-     * Starts the parsing of a given ascension log.
-     * <p>
-     * From where this log comes (input stream, buffered reader, file, etc.),
-     * depends in the actual implementation of this class.
-     * 
-     * @throws IOException
-     *             if there was a problem with reading an IO source (probably
-     *             the log file); In such a case the parsing will be
-     *             discontinued and the {@link LogDataHolder} of this class
-     *             shouldn't be used for further computations
-     */
-    public void parse()
-                       throws IOException;
+  /**
+   * Starts the parsing of a given ascension log.
+   * <p>
+   * From where this log comes (input stream, buffered reader, file, etc.),
+   * depends in the actual implementation of this class.
+   *
+   * @throws IOException
+   *             if there was a problem with reading an IO source (probably
+   *             the log file); In such a case the parsing will be
+   *             discontinued and the {@link LogDataHolder} of this class
+   *             shouldn't be used for further computations
+   */
+  public void parse()
+      throws IOException;
 
-    /**
-     * @return The log data of this log parser.
-     */
-    public LogDataHolder getLogData();
+  /**
+   * @return The log data of this log parser.
+   */
+  public LogDataHolder getLogData();
 
-    /**
-     * @return True if the log data created by this parser is detailed enough to
-     *         create a textual log from it with {@link TextLogCreator} class.
-     */
-    public boolean isDetailedLogData();
+  /**
+   * @return True if the log data created by this parser is detailed enough to
+   *         create a textual log from it with {@link TextLogCreator} class.
+   */
+  public boolean isDetailedLogData();
 }

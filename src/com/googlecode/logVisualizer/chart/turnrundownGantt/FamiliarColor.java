@@ -31,103 +31,103 @@ import java.util.Map;
 import com.googlecode.logVisualizer.util.Maps;
 
 public final class FamiliarColor {
-    private final String familiarName;
+  private final String familiarName;
 
-    private Colors color;
+  private Colors color;
 
-    public FamiliarColor(
-                         final String familiarName, final String colorName) {
-        this.familiarName = familiarName;
-        color = Colors.fromString(colorName);
+  public FamiliarColor(
+      final String familiarName, final String colorName) {
+    this.familiarName = familiarName;
+    color = Colors.fromString(colorName);
+  }
+
+  public String getFamiliarName() {
+    return familiarName;
+  }
+
+  public void setColor(
+      final Colors color) {
+    setColor(color.toString());
+  }
+
+  public void setColor(
+      final String colorName) {
+    color = Colors.fromString(colorName);
+  }
+
+  public Colors getColor() {
+    return color;
+  }
+
+  public Paint getColorPaint() {
+    return color.getColor();
+  }
+
+  @Override
+  public boolean equals(
+      final Object o) {
+    if (o != null)
+      if (o instanceof FamiliarColor)
+        return ((FamiliarColor) o).getFamiliarName().equals(familiarName)
+            && ((FamiliarColor) o).getColor().equals(color);
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 3253;
+    result = result * 31 + familiarName.hashCode();
+    result = result * 31 + color.hashCode();
+
+    return result;
+  }
+
+  public static enum Colors {
+    NONE("none", Color.WHITE),
+    BLUE("blue", new Color(200, 225, 255)),
+    YELLOW("yellow", new Color(255, 255, 200)),
+    GREEN("green", new Color(200, 255, 200)),
+    RED("red", new Color(255, 200, 255)),
+    TURQUOISE("turquoise", new Color(200, 255, 255)),
+    GRAY("gray", new Color(200, 200, 175));
+
+    private static final Map<String, Colors> stringToEnum = Maps.newHashMap();
+
+    static {
+      for (final Colors op : values())
+        stringToEnum.put(op.toString(), op);
     }
 
-    public String getFamiliarName() {
-        return familiarName;
+    private final String colorName;
+
+    private final Paint color;
+
+    Colors(
+        final String colorName, final Paint color) {
+      this.colorName = colorName;
+      this.color = color;
     }
 
-    public void setColor(
-                         final Colors color) {
-        setColor(color.toString());
-    }
-
-    public void setColor(
-                         final String colorName) {
-        color = Colors.fromString(colorName);
-    }
-
-    public Colors getColor() {
-        return color;
-    }
-
-    public Paint getColorPaint() {
-        return color.getColor();
+    public Paint getColor() {
+      return color;
     }
 
     @Override
-    public boolean equals(
-                          final Object o) {
-        if (o != null)
-            if (o instanceof FamiliarColor)
-                return ((FamiliarColor) o).getFamiliarName().equals(familiarName)
-                       && ((FamiliarColor) o).getColor().equals(color);
-
-        return false;
+    public String toString() {
+      return colorName;
     }
 
-    @Override
-    public int hashCode() {
-        int result = 3253;
-        result = result * 31 + familiarName.hashCode();
-        result = result * 31 + color.hashCode();
+    /**
+     * @return The enum whose toString method returns a string which is
+     *         equal to the given string. If no match is found this method
+     *         will return <code>WHITE</code>.
+     */
+    public static Colors fromString(
+        final String colorName) {
+      final Colors color = stringToEnum.get(colorName);
 
-        return result;
+      return color != null ? color : NONE;
     }
-
-    public static enum Colors {
-        NONE("none", Color.WHITE),
-        BLUE("blue", new Color(200, 225, 255)),
-        YELLOW("yellow", new Color(255, 255, 200)),
-        GREEN("green", new Color(200, 255, 200)),
-        RED("red", new Color(255, 200, 255)),
-        TURQUOISE("turquoise", new Color(200, 255, 255)),
-        GRAY("gray", new Color(200, 200, 175));
-
-        private static final Map<String, Colors> stringToEnum = Maps.newHashMap();
-
-        static {
-            for (final Colors op : values())
-                stringToEnum.put(op.toString(), op);
-        }
-
-        private final String colorName;
-
-        private final Paint color;
-
-        Colors(
-               final String colorName, final Paint color) {
-            this.colorName = colorName;
-            this.color = color;
-        }
-
-        public Paint getColor() {
-            return color;
-        }
-
-        @Override
-        public String toString() {
-            return colorName;
-        }
-
-        /**
-         * @return The enum whose toString method returns a string which is
-         *         equal to the given string. If no match is found this method
-         *         will return <code>WHITE</code>.
-         */
-        public static Colors fromString(
-                                        final String colorName) {
-            final Colors color = stringToEnum.get(colorName);
-
-            return color != null ? color : NONE;
-        }
-    }
+  }
 }

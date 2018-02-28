@@ -28,12 +28,17 @@ package com.googlecode.logVisualizer.util.xmlLogs;
  * An exception thrown in case a XML file could not be read/written to.
  */
 public final class XMLAccessException extends Exception {
-    public XMLAccessException() {
-        super();
-    }
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1086346204963701914L;
 
-    public XMLAccessException(
-                              final String s) {
-        super(s);
-    }
+  public XMLAccessException() {
+    super();
+  }
+
+  public XMLAccessException(
+      final String s) {
+    super(s);
+  }
 }

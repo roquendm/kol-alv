@@ -48,126 +48,134 @@ import com.googlecode.logVisualizer.util.Countable;
  * all subclasses of this class should also contain this note that they do so.
  */
 public abstract class AbstractTurnInterval extends AbstractTurn implements TurnInterval,
-        Comparable<TurnInterval> {
-    private LogComment preComment = new LogComment();
+Comparable<TurnInterval> {
+  private LogComment preComment = new LogComment();
 
-    /**
-     * @param areaName
-     *            The name of the area to set.
-     */
-    public AbstractTurnInterval(
-                                final String areaName) {
-        super(areaName);
+  /**
+   * @param areaName
+   *            The name of the area to set.
+   */
+  public AbstractTurnInterval(
+      final String areaName) {
+    super(areaName);
+  }
+
+  /**
+   * Returns the last turn number of this turn interval.
+   *
+   * @see TurnEntity
+   */
+  @Override
+  public int getTurnNumber() {
+    return getEndTurn();
+  }
+
+  /**
+   * The turn version of a turn interval is always
+   * {@link TurnVersion#NOT_DEFINED}.
+   *
+   * @see TurnEntity
+   */
+  @Override
+  public TurnVersion getTurnVersion() {
+    return TurnVersion.NOT_DEFINED;
+  }
+
+  /**
+   * @see TurnInterval
+   */
+  @Override
+  public int getTotalTurns() {
+    return getEndTurn() - getStartTurn();
+  }
+
+  /**
+   * @see TurnInterval
+   */
+  @Override
+  public void setPreIntervalComment(
+      final LogComment comment) {
+    if (comment == null)
+      throw new IllegalArgumentException("The comment must not be null.");
+
+    preComment = comment;
+  }
+
+  /**
+   * @see TurnInterval
+   */
+  @Override
+  public LogComment getPreIntervalComment() {
+    return preComment;
+  }
+
+  /**
+   * @see TurnInterval
+   */
+  @Override
+  public void setPostIntervalComment(
+      final LogComment comment) {
+    if (comment == null)
+      throw new IllegalArgumentException("The comment must not be null.");
+
+    this.comment = comment;
+  }
+
+  /**
+   * @see TurnInterval
+   */
+  @Override
+  public LogComment getPostIntervalComment() {
+    return comment;
+  }
+
+  /**
+   * @return The difference between the start turns of this turn interval and
+   *         the given turn interval. If both start turns are the same, the
+   *         end turns will be compared.
+   */
+  @Override
+  public int compareTo(
+      final TurnInterval turn) {
+    final int result = getStartTurn() - turn.getStartTurn();
+    return result == 0 ? getEndTurn() - turn.getEndTurn() : result;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(60);
+
+    str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
+
+    if (getTotalTurns() > 1) {
+      str.append(getStartTurn() + 1);
+      str.append(UsefulPatterns.MINUS);
     }
 
-    /**
-     * Returns the last turn number of this turn interval.
-     * 
-     * @see TurnEntity
-     */
-    public int getTurnNumber() {
-        return getEndTurn();
-    }
+    str.append(getEndTurn());
+    str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getAreaName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getStatGain().toString());
 
-    /**
-     * The turn version of a turn interval is always
-     * {@link TurnVersion#NOT_DEFINED}.
-     * 
-     * @see TurnEntity
-     */
-    public TurnVersion getTurnVersion() {
-        return TurnVersion.NOT_DEFINED;
-    }
+    return str.toString();
+  }
 
-    /**
-     * @see TurnInterval
-     */
-    public int getTotalTurns() {
-        return getEndTurn() - getStartTurn();
-    }
+  @Override
+  public boolean equals(
+      final Object obj) {
+    if (super.equals(obj) && obj instanceof AbstractTurnInterval)
+      return true;
 
-    /**
-     * @see TurnInterval
-     */
-    public void setPreIntervalComment(
-                                      final LogComment comment) {
-        if (comment == null)
-            throw new IllegalArgumentException("The comment must not be null.");
+    return false;
+  }
 
-        preComment = comment;
-    }
+  @Override
+  public int hashCode() {
+    int result = 11;
+    result = 31 * result + super.hashCode();
 
-    /**
-     * @see TurnInterval
-     */
-    public LogComment getPreIntervalComment() {
-        return preComment;
-    }
-
-    /**
-     * @see TurnInterval
-     */
-    public void setPostIntervalComment(
-                                       final LogComment comment) {
-        if (comment == null)
-            throw new IllegalArgumentException("The comment must not be null.");
-
-        this.comment = comment;
-    }
-
-    /**
-     * @see TurnInterval
-     */
-    public LogComment getPostIntervalComment() {
-        return comment;
-    }
-
-    /**
-     * @return The difference between the start turns of this turn interval and
-     *         the given turn interval. If both start turns are the same, the
-     *         end turns will be compared.
-     */
-    public int compareTo(
-                         final TurnInterval turn) {
-        final int result = getStartTurn() - turn.getStartTurn();
-        return result == 0 ? getEndTurn() - turn.getEndTurn() : result;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(60);
-
-        str.append(UsefulPatterns.SQUARE_BRACKET_OPEN);
-
-        if (getTotalTurns() > 1) {
-            str.append(getStartTurn() + 1);
-            str.append(UsefulPatterns.MINUS);
-        }
-
-        str.append(getEndTurn());
-        str.append(UsefulPatterns.SQUARE_BRACKET_CLOSE);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getAreaName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getStatGain().toString());
-
-        return str.toString();
-    }
-
-    @Override
-    public boolean equals(
-                          final Object obj) {
-        if (super.equals(obj) && obj instanceof AbstractTurnInterval)
-            return true;
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 11;
-        result = 31 * result + super.hashCode();
-
-        return result;
-    }
+    return result;
+  }
 }

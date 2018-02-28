@@ -24,31 +24,25 @@
 
 package com.googlecode.logVisualizer.parser.lineParsers;
 
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.googlecode.logVisualizer.logData.LogDataHolder;
 import com.googlecode.logVisualizer.logData.turn.SingleTurn;
-import com.googlecode.logVisualizer.parser.UsefulPatterns;
-import com.googlecode.logVisualizer.util.Sets;
 
 public final class MafiaBanishLineParser extends AbstractLineParser {
-	    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(
-                             final String line, final LogDataHolder logData) {
-        ((SingleTurn) logData.getLastTurnSpent()).setBanished(true);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(final String line) {
-    	return false;//currently nothing uses this.
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(
+      final String line, final LogDataHolder logData) {
+    ((SingleTurn) logData.getLastTurnSpent()).setBanished(true);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(final String line) {
+    return false;//currently nothing uses this.
+  }
 }

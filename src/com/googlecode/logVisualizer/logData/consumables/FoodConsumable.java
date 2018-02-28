@@ -29,66 +29,67 @@ import com.googlecode.logVisualizer.util.Countable;
 
 /**
  * A simple implementation of the Consumable class for food.
- * 
+ *
  * @see Consumable
  */
 final class FoodConsumable extends Consumable {
-    private static final String CONSUMED_START_STRING = "Ate";
+  private static final String CONSUMED_START_STRING = "Ate";
 
-    FoodConsumable(
-                   final String name, final int adventureGain, final int amountUsed) {
-        super(name, adventureGain, amountUsed);
-    }
+  FoodConsumable(
+      final String name, final int adventureGain, final int amountUsed) {
+    super(name, adventureGain, amountUsed);
+  }
 
-    FoodConsumable(
-                   final String name, final int adventureGain, final int amountUsed,
-                   final int turnNumberOfUsage) {
-        super(name, adventureGain, amountUsed, turnNumberOfUsage);
-    }
+  FoodConsumable(
+      final String name, final int adventureGain, final int amountUsed,
+      final int turnNumberOfUsage) {
+    super(name, adventureGain, amountUsed, turnNumberOfUsage);
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public ConsumableVersion getConsumableVersion() {
-        return ConsumableVersion.FOOD;
-    }
+  /** {@inheritDoc} */
+  @Override
+  public ConsumableVersion getConsumableVersion() {
+    return ConsumableVersion.FOOD;
+  }
 
-    /**
-     * @return A deep copy of this object.
-     * @see Countable
-     */
-    public FoodConsumable newInstance() {
-        final FoodConsumable consumable = getTurnNumberOfUsage() < 0 ? new FoodConsumable(getName(),
-                                                                                          getAdventureGain(),
-                                                                                          getAmount())
-                                                                    : new FoodConsumable(getName(),
-                                                                                         getAdventureGain(),
-                                                                                         getAmount(),
-                                                                                         getTurnNumberOfUsage());
+  /**
+   * @return A deep copy of this object.
+   * @see Countable
+   */
+  @Override
+  public FoodConsumable newInstance() {
+    final FoodConsumable consumable = getTurnNumberOfUsage() < 0 ? new FoodConsumable(getName(),
+        getAdventureGain(),
+        getAmount())
+        : new FoodConsumable(getName(),
+            getAdventureGain(),
+            getAmount(),
+            getTurnNumberOfUsage());
 
-        consumable.setDayNumberOfUsage(getDayNumberOfUsage());
-        consumable.setStatGain(getStatGain());
+    consumable.setDayNumberOfUsage(getDayNumberOfUsage());
+    consumable.setStatGain(getStatGain());
 
-        return consumable;
-    }
+    return consumable;
+  }
 
-    @Override
-    public String toString() {
-        final StringBuilder str = new StringBuilder(50);
+  @Override
+  public String toString() {
+    final StringBuilder str = new StringBuilder(50);
 
-        str.append(CONSUMED_START_STRING);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getAmount());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getName());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
-        str.append(getAdventureGain());
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(ADVENTURES_GAINED_STRING);
-        str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
-        str.append(UsefulPatterns.WHITE_SPACE);
-        str.append(getStatGain().toString());
+    str.append(CONSUMED_START_STRING);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getAmount());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getName());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(UsefulPatterns.ROUND_BRACKET_OPEN);
+    str.append(getAdventureGain());
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(ADVENTURES_GAINED_STRING);
+    str.append(UsefulPatterns.ROUND_BRACKET_CLOSE);
+    str.append(UsefulPatterns.WHITE_SPACE);
+    str.append(getStatGain().toString());
 
-        return str.toString();
-    }
+    return str.toString();
+  }
 }

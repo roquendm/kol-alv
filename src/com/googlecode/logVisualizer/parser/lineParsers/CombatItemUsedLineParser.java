@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 
 import com.googlecode.logVisualizer.logData.CombatItem;
 import com.googlecode.logVisualizer.logData.LogDataHolder;
-import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.logData.turn.SingleTurn;
+import com.googlecode.logVisualizer.logData.turn.Turn;
 import com.googlecode.logVisualizer.parser.UsefulPatterns;
 
 /**
@@ -42,42 +42,42 @@ import com.googlecode.logVisualizer.parser.UsefulPatterns;
  * {@code Round _roundNumber_: _accountName_ uses the _skillName_!}
  */
 public final class CombatItemUsedLineParser extends AbstractLineParser {
-    private static final Pattern COMBAT_ITEM_USED_CAPTURE_PATTERN = Pattern.compile(".*uses the ([\\p{L}\\d\\p{Punct}\\s]+)!(?: \\(auto-attack\\))?");
+  private static final Pattern COMBAT_ITEM_USED_CAPTURE_PATTERN = Pattern.compile(".*uses the ([\\p{L}\\d\\p{Punct}\\s]+)!(?: \\(auto-attack\\))?");
 
-    private static final String COMBAT_ITEM_USED_STRING = "uses the";
+  private static final String COMBAT_ITEM_USED_STRING = "uses the";
 
-    private final Matcher combatItemUsedMatcher = COMBAT_ITEM_USED_CAPTURE_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
+  private final Matcher combatItemUsedMatcher = COMBAT_ITEM_USED_CAPTURE_PATTERN.matcher(UsefulPatterns.EMPTY_STRING);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doParsing(final String line, final LogDataHolder logData) {
-        final String combatItemName;
-        int amount = 1;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doParsing(final String line, final LogDataHolder logData) {
+    final String combatItemName;
+    //int amount = 1;
 
-        final Matcher result = COMBAT_ITEM_USED_CAPTURE_PATTERN.matcher( line );
-        result.find();
-        
-        combatItemName = result.group(1).toLowerCase(Locale.ENGLISH);
+    final Matcher result = COMBAT_ITEM_USED_CAPTURE_PATTERN.matcher( line );
+    result.find();
 
-        // Add the skill to the current turn.
-        final Turn currentTurn = logData.getLastTurnSpent();
-        final CombatItem combatItem = new CombatItem(combatItemName, 1, currentTurn.getTurnNumber());
-        
-        currentTurn.addCombatItemUsed( combatItem );
-                
-        //Check for Banishing combat items
-        if (UsefulPatterns.BANISH_ITEMS.contains( combatItemName )) {
-        	((SingleTurn) logData.getLastTurnSpent()).setBanished(true, combatItemName, null);        
-        }
+    combatItemName = result.group(1).toLowerCase(Locale.ENGLISH);
+
+    // Add the skill to the current turn.
+    final Turn currentTurn = logData.getLastTurnSpent();
+    final CombatItem combatItem = new CombatItem(combatItemName, 1, currentTurn.getTurnNumber());
+
+    currentTurn.addCombatItemUsed( combatItem );
+
+    //Check for Banishing combat items
+    if (UsefulPatterns.BANISH_ITEMS.contains( combatItemName )) {
+      ((SingleTurn) logData.getLastTurnSpent()).setBanished(true, combatItemName, null);
     }
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean isCompatibleLine(final String line) {
-        return line.contains(COMBAT_ITEM_USED_STRING) && combatItemUsedMatcher.reset(line).matches();
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompatibleLine(final String line) {
+    return line.contains(COMBAT_ITEM_USED_STRING) && combatItemUsedMatcher.reset(line).matches();
+  }
 }
